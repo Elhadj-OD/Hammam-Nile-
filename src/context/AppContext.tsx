@@ -39,6 +39,23 @@ import {
   auth,
   googleProvider,
 } from '../lib/firebase';
+import {
+  isSupabaseConfigured,
+  getProductsFromSupabase,
+  saveProductToSupabase,
+  deleteProductFromSupabase,
+  getSalesFromSupabase,
+  saveSaleToSupabase,
+  getClientsFromSupabase,
+  saveClientToSupabase,
+  deleteClientFromSupabase,
+  getMovementsFromSupabase,
+  saveMovementToSupabase,
+  getHammamUsagesFromSupabase,
+  saveHammamUsageToSupabase,
+  getShopSettingsFromSupabase,
+  saveShopSettingsToSupabase,
+} from '../lib/supabase';
 import { signInWithPopup } from 'firebase/auth';
 
 interface AppContextType {
@@ -52,6 +69,7 @@ interface AppContextType {
 
   // Firebase 2FA & Cloud Sync
   firebaseConnected: boolean;
+  supabaseConnected: boolean;
   isAdminVerified: boolean;
   pendingVerificationId: string | null;
   lastSentCode: string | null;
@@ -231,6 +249,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Firebase Cloud & 2FA State
   const [firebaseConnected, setFirebaseConnected] = useState<boolean>(false);
+  const [supabaseConnected, setSupabaseConnected] = useState<boolean>(isSupabaseConfigured());
   const [isAdminVerified, setIsAdminVerified] = useState<boolean>(() => {
     return localStorage.getItem(`${STORAGE_KEY}-admin-verified`) === 'true';
   });
@@ -371,6 +390,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           .catch(console.error);
       }
     });
+  }, []);
+
+  // Supabase initial load and cloud synchronization
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+    async function loadSupabase() {
+      try {
+        const [sbProducts, sbSales, sbClients, sbMovements, sbUsages, sbSettings] = await Promise.all([
+          getProductsFromSupabase(),
+          getSalesFromSupabase(),
+          getClientsFromSupabase(),
+          getMovementsFromSupabase(),
+          getHammamUsagesFromSupabase(),
+          getShopSettingsFromSupabase(),
+        ]);
+
+        if (sbProducts && sbProducts.length > 0) {
+          setProducts(sbProducts);
+        } else if (products.length > 0) {
+          // Push local catalog to Supabase if empty on cloud
+          sbProducts?.length === 0 && products.forEach(p => saveProductToSupabase(p));
+        }
+
+        if (sbSales && sbSales.length > 0) setSales(sbSales);
+        if (sbClients && sbClients.length > 0) setClients(sbClients);
+        if (sbMovements && sbMovements.length > 0) setMovements(sbMovements);
+        if (sbUsages && sbUsages.length > 0) setHammamUsages(sbUsages);
+        if (sbSettings) setSettings(sbSettings);
+
+        setSupabaseConnected(true);
+      } catch (err) {
+        console.warn('Supabase sync warning:', err);
+      }
+    }
+    loadSupabase();
   }, []);
 
   const requestAdminEmailCode = async (
@@ -604,6 +658,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
     const newProduct: Product = { ...productData, id: newId };
     setProducts(prev => [newProduct, ...prev]);
+    saveProductToSupabase(newProduct);
 
     // Track movement if initial stock > 0
     if (newProduct.qty > 0) {
@@ -620,6 +675,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         user: currentUser?.username || 'admin',
       };
       setMovements(prev => [newMovement, ...prev]);
+      saveMovementToSupabase(newMovement);
     }
   };
 
@@ -627,7 +683,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setProducts(prev =>
       prev.map(p => {
         if (p.id === id) {
-          return { ...p, ...updates };
+          const updated = { ...p, ...updates };
+          saveProductToSupabase(updated);
+          return updated;
         }
         return p;
       })
@@ -636,6 +694,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const deleteProduct = (id: number) => {
     setProducts(prev => prev.filter(p => p.id !== id));
+    deleteProductFromSupabase(id);
   };
 
   const lowStockProducts = products.filter(p => p.qty <= p.minQty);
@@ -760,8 +819,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCart([]);
     setLastSale(newSale);
 
-    // Sync sale to Firebase Firestore
+    // Sync sale to Firebase Firestore & Supabase
     syncSaleToFirestore(newSale).catch(console.error);
+    saveSaleToSupabase(newSale);
+    newMovements.forEach(m => saveMovementToSupabase(m));
 
     // Auto-update or create client in directory with purchase details
     const cleanCustomerName = (customerName || '').trim();
@@ -794,6 +855,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const updatedList = [...prev];
           updatedList[matchIdx] = updated;
           syncClientToFirestore(updated).catch(console.error);
+          saveClientToSupabase(updated);
           return updatedList;
         } else {
           const newId = prev.length > 0 ? Math.max(...prev.map(c => c.id)) + 1 : 1;
@@ -810,6 +872,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             createdAt: now.toISOString().split('T')[0],
           };
           syncClientToFirestore(newClient).catch(console.error);
+          saveClientToSupabase(newClient);
           return [newClient, ...prev];
         }
       });
@@ -830,6 +893,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setClients(prev => [newClient, ...prev]);
     syncClientToFirestore(newClient).catch(console.error);
+    saveClientToSupabase(newClient);
     return newClient;
   };
 
@@ -839,6 +903,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (c.id === id) {
           const updated = { ...c, ...updates };
           syncClientToFirestore(updated).catch(console.error);
+          saveClientToSupabase(updated);
           return updated;
         }
         return c;
@@ -848,6 +913,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const deleteClient = (id: number) => {
     setClients(prev => prev.filter(c => c.id !== id));
+    deleteClientFromSupabase(id);
   };
 
   // Quotes (Devis)
@@ -1016,6 +1082,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     setMovements(prev => [newMovement, ...prev]);
+    saveMovementToSupabase(newMovement);
     return true;
   };
 
@@ -1057,6 +1124,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     setHammamUsages(prev => [newUsage, ...prev]);
+    saveHammamUsageToSupabase(newUsage);
 
     // Tracé automatique dans le registre des mouvements de stock
     const newMovement: StockMovement = {
@@ -1072,6 +1140,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       user: currentUser?.username || 'admin',
     };
     setMovements(prev => [newMovement, ...prev]);
+    saveMovementToSupabase(newMovement);
 
     return true;
   };
@@ -1177,6 +1246,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         lastSale,
         setLastSale,
         firebaseConnected,
+        supabaseConnected,
         isAdminVerified,
         pendingVerificationId,
         lastSentCode,
