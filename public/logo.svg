@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="100%" height="100%">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&amp;display=swap');
+      .script-text {
+        font-family: 'Alex Brush', cursive;
+        font-size: 38px;
+        fill: #004CB7;
+      }
+    </style>
+  </defs>
+  <!-- Background is transparent -->
+  <g id="emblem" fill="#004CB7">
+    <path d="M 40 45 
+             C 70 50 110 54 140 54
+             C 160 50 178 50 190 56
+             C 178 62 170 72 172 82
+             C 174 92 184 96 190 100
+             C 182 108 168 112 150 110
+             C 128 108 110 97 96 89
+             C 110 90 126 89 140 86
+             C 114 83 92 78 76 75
+             C 98 75 116 74 132 72
+             C 104 69 78 64 56 61
+             C 78 61 100 60 120 59
+             C 90 54 62 50 40 45 Z" />
+  </g>
+  <text x="120" y="155" text-anchor="middle" class="script-text">Hammam Nile</text>
+</svg>
