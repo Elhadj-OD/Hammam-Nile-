@@ -24,7 +24,7 @@ export const LoginView: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
   const selectRole = (role: 'admin' | 'caissier') => {
@@ -237,7 +237,6 @@ export const LoginView: React.FC = () => {
             {/* Submit button */}
             <button
               type="submit"
-              disabled={isLoggingIn}
               className={`w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white ${
                 selectedProfile === 'admin'
                   ? 'bg-[#0A3735] hover:bg-[#0F4C4A]'
