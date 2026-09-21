@@ -1,0 +1,139 @@
+-- ==============================================================================
+-- BOUTIQUE HAMMAM NILE — SCHEMA SUPABASE (POSTGRESQL)
+-- Copiez-collez ce script dans le "SQL Editor" de votre tableau de bord Supabase
+-- ==============================================================================
+
+-- 1. Table des Produits
+CREATE TABLE IF NOT EXISTS public.products (
+  id BIGINT PRIMARY KEY,
+  name TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'savons',
+  price NUMERIC NOT NULL DEFAULT 0,
+  qty INT NOT NULL DEFAULT 0,
+  "minQty" INT NOT NULL DEFAULT 5,
+  emoji TEXT DEFAULT '🧼',
+  image TEXT,
+  barcode TEXT,
+  description TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index pour recherche rapide par code-barres et catégorie
+CREATE INDEX IF NOT EXISTS idx_products_barcode ON public.products(barcode);
+CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category);
+
+-- 2. Table des Ventes (Historique caisse)
+CREATE TABLE IF NOT EXISTS public.sales (
+  id BIGINT PRIMARY KEY,
+  caissier TEXT NOT NULL,
+  "caissierName" TEXT,
+  date TEXT NOT NULL,
+  time TEXT NOT NULL,
+  total NUMERIC NOT NULL,
+  subtotal NUMERIC,
+  discount NUMERIC DEFAULT 0,
+  payment TEXT NOT NULL DEFAULT 'cash',
+  "paymentDetail" TEXT,
+  "amountReceived" NUMERIC,
+  "changeGiven" NUMERIC,
+  items JSONB NOT NULL DEFAULT '[]'::JSONB,
+  timestamp BIGINT NOT NULL,
+  "customerName" TEXT DEFAULT 'Comptoir',
+  "customerPhone" TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sales_timestamp ON public.sales(timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_sales_caissier ON public.sales(caissier);
+
+-- 3. Table des Clients (CRM)
+CREATE TABLE IF NOT EXISTS public.clients (
+  id BIGINT PRIMARY KEY,
+  name TEXT NOT NULL,
+  phone TEXT,
+  email TEXT,
+  address TEXT,
+  notes TEXT,
+  "createdAt" TEXT,
+  "purchaseCount" INT DEFAULT 0,
+  "totalSpent" NUMERIC DEFAULT 0,
+  "lastPurchaseDate" TEXT,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_clients_name ON public.clients(name);
+CREATE INDEX IF NOT EXISTS idx_clients_phone ON public.clients(phone);
+
+-- 4. Table des Mouvements de Stock (Audit Entrées / Sorties)
+CREATE TABLE IF NOT EXISTS public.stock_movements (
+  id BIGSERIAL PRIMARY KEY,
+  "productId" BIGINT NOT NULL,
+  "productName" TEXT NOT NULL,
+  type TEXT NOT NULL, -- 'in' ou 'out'
+  qty INT NOT NULL,
+  reason TEXT,
+  date TEXT NOT NULL,
+  time TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  "user" TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5. Table des Prélèvements Hammam (Sorties de stock usage interne)
+CREATE TABLE IF NOT EXISTS public.hammam_usages (
+  id BIGSERIAL PRIMARY KEY,
+  "productId" BIGINT NOT NULL,
+  "productName" TEXT NOT NULL,
+  qty INT NOT NULL,
+  "unitPrice" NUMERIC NOT NULL,
+  "totalValue" NUMERIC NOT NULL,
+  "serviceOrCabin" TEXT,
+  "requestedBy" TEXT,
+  "takenByStaff" TEXT,
+  date TEXT NOT NULL,
+  time TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6. Table des Paramètres Boutique
+CREATE TABLE IF NOT EXISTS public.shop_settings (
+  id INT PRIMARY KEY DEFAULT 1,
+  settings JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 7. Activer Row Level Security (RLS) avec politique ouverte pour le POS
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sales ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.stock_movements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.hammam_usages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.shop_settings ENABLE ROW LEVEL SECURITY;
+
+-- Politiques d'accès (permettant la synchronisation directe depuis l'application avec la clé anon)
+DROP POLICY IF EXISTS "Public access for products" ON public.products;
+CREATE POLICY "Public access for products" ON public.products FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public access for sales" ON public.sales;
+CREATE POLICY "Public access for sales" ON public.sales FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public access for clients" ON public.clients;
+CREATE POLICY "Public access for clients" ON public.clients FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public access for stock_movements" ON public.stock_movements;
+CREATE POLICY "Public access for stock_movements" ON public.stock_movements FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public access for hammam_usages" ON public.hammam_usages;
+CREATE POLICY "Public access for hammam_usages" ON public.hammam_usages FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public access for shop_settings" ON public.shop_settings;
+CREATE POLICY "Public access for shop_settings" ON public.shop_settings FOR ALL USING (true) WITH CHECK (true);
+
+-- Activer les notifications temps réel (Realtime) sur les tables critiques
+ALTER PUBLICATION supabase_realtime ADD TABLE public.products;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.sales;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.clients;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.hammam_usages;

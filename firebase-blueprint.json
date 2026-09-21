@@ -1,0 +1,90 @@
+{
+  "entities": {
+    "Client": {
+      "title": "Client",
+      "description": "Fiche client de la boutique et du Hammam Nile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "name": { "type": "string", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "email": { "type": "string", "maxLength": 100 },
+        "address": { "type": "string", "maxLength": 200 },
+        "notes": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "purchaseCount": { "type": "number" },
+        "totalSpent": { "type": "number" },
+        "lastPurchaseDate": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "name"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Vente enregistrée en caisse à la boutique Hammam Nile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "caissier": { "type": "string", "maxLength": 50 },
+        "caissierName": { "type": "string", "maxLength": 100 },
+        "date": { "type": "string", "maxLength": 20 },
+        "time": { "type": "string", "maxLength": 20 },
+        "total": { "type": "number" },
+        "subtotal": { "type": "number" },
+        "discount": { "type": "number" },
+        "payment": { "type": "string", "maxLength": 20 },
+        "paymentDetail": { "type": "string", "maxLength": 50 },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 30 },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["id", "caissier", "date", "time", "total", "payment", "timestamp"]
+    },
+    "SecurityVerification": {
+      "title": "SecurityVerification",
+      "description": "Code de vérification sécurisé à usage unique pour l'accès administrateur",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 120 },
+        "code": { "type": "string", "maxLength": 10 },
+        "expiresAt": { "type": "number" },
+        "verified": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "role": { "type": "string", "maxLength": 20 }
+      },
+      "required": ["email", "code", "expiresAt", "verified"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Paramètres généraux de l'établissement Hammam Nile",
+      "type": "object",
+      "properties": {
+        "shopName": { "type": "string", "maxLength": 100 },
+        "slogan": { "type": "string", "maxLength": 150 },
+        "address": { "type": "string", "maxLength": 200 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "email": { "type": "string", "maxLength": 100 },
+        "currency": { "type": "string", "maxLength": 20 },
+        "adminEmail": { "type": "string", "maxLength": 120 }
+      },
+      "required": ["shopName", "currency"]
+    }
+  },
+  "firestore": {
+    "/clients/{clientId}": {
+      "schema": "Client",
+      "description": "Collection des clients avec historique et coordonnées"
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Collection des ventes de la caisse"
+    },
+    "/security_verifications/{verificationId}": {
+      "schema": "SecurityVerification",
+      "description": "Codes d'authentification 2FA pour l'accès administrateur"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "Configuration globale de l'application"
+    }
+  }
+}
