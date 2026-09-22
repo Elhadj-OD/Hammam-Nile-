@@ -385,22 +385,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs font-mono shadow-xs ${
             isGerant ? 'bg-[#0A3735] text-white' : 'bg-[#004CB7] text-white'
           }`}>
-            {isGerant ? 'SO' : 'EH'}
+            {currentUser.avatar && !currentUser.avatar.startsWith('data:') && !currentUser.avatar.startsWith('http')
+              ? currentUser.avatar
+              : currentUser.name.substring(0, 2).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-bold text-[#EFE8D8] truncate">{currentUser.name}</div>
             <div className="text-[10px] text-[#EFE8D8]/70">
-              {isGerant ? 'Administratrice' : 'Caissier'}
+              {isGerant ? 'Administratrice' : myDept ? myDept.label : 'Caissier'}
+              {currentUser.locked && ' 🔒'}
             </div>
           </div>
         </div>
 
-        {/* Logout / Lock Session */}
+        {/* Logout / Lock Session — toujours disponible, même sur un profil verrouillé,
+            pour que la caissière puisse libérer le poste pour la suivante */}
         <button
           type="button"
           onClick={logout}
           className="flex items-center gap-3 p-[10px_12px] text-[13px] font-semibold text-[#EFE8D8]/60 hover:text-rose-300 hover:bg-white/5 rounded-xl transition-all cursor-pointer w-full text-left border-0 bg-transparent"
-          title="Verrouiller la session et revenir à l'écran de mot de passe"
+          title="Se déconnecter et revenir à l'écran de connexion"
         >
           <svg
             viewBox="0 0 24 24"
@@ -413,7 +417,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          <span>Verrouiller / Quitter</span>
+          <span>Se déconnecter</span>
         </button>
       </aside>
     </>
