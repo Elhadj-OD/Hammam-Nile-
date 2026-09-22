@@ -126,23 +126,39 @@ ALTER TABLE public.shop_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.presence ENABLE ROW LEVEL SECURITY;
 
 -- Politiques d'accès (permettant la synchronisation directe depuis l'application avec la clé anon)
+-- Chaque table n'ouvre que les opérations réellement utilisées par l'application
+-- (voir src/lib/supabase.ts) : les journaux d'audit sont en écriture seule
+-- (insert-only, jamais modifiés ni supprimés) et les ventes/paramètres ne sont
+-- jamais supprimés depuis le client.
 DROP POLICY IF EXISTS "Public access for products" ON public.products;
-CREATE POLICY "Public access for products" ON public.products FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for products" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Public insert for products" ON public.products FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update for products" ON public.products FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Public delete for products" ON public.products FOR DELETE USING (true);
 
 DROP POLICY IF EXISTS "Public access for sales" ON public.sales;
-CREATE POLICY "Public access for sales" ON public.sales FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for sales" ON public.sales FOR SELECT USING (true);
+CREATE POLICY "Public insert for sales" ON public.sales FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update for sales" ON public.sales FOR UPDATE USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public access for clients" ON public.clients;
-CREATE POLICY "Public access for clients" ON public.clients FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for clients" ON public.clients FOR SELECT USING (true);
+CREATE POLICY "Public insert for clients" ON public.clients FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update for clients" ON public.clients FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Public delete for clients" ON public.clients FOR DELETE USING (true);
 
 DROP POLICY IF EXISTS "Public access for stock_movements" ON public.stock_movements;
-CREATE POLICY "Public access for stock_movements" ON public.stock_movements FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for stock_movements" ON public.stock_movements FOR SELECT USING (true);
+CREATE POLICY "Public insert for stock_movements" ON public.stock_movements FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public access for hammam_usages" ON public.hammam_usages;
-CREATE POLICY "Public access for hammam_usages" ON public.hammam_usages FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for hammam_usages" ON public.hammam_usages FOR SELECT USING (true);
+CREATE POLICY "Public insert for hammam_usages" ON public.hammam_usages FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public access for shop_settings" ON public.shop_settings;
-CREATE POLICY "Public access for shop_settings" ON public.shop_settings FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for shop_settings" ON public.shop_settings FOR SELECT USING (true);
+CREATE POLICY "Public insert for shop_settings" ON public.shop_settings FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update for shop_settings" ON public.shop_settings FOR UPDATE USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public access for presence" ON public.presence;
 CREATE POLICY "Public access for presence" ON public.presence FOR ALL USING (true) WITH CHECK (true);

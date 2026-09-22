@@ -78,6 +78,10 @@ export const ProduitsView: React.FC = () => {
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Fichier invalide : veuillez sélectionner une image.');
+        return;
+      }
       if (file.size > 2 * 1024 * 1024) {
         alert('Veuillez sélectionner une image de moins de 2 Mo.');
         return;
