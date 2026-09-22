@@ -32,7 +32,8 @@ const MainLayout: React.FC = () => {
       case 'dashboard':
         return <DashboardView />;
       case 'caisse':
-        return <CaisseView />;
+        // L'admin n'a pas de partie caisse : elle vérifie, elle ne vend pas
+        return currentUser.role === 'gerant' ? <DashboardView /> : <CaisseView />;
       case 'mes-ventes':
         return <MesVentesView />;
       case 'devis':

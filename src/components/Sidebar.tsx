@@ -27,6 +27,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
   if (!currentUser) return null;
 
   const isGerant = currentUser.role === 'gerant';
+  // L'admin vérifie les deux parties ; une caissière ne prélève que sur sa partie (genre)
+  const prelevementLabel = isGerant
+    ? 'Prélèvements Hammam'
+    : `Prélèvement (${currentUser.gender === 'homme' ? 'Hommes' : 'Femmes'})`;
 
   const handleNavClick = (section: ActiveSection) => {
     setActiveSection(section);
@@ -111,39 +115,41 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
 
         {/* Navigation list */}
         <ul className="list-none p-0 m-0 flex flex-col gap-1 flex-1">
-          {/* Caisse - Available to All */}
-          <li
-            onClick={() => handleNavClick('caisse')}
-            className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
-              activeSection === 'caisse'
-                ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
-                : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="w-[17px] h-[17px] shrink-0"
-              >
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              </svg>
-              <span>Caisse</span>
-            </div>
-            {cart.length > 0 && (
-              <span
-                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                  activeSection === 'caisse'
-                    ? 'bg-[#0A3735] text-[#B8874B]'
-                    : 'bg-[#B8874B] text-[#0A3735]'
-                }`}
-              >
-                {cart.length}
-              </span>
-            )}
-          </li>
+          {/* Caisse - Caissier(ère)s uniquement, pas l'admin (elle ne vend pas) */}
+          {!isGerant && (
+            <li
+              onClick={() => handleNavClick('caisse')}
+              className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+                activeSection === 'caisse'
+                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="w-[17px] h-[17px] shrink-0"
+                >
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                </svg>
+                <span>Caisse</span>
+              </div>
+              {cart.length > 0 && (
+                <span
+                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                    activeSection === 'caisse'
+                      ? 'bg-[#0A3735] text-[#B8874B]'
+                      : 'bg-[#B8874B] text-[#0A3735]'
+                  }`}
+                >
+                  {cart.length}
+                </span>
+              )}
+            </li>
+          )}
 
           {/* Commandes - Admin only */}
           {isGerant && (
@@ -287,7 +293,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               >
                 <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
               </svg>
-              <span>Prélèvements Hammam</span>
+              <span>{prelevementLabel}</span>
             </div>
             {hammamUsages.length > 0 && (
               <span

@@ -75,8 +75,24 @@ export const PrelevementsHammamView: React.FC = () => {
   // Calculations
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
 
+  // L'admin vérifie les deux parties ; une caissière ne prélève que sur sa partie (genre)
+  const isGerant = currentUser?.role === 'gerant';
+  const canAccessBoutiqueFemme = isGerant || currentUser?.gender !== 'homme';
+  const canAccessBoutiqueHomme = isGerant || currentUser?.gender === 'homme';
+  const genderLabel = isGerant ? null : currentUser?.gender === 'homme' ? 'Hommes' : 'Femmes';
+
+  const accessibleProducts = products.filter(p => {
+    if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
+    if (p.category === 'hommes' && !canAccessBoutiqueHomme) return false;
+    return true;
+  });
+
   // Filtered usages
   const filteredUsages = hammamUsages.filter(u => {
+    const usageProduct = products.find(p => p.id === u.productId);
+    if (usageProduct?.category === 'femmes' && !canAccessBoutiqueFemme) return false;
+    if (usageProduct?.category === 'hommes' && !canAccessBoutiqueHomme) return false;
+
     const matchesSearch =
       u.productName.toLowerCase().includes(search.toLowerCase()) ||
       u.serviceOrCabin.toLowerCase().includes(search.toLowerCase()) ||
@@ -191,7 +207,7 @@ export const PrelevementsHammamView: React.FC = () => {
             <span>Usage Interne & Cabines de Soins</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-[#1C2321] font-display">
-            Produits Prélevés par le Hammam
+            Produits Prélevés par le Hammam{genderLabel && ` (${genderLabel})`}
           </h2>
           <p className="text-xs sm:text-sm text-[#6B7873] mt-0.5">
             Registre et valorisation des produits pris sur le stock de la boutique pour le fonctionnement du hammam (gommages, bains, massages et vestiaires).
@@ -551,7 +567,7 @@ export const PrelevementsHammamView: React.FC = () => {
                   className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
                 >
                   <option value="">-- Sélectionner un produit en rayon --</option>
-                  {products.map(p => (
+                  {accessibleProducts.map(p => (
                     <option key={p.id} value={p.id} disabled={p.qty <= 0}>
                       {p.name} — (Dispo : {p.qty} unité{p.qty > 1 ? 's' : ''}) — {formatPrice(p.price)}
                     </option>
