@@ -1,6 +1,14 @@
 // Hammam Nile — Service Worker (PWA)
-const CACHE_NAME = 'hammam-nile-v1';
+const CACHE_NAME = 'hammam-nile-v2';
 const OFFLINE_URL = '/';
+
+// Permet à la page de forcer l'activation immédiate d'un nouveau SW en attente
+// (utilisé par le bouton "Actualiser l'app")
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
 
 // Static assets to pre-cache at install time
 const PRECACHE_ASSETS = [

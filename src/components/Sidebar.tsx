@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { ActiveSection, UserRole } from '../types';
 import { DEPARTMENTS } from '../lib/departments';
 import {
   X,
   AlertTriangle,
+  RefreshCw,
 } from 'lucide-react';
 import { HammamNileEmblem } from './HammamNileLogo';
 
@@ -25,6 +26,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
     hammamUsages,
   } = useApp();
 
+  const [refreshing, setRefreshing] = useState(false);
+
   if (!currentUser) return null;
 
   const isGerant = currentUser.role === 'gerant';
@@ -42,6 +45,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
 
   const handleRoleSwitch = (role: UserRole) => {
     switchRole(role);
+  };
+
+  // Force le rechargement de la dernière version publiée : vide le cache du
+  // Service Worker (PWA) et recharge la page, utile quand l'app installée
+  // n'affiche pas les dernières mises à jour.
+  const handleRefreshApp = async () => {
+    setRefreshing(true);
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(reg => reg.update()));
+      }
+    } catch (err) {
+      console.warn('Échec du rafraîchissement du cache :', err);
+    } finally {
+      window.location.reload();
+    }
   };
 
   return (
@@ -421,6 +445,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             </div>
           </div>
         </div>
+
+        {/* Actualiser l'app — force la dernière version (utile pour l'app installée) */}
+        <button
+          type="button"
+          onClick={handleRefreshApp}
+          disabled={refreshing}
+          className="flex items-center gap-3 p-[10px_12px] text-[13px] font-semibold text-[#EFE8D8]/60 hover:text-[#EFE8D8] hover:bg-white/5 rounded-xl transition-all cursor-pointer w-full text-left border-0 bg-transparent disabled:opacity-60"
+          title="Recharger l'application avec la dernière version publiée"
+        >
+          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          <span>{refreshing ? 'Actualisation…' : "Actualiser l'app"}</span>
+        </button>
 
         {/* Logout / Lock Session — toujours disponible, même sur un profil verrouillé,
             pour que la caissière puisse libérer le poste pour la suivante */}
