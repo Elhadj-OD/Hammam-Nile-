@@ -120,13 +120,45 @@ CREATE TABLE IF NOT EXISTS public.shop_settings (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 7. Activer Row Level Security (RLS) avec politique ouverte pour le POS
+-- 7. Table des Profils (identité applicative liée à Supabase Auth)
+-- Remplace l'ancienne liste d'utilisateurs stockée en clair côté client
+-- (src/data/initialData.ts). Un profil n'existe que pour un compte Supabase
+-- Auth réel (id = auth.users.id) ; aucun mot de passe n'est stocké ici,
+-- Supabase Auth le gère lui-même (hashé, jamais lisible).
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  username TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'caissier' CHECK (role IN ('caissier', 'gerant')),
+  gender TEXT CHECK (gender IN ('femme', 'homme')),
+  department TEXT,
+  locked BOOLEAN NOT NULL DEFAULT false,
+  avatar TEXT,
+  phone TEXT,
+  must_change_password BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
+
+-- 8. Activer Row Level Security (RLS) avec politique ouverte pour le POS
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sales ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.stock_movements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.hammam_usages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.shop_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- profiles : lecture réservée aux comptes authentifiés (liste d'équipe,
+-- écran "switch user"). AUCUNE policy INSERT/UPDATE/DELETE cliente :
+-- toute écriture passe par api/admin-users.ts (clé service_role côté
+-- serveur), qui vérifie que l'appelant est 'gerant' avant de modifier
+-- un autre compte que le sien.
+DROP POLICY IF EXISTS "Authenticated read profiles" ON public.profiles;
+CREATE POLICY "Authenticated read profiles" ON public.profiles
+  FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Politiques d'accès (permettant la synchronisation directe depuis l'application avec la clé anon)
 -- Chaque table n'ouvre que les opérations réellement utilisées par l'application

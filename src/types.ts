@@ -8,16 +8,17 @@ export type CaisseDepartment =
   | 'coiffure_salon';
 
 export interface User {
+  id?: string; // Supabase Auth user id (uuid) — absent tant que le profil n'a pas été migré
   username: string;
   name: string;
   role: UserRole;
   gender?: UserGender;
   department?: CaisseDepartment;
   locked?: boolean;
-  password?: string;
   avatar?: string;
   phone?: string;
   createdAt?: string;
+  mustChangePassword?: boolean;
 }
 
 export interface PresenceRow {

@@ -17,6 +17,7 @@ export const AuthSwitchModal: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -39,7 +40,7 @@ export const AuthSwitchModal: React.FC = () => {
   const targetLabel = isAdmin ? 'Partie Admin (Direction)' : 'Partie Caisse (Vente)';
   const targetUser = isAdmin ? 'Sophia' : 'Elhadj';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -48,7 +49,9 @@ export const AuthSwitchModal: React.FC = () => {
       return;
     }
 
-    const res = verifyAndSwitch(password);
+    setLoading(true);
+    const res = await verifyAndSwitch(password);
+    setLoading(false);
     if (!res.success) {
       setError(res.error || 'Mot de passe incorrect.');
       inputRef.current?.select();
@@ -178,14 +181,15 @@ export const AuthSwitchModal: React.FC = () => {
             </button>
             <button
               type="submit"
-              className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold text-white transition flex items-center justify-center gap-2 shadow-md cursor-pointer ${
+              disabled={loading}
+              className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold text-white transition flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-60 ${
                 isAdmin
                   ? 'bg-[#0A3735] hover:bg-[#0F4C4A]'
                   : 'bg-[#004CB7] hover:bg-[#003C93]'
               }`}
             >
-              <span>Valider</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{loading ? 'Vérification…' : 'Valider'}</span>
+              {!loading && <ArrowRight className="w-4 h-4" />}
             </button>
           </div>
         </form>

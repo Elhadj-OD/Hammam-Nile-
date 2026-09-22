@@ -1,73 +1,11 @@
-import { Product, Client, Quote, Invoice, StockMovement, ShopSettings, Sale, User, HammamUsage } from '../types';
+import { Product, Client, Quote, Invoice, StockMovement, ShopSettings, Sale, HammamUsage } from '../types';
 
-export const INITIAL_USERS_LIST: User[] = [
-  {
-    username: 'elhadj',
-    password: '3454',
-    role: 'caissier',
-    gender: 'homme',
-    department: 'boutique_homme',
-    name: 'Elhadj',
-    avatar: 'EH',
-    phone: '+222 46 12 34 56',
-    createdAt: '2026-01-10',
-  },
-  {
-    username: 'sophia',
-    password: '2630',
-    role: 'gerant',
-    gender: 'femme',
-    name: 'Sophia',
-    avatar: 'SO',
-    phone: '+222 36 98 76 54',
-    createdAt: '2026-01-01',
-  },
-  {
-    username: 'femme',
-    password: '1234',
-    role: 'caissier',
-    gender: 'femme',
-    department: 'boutique_femme',
-    name: 'Caissière Boutique Femme',
-    avatar: 'BF',
-    createdAt: '2026-09-22',
-  },
-  {
-    username: 'hammam',
-    password: '2345',
-    role: 'caissier',
-    gender: 'femme',
-    department: 'hammam_bains',
-    name: 'Caissière Hammam & Bains',
-    avatar: 'HB',
-    createdAt: '2026-09-22',
-  },
-  {
-    username: 'spa',
-    password: '3456',
-    role: 'caissier',
-    gender: 'femme',
-    department: 'spa_massage',
-    name: 'Caissière Spa & Massage',
-    avatar: 'SM',
-    createdAt: '2026-09-22',
-  },
-  {
-    username: 'coiffure',
-    password: '4567',
-    role: 'caissier',
-    gender: 'femme',
-    department: 'coiffure_salon',
-    name: 'Caissière Coiffure & Salon',
-    avatar: 'CS',
-    createdAt: '2026-09-22',
-  },
-];
-
-export const INITIAL_USERS: Record<string, User> = {
-  elhadj: INITIAL_USERS_LIST[0],
-  sophia: INITIAL_USERS_LIST[1],
-};
+// La liste des comptes (identifiants + mots de passe) ne vit plus dans le
+// code source : elle a été déplacée vers Supabase Auth + la table
+// public.profiles (voir src/lib/supabaseAuth.ts et
+// scripts/migrate-users-to-auth.mjs). Un fichier importé par le
+// navigateur ne doit plus jamais contenir de mot de passe, même par
+// défaut/démo.
 
 export const INITIAL_PRODUCTS: Product[] = [
   { id: 1, name: 'Savon noir Ghassoul', category: 'savons', price: 150, qty: 50, minQty: 10, emoji: '🧼', description: 'Savon noir traditionnel purifiant' },

@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import {
   User,
   UserRole,
+  UserGender,
+  CaisseDepartment,
   Product,
   CartItem,
   Sale,
@@ -18,8 +20,6 @@ import {
   PresenceRow,
 } from '../types';
 import {
-  INITIAL_USERS,
-  INITIAL_USERS_LIST,
   INITIAL_PRODUCTS,
   INITIAL_CLIENTS,
   INITIAL_SETTINGS,
@@ -38,6 +38,7 @@ import {
 } from '../lib/firebase';
 import {
   isSupabaseConfigured,
+  supabase,
   getProductsFromSupabase,
   saveProductToSupabase,
   deleteProductFromSupabase,
@@ -56,15 +57,28 @@ import {
   upsertPresenceToSupabase,
   clearPresenceFromSupabase,
 } from '../lib/supabase';
+import {
+  signInWithUsername,
+  signOutUser,
+  fetchOwnProfile,
+  fetchAllProfiles,
+  createStaffUser,
+  updateStaffUser,
+  deleteStaffUser,
+  resetStaffPassword,
+  changeOwnPassword,
+} from '../lib/supabaseAuth';
 
 interface AppContextType {
   currentUser: User | null;
+  authLoading: boolean;
   activeSection: ActiveSection;
   setActiveSection: (section: ActiveSection) => void;
   switchRole: (role: UserRole) => void;
   switchUser: (username: string) => void;
-  login: (username: string, password?: string) => boolean;
+  login: (username: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
+  completePasswordChange: (newPassword: string) => Promise<{ success: boolean; error?: string }>;
 
   // Cloud Sync
   firebaseConnected: boolean;
@@ -85,13 +99,22 @@ interface AppContextType {
     onSuccessSection?: ActiveSection;
   }) => void;
   closeAuthModal: () => void;
-  verifyAndSwitch: (password: string) => { success: boolean; error?: string };
+  verifyAndSwitch: (password: string) => Promise<{ success: boolean; error?: string }>;
 
   // Users & Cashiers Management
   users: User[];
-  addUser: (user: User) => void;
-  updateUser: (username: string, updates: Partial<User>) => void;
-  deleteUser: (username: string) => void;
+  addUser: (user: {
+    username: string;
+    name: string;
+    role: UserRole;
+    gender?: UserGender;
+    department?: CaisseDepartment;
+    phone?: string;
+    avatar?: string;
+  }) => Promise<{ success: boolean; error?: string; tempPassword?: string }>;
+  updateUser: (username: string, updates: Partial<User>) => Promise<{ success: boolean; error?: string }>;
+  deleteUser: (username: string) => Promise<{ success: boolean; error?: string }>;
+  resetUserPassword: (username: string) => Promise<{ success: boolean; error?: string; tempPassword?: string }>;
 
   // Présence (qui est connecté, pour le contrôle des heures par l'admin)
   presence: PresenceRow[];
@@ -197,62 +220,19 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 const STORAGE_KEY = 'hammam-nile-v1';
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [users, setUsers] = useState<User[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}-users`);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as User[];
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const ensured = [...parsed];
-          const sophiaIndex = ensured.findIndex(u => u.username.toLowerCase() === 'sophia');
-          if (sophiaIndex >= 0) {
-            ensured[sophiaIndex] = { ...ensured[sophiaIndex], password: '2630', role: 'gerant', name: 'Sophia' };
-          } else {
-            ensured.push(INITIAL_USERS_LIST[1]);
-          }
-          const elhadjIndex = ensured.findIndex(u => u.username.toLowerCase() === 'elhadj');
-          if (elhadjIndex >= 0) {
-            ensured[elhadjIndex] = {
-              ...ensured[elhadjIndex],
-              password: '3454',
-              role: 'caissier',
-              name: 'Elhadj',
-              department: 'boutique_homme',
-            };
-          } else {
-            ensured.unshift(INITIAL_USERS_LIST[0]);
-          }
-          // Ajoute les 4 caisses de département si absentes (comptes créés après le premier chargement)
-          ['femme', 'hammam', 'spa', 'coiffure'].forEach(uname => {
-            if (!ensured.some(u => u.username.toLowerCase() === uname)) {
-              const seed = INITIAL_USERS_LIST.find(u => u.username === uname);
-              if (seed) ensured.push(seed);
-            }
-          });
-          return ensured;
-        }
-      } catch {
-        return INITIAL_USERS_LIST;
-      }
-    }
-    return INITIAL_USERS_LIST;
-  });
+  // Équipe (profils) : chargée depuis Supabase (table profiles) une fois
+  // authentifié — plus aucun identifiant/mot de passe stocké côté client.
+  const [users, setUsers] = useState<User[]>([]);
 
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem(`${STORAGE_KEY}-current-user`);
-    if (savedUser) {
-      try {
-        const parsed = JSON.parse(savedUser) as User;
-        if (parsed && (parsed.username.toLowerCase() === 'sophia' || parsed.username.toLowerCase() === 'elhadj')) {
-          return parsed;
-        }
-      } catch {
-        return null;
-      }
-    }
-    // Demande systématiquement un mot de passe à la première visite pour protéger les deux parties
-    return null;
-  });
+  // Identité : dérivée de la session Supabase Auth, jamais reconstruite à
+  // partir d'un objet brut en localStorage (voir onAuthStateChange plus bas).
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  const refreshUsers = async () => {
+    const profiles = await fetchAllProfiles();
+    if (profiles.length > 0) setUsers(profiles);
+  };
 
   const [activeSection, setActiveSection] = useState<ActiveSection>('caisse');
   const [lastSale, setLastSale] = useState<Sale | null>(null);
@@ -351,10 +331,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem(`${STORAGE_KEY}-settings`, JSON.stringify(settings));
   }, [settings]);
 
-  useEffect(() => {
-    localStorage.setItem(`${STORAGE_KEY}-users`, JSON.stringify(users));
-  }, [users]);
-
   // Firebase initialization and initial sync
   useEffect(() => {
     testConnection().then(connected => {
@@ -435,13 +411,52 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     loadSupabase();
   }, []);
 
+  // Session Supabase Auth : restaure la session existante au chargement,
+  // puis reste synchronisé (autre onglet, rafraîchissement de token,
+  // déconnexion). C'est la SEULE source de vérité pour "qui est connecté" —
+  // plus aucun objet utilisateur brut n'est lu depuis localStorage.
   useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem(`${STORAGE_KEY}-current-user`, JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem(`${STORAGE_KEY}-current-user`);
+    if (!isSupabaseConfigured() || !supabase) {
+      setAuthLoading(false);
+      return;
     }
-  }, [currentUser]);
+
+    let active = true;
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!active) return;
+      if (session) {
+        const profile = await fetchOwnProfile();
+        if (active && profile) {
+          setCurrentUser(profile);
+          if (profile.role === 'gerant') setActiveSection('dashboard');
+          else setActiveSection('caisse');
+          refreshUsers();
+        }
+      }
+      if (active) setAuthLoading(false);
+    });
+
+    const { data: subscription } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!active) return;
+      if (event === 'SIGNED_OUT' || !session) {
+        setCurrentUser(null);
+        return;
+      }
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        const profile = await fetchOwnProfile();
+        if (active && profile) {
+          setCurrentUser(profile);
+          refreshUsers();
+        }
+      }
+    });
+
+    return () => {
+      active = false;
+      subscription.subscription.unsubscribe();
+    };
+  }, []);
 
   const touchPresence = (user: User) => {
     upsertPresenceToSupabase({
@@ -473,33 +488,53 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => clearInterval(interval);
   }, [currentUser?.role]);
 
-  // Auth & Team Management
-  const addUser = (newUser: User) => {
-    setUsers(prev => {
-      const exists = prev.some(u => u.username.toLowerCase() === newUser.username.toLowerCase());
-      if (exists) {
-        return prev.map(u => u.username.toLowerCase() === newUser.username.toLowerCase() ? { ...u, ...newUser } : u);
-      }
-      return [...prev, newUser];
-    });
+  // Auth & Team Management — toute écriture passe par api/admin-users.ts
+  // (clé service_role côté serveur), jamais directement sur Supabase
+  // depuis le client : la table profiles n'a aucune policy d'écriture.
+  const addUser = async (newUser: {
+    username: string;
+    name: string;
+    role: UserRole;
+    gender?: UserGender;
+    department?: CaisseDepartment;
+    phone?: string;
+    avatar?: string;
+  }) => {
+    const res = await createStaffUser(newUser);
+    if (res.success) await refreshUsers();
+    return res;
   };
 
-  const updateUser = (username: string, updates: Partial<User>) => {
-    setUsers(prev => prev.map(u => u.username === username ? { ...u, ...updates } : u));
-    if (currentUser?.username === username) {
-      setCurrentUser(prev => prev ? { ...prev, ...updates } : null);
-    }
-  };
-
-  const deleteUser = (username: string) => {
-    if (users.length <= 1) return;
-    setUsers(prev => prev.filter(u => u.username !== username));
-    if (currentUser?.username === username) {
-      const remaining = users.filter(u => u.username !== username);
-      if (remaining.length > 0) {
-        setCurrentUser(remaining[0]);
+  const updateUser = async (username: string, updates: Partial<User>) => {
+    const res = await updateStaffUser(username, updates);
+    if (res.success) {
+      await refreshUsers();
+      if (currentUser?.username === username) {
+        const refreshed = await fetchOwnProfile();
+        if (refreshed) setCurrentUser(refreshed);
       }
     }
+    return res;
+  };
+
+  const deleteUser = async (username: string) => {
+    if (users.length <= 1) return { success: false, error: 'Impossible de supprimer le seul utilisateur du système.' };
+    const res = await deleteStaffUser(username);
+    if (res.success) await refreshUsers();
+    return res;
+  };
+
+  const resetUserPassword = async (username: string) => {
+    return resetStaffPassword(username);
+  };
+
+  const completePasswordChange = async (newPassword: string) => {
+    const res = await changeOwnPassword(newPassword);
+    if (res.success) {
+      const refreshed = await fetchOwnProfile();
+      if (refreshed) setCurrentUser(refreshed);
+    }
+    return res;
   };
 
   // Password-protected switching modal
@@ -543,7 +578,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setAuthModal(prev => ({ ...prev, isOpen: false }));
   };
 
-  const verifyAndSwitch = (passwordInput: string): { success: boolean; error?: string } => {
+  const verifyAndSwitch = async (passwordInput: string): Promise<{ success: boolean; error?: string }> => {
     const cleanPass = (passwordInput || '').trim();
     let targetUser: User | undefined;
 
@@ -557,18 +592,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return { success: false, error: 'Utilisateur cible introuvable.' };
     }
 
-    if (!cleanPass || targetUser.password !== cleanPass) {
-      return {
-        success: false,
-        error: `Mot de passe incorrect pour ${targetUser.name}.`,
-      };
+    if (!cleanPass) {
+      return { success: false, error: `Mot de passe incorrect pour ${targetUser.name}.` };
     }
 
-    setCurrentUser(targetUser);
-    touchPresence(targetUser);
+    const signIn = await signInWithUsername(targetUser.username, cleanPass);
+    if (!signIn.success) {
+      return { success: false, error: `Mot de passe incorrect pour ${targetUser.name}.` };
+    }
+
+    const profile = await fetchOwnProfile();
+    if (!profile) {
+      return { success: false, error: 'Profil introuvable pour ce compte.' };
+    }
+
+    setCurrentUser(profile);
+    touchPresence(profile);
     if (authModal.onSuccessSection) {
       setActiveSection(authModal.onSuccessSection);
-    } else if (targetUser.role === 'gerant') {
+    } else if (profile.role === 'gerant') {
       setActiveSection('dashboard');
     } else {
       setActiveSection('caisse');
@@ -591,26 +633,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     openAuthModal({ targetRole: role });
   };
 
-  const login = (username: string, password?: string): boolean => {
+  const login = async (username: string, password?: string): Promise<{ success: boolean; error?: string }> => {
     const cleanUsername = username.toLowerCase().trim();
     const cleanPass = (password || '').trim();
-    const user = users.find(
-      u => u.username.toLowerCase() === cleanUsername || u.name.toLowerCase() === cleanUsername
-    );
-    if (!user) return false;
-    if (!cleanPass || user.password !== cleanPass) return false;
-    setCurrentUser(user);
-    touchPresence(user);
-    if (user.role === 'gerant') {
+    if (!cleanUsername || !cleanPass) {
+      return { success: false, error: 'Identifiant ou code incorrect.' };
+    }
+
+    const signIn = await signInWithUsername(cleanUsername, cleanPass);
+    if (!signIn.success) {
+      return { success: false, error: signIn.error || 'Identifiant ou code incorrect.' };
+    }
+
+    const profile = await fetchOwnProfile();
+    if (!profile) {
+      return { success: false, error: 'Profil introuvable pour ce compte. Contactez la gérante.' };
+    }
+
+    setCurrentUser(profile);
+    touchPresence(profile);
+    await refreshUsers();
+    if (profile.role === 'gerant') {
       setActiveSection('dashboard');
     } else {
       setActiveSection('caisse');
     }
-    return true;
+    return { success: true };
   };
 
   const logout = () => {
     if (currentUser) clearPresenceFromSupabase(currentUser.username);
+    signOutUser();
     setCurrentUser(null);
     setCart([]);
     setActiveSection('dashboard');
@@ -1150,8 +1203,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setMovements(INITIAL_MOVEMENTS);
     setHammamUsages(INITIAL_HAMMAM_USAGES);
     setSettings(INITIAL_SETTINGS);
-    setUsers(INITIAL_USERS_LIST);
-    setCurrentUser(null);
     setCart([]);
   };
 
@@ -1159,12 +1210,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <AppContext.Provider
       value={{
         currentUser,
+        authLoading,
         activeSection,
         setActiveSection,
         switchRole,
         switchUser,
         login,
         logout,
+        completePasswordChange,
         authModal,
         openAuthModal,
         closeAuthModal,
@@ -1173,6 +1226,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addUser,
         updateUser,
         deleteUser,
+        resetUserPassword,
         presence,
         products,
         addProduct,

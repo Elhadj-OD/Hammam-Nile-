@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { LoginView } from './components/LoginView';
+import { ForcePasswordChangeView } from './components/ForcePasswordChangeView';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { DashboardView } from './components/DashboardView';
@@ -21,11 +22,23 @@ import { ReceiptModal } from './components/ReceiptModal';
 import { AuthSwitchModal } from './components/AuthSwitchModal';
 
 const MainLayout: React.FC = () => {
-  const { currentUser, activeSection, lastSale, setLastSale } = useApp();
+  const { currentUser, authLoading, activeSection, lastSale, setLastSale } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#072423]">
+        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+      </div>
+    );
+  }
 
   if (!currentUser) {
     return <LoginView />;
+  }
+
+  if (currentUser.mustChangePassword) {
+    return <ForcePasswordChangeView />;
   }
 
   const renderActiveSection = () => {

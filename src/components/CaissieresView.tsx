@@ -20,6 +20,8 @@ import {
   Lock,
   Unlock,
   Circle,
+  ShieldCheck,
+  Copy,
 } from 'lucide-react';
 
 // Un compte est considéré "en ligne" s'il a signalé une activité récente
@@ -32,6 +34,7 @@ export const CaissieresView: React.FC = () => {
     addUser,
     updateUser,
     deleteUser,
+    resetUserPassword,
     switchUser,
     presence,
     sales,
@@ -41,11 +44,16 @@ export const CaissieresView: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Un mot de passe temporaire généré côté serveur n'est affiché qu'une
+  // seule fois, à l'écran, pour que la gérante puisse le transmettre en
+  // main propre — jamais stocké ni renvoyé ensuite.
+  const [tempPasswordInfo, setTempPasswordInfo] = useState<{ name: string; username: string; tempPassword: string } | null>(null);
 
   // Form State
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [role, setRole] = useState<UserRole>('caissier');
   const [gender, setGender] = useState<UserGender>('femme');
@@ -67,7 +75,6 @@ export const CaissieresView: React.FC = () => {
     setEditingUser(null);
     setName('');
     setUsername('');
-    setPassword('');
     setPhone('');
     setRole('caissier');
     setGender('femme');
@@ -81,7 +88,6 @@ export const CaissieresView: React.FC = () => {
     setEditingUser(user);
     setName(user.name);
     setUsername(user.username);
-    setPassword(user.password || '');
     setPhone(user.phone || '');
     setRole(user.role);
     setGender(user.gender || 'femme');
@@ -110,7 +116,7 @@ export const CaissieresView: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim()) {
@@ -123,36 +129,54 @@ export const CaissieresView: React.FC = () => {
     // Default avatar if none uploaded
     const finalAvatar = avatarPreview || name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
-    const userData: User = {
-      name: name.trim(),
-      username: cleanUsername,
-      password: password.trim() || '1234',
-      phone: phone.trim(),
-      role,
-      gender,
-      department: department || undefined,
-      locked,
-      avatar: finalAvatar,
-      createdAt: editingUser?.createdAt || new Date().toISOString().split('T')[0],
-    };
-
+    setSubmitting(true);
     if (editingUser) {
-      updateUser(editingUser.username, userData);
+      const res = await updateUser(editingUser.username, {
+        name: name.trim(),
+        phone: phone.trim(),
+        role,
+        gender,
+        department: department || undefined,
+        locked,
+        avatar: finalAvatar,
+      });
+      setSubmitting(false);
+      if (!res.success) {
+        alert(res.error || 'Impossible de mettre à jour ce profil.');
+        return;
+      }
     } else {
-      addUser(userData);
+      const res = await addUser({
+        name: name.trim(),
+        username: cleanUsername,
+        phone: phone.trim(),
+        role,
+        gender,
+        department: department || undefined,
+        avatar: finalAvatar,
+      });
+      setSubmitting(false);
+      if (!res.success) {
+        alert(res.error || 'Impossible de créer ce compte.');
+        return;
+      }
+      if (res.tempPassword) {
+        setTempPasswordInfo({ name: name.trim(), username: cleanUsername, tempPassword: res.tempPassword });
+      }
     }
 
     setIsModalOpen(false);
     setEditingUser(null);
   };
 
-  const handleDelete = (u: User) => {
+  const handleDelete = async (u: User) => {
     if (users.length <= 1) {
       alert('Impossible de supprimer le seul utilisateur du système.');
       return;
     }
     if (window.confirm(`Confirmez-vous la suppression de ${u.name} ?`)) {
-      deleteUser(u.username);
+      const res = await deleteUser(u.username);
+      if (!res.success) alert(res.error || 'Impossible de supprimer ce compte.');
     }
   };
 
@@ -161,8 +185,23 @@ export const CaissieresView: React.FC = () => {
     setActiveSection('caisse');
   };
 
-  const handleToggleLock = (u: User) => {
-    updateUser(u.username, { locked: !u.locked });
+  const handleToggleLock = async (u: User) => {
+    const res = await updateUser(u.username, { locked: !u.locked });
+    if (!res.success) alert(res.error || 'Impossible de modifier le verrouillage.');
+  };
+
+  const handleResetPassword = async (u: User) => {
+    if (!window.confirm(`Générer un nouveau mot de passe temporaire pour ${u.name} ? L'ancien cessera immédiatement de fonctionner.`)) {
+      return;
+    }
+    const res = await resetUserPassword(u.username);
+    if (!res.success) {
+      alert(res.error || 'Impossible de réinitialiser le mot de passe.');
+      return;
+    }
+    if (res.tempPassword) {
+      setTempPasswordInfo({ name: u.name, username: u.username, tempPassword: res.tempPassword });
+    }
   };
 
   // Compute sales stats per user
@@ -326,6 +365,14 @@ export const CaissieresView: React.FC = () => {
                     )}
                     <button
                       type="button"
+                      onClick={() => handleResetPassword(u)}
+                      className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#B8874B] hover:bg-[#F7F3EC] transition cursor-pointer"
+                      title="Réinitialiser le mot de passe (génère un code temporaire à usage unique)"
+                    >
+                      <Key className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => handleOpenEdit(u)}
                       className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#0F4C4A] hover:bg-[#F7F3EC] transition cursor-pointer"
                       title="Modifier le profil"
@@ -354,8 +401,8 @@ export const CaissieresView: React.FC = () => {
                     </div>
                   )}
                   <div className="flex items-center gap-2">
-                    <Key className="w-3.5 h-3.5 text-[#0F4C4A]" />
-                    <span>Mot de passe : •••••••• (Confidentiel)</span>
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#0F4C4A]" />
+                    <span>Compte sécurisé (authentification Supabase)</span>
                   </div>
                   {u.createdAt && (
                     <div className="flex items-center gap-2">
@@ -543,35 +590,25 @@ export const CaissieresView: React.FC = () => {
                 />
               </div>
 
-              {/* Username & Password */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                    Identifiant / Pseudo *
-                  </label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={e => setUsername(e.target.value)}
-                    placeholder="ex: fatou"
-                    required
-                    disabled={!!editingUser}
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A] disabled:opacity-60"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                    Code PIN / Mot de passe
-                  </label>
-                  <input
-                    type="text"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    placeholder="1234"
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
-                  />
-                </div>
+              {/* Username */}
+              <div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1">
+                  Identifiant / Pseudo *
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  placeholder="ex: fatou"
+                  required
+                  disabled={!!editingUser}
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A] disabled:opacity-60"
+                />
+                {!editingUser && (
+                  <p className="text-[11px] text-[#6B7873] mt-1">
+                    Un mot de passe temporaire sera généré automatiquement et affiché une seule fois après la création — à transmettre en main propre. La caissière devra le changer à sa première connexion.
+                  </p>
+                )}
               </div>
 
               {/* Phone & Role */}
@@ -676,13 +713,57 @@ export const CaissieresView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="py-2.5 px-6 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+                  disabled={submitting}
+                  className="py-2.5 px-6 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-60"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>{editingUser ? 'Enregistrer les modifications' : 'Créer la Caissière'}</span>
+                  <span>
+                    {submitting
+                      ? 'Enregistrement…'
+                      : editingUser
+                      ? 'Enregistrer les modifications'
+                      : 'Créer la Caissière'}
+                  </span>
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Mot de passe temporaire — affiché UNE SEULE FOIS après création ou réinitialisation */}
+      {tempPasswordInfo && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#E7E0D3]">
+            <div className="w-11 h-11 rounded-2xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center mb-3">
+              <Key className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold font-display text-[#1C2321] mb-1">
+              Mot de passe temporaire pour {tempPasswordInfo.name}
+            </h3>
+            <p className="text-xs text-[#6B7873] mb-3">
+              Transmettez-le en main propre à @{tempPasswordInfo.username}. Il ne sera plus jamais affiché — un nouveau mot de passe sera demandé à la première connexion.
+            </p>
+            <div className="flex items-center gap-2 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl p-3 mb-4">
+              <code className="flex-1 text-base font-mono font-bold tracking-wider text-[#1C2321]">
+                {tempPasswordInfo.tempPassword}
+              </code>
+              <button
+                type="button"
+                onClick={() => navigator.clipboard?.writeText(tempPasswordInfo.tempPassword)}
+                className="p-2 rounded-lg text-[#6B7873] hover:text-[#0F4C4A] hover:bg-white transition cursor-pointer"
+                title="Copier"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setTempPasswordInfo(null)}
+              className="w-full py-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition cursor-pointer"
+            >
+              J'ai noté le mot de passe
+            </button>
           </div>
         </div>
       )}
