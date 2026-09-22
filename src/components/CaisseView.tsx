@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { PaymentMethod } from '../types';
+import { DEPARTMENTS } from '../lib/departments';
 import {
   Search,
   Receipt,
@@ -78,6 +79,9 @@ export const CaisseView: React.FC = () => {
     return `${n.toLocaleString('fr-FR')} ${settings.currency}`;
   };
 
+  // Une caissière avec un département assigné n'a accès qu'à sa propre caisse
+  const myDept = currentUser?.department ? DEPARTMENTS[currentUser.department] : null;
+
   // La Boutique Femme est réservée aux caissières (genre "femme" ou non renseigné)
   const canAccessBoutiqueFemme = currentUser?.gender !== 'homme';
   // La Boutique Homme est réservée aux caissiers marqués "homme"
@@ -90,12 +94,17 @@ export const CaisseView: React.FC = () => {
 
   // Filter products
   const filteredProducts = products.filter(p => {
-    if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
-    if (p.category === 'hommes' && !canAccessBoutiqueHomme) return false;
-    const matchesCat = activeCat === 'all' || p.category === activeCat;
     const matchesSearch =
       search.trim() === '' ||
       p.name.toLowerCase().includes(search.toLowerCase());
+
+    if (myDept) {
+      return p.category === myDept.category && matchesSearch;
+    }
+
+    if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
+    if (p.category === 'hommes' && !canAccessBoutiqueHomme) return false;
+    const matchesCat = activeCat === 'all' || p.category === activeCat;
     return matchesCat && matchesSearch;
   });
 
@@ -119,12 +128,13 @@ export const CaisseView: React.FC = () => {
       e.preventDefault();
       const code = scanCode.trim();
       if (code.length > 2) {
-        const found = products.find(
-          p =>
-            p.barcode === code &&
-            (p.category !== 'femmes' || canAccessBoutiqueFemme) &&
-            (p.category !== 'hommes' || canAccessBoutiqueHomme)
-        );
+        const found = products.find(p => {
+          if (p.barcode !== code) return false;
+          if (myDept) return p.category === myDept.category;
+          if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
+          if (p.category === 'hommes' && !canAccessBoutiqueHomme) return false;
+          return true;
+        });
         if (found) {
           addToCart(found);
           setScanMsg({ text: `✓ ${found.name} ajouté au ticket`, type: 'ok' });
@@ -155,7 +165,7 @@ export const CaisseView: React.FC = () => {
 
   const isGerant = currentUser?.role === 'gerant';
   const displayName = currentUser?.name || (isGerant ? 'Aïchetou' : 'Fatimetou');
-  const displayRole = isGerant ? 'Administratrice' : 'Caissière';
+  const displayRole = isGerant ? 'Administratrice' : myDept ? myDept.label : 'Caissière';
   const hasPhoto = currentUser?.avatar && (currentUser.avatar.startsWith('data:') || currentUser.avatar.startsWith('http'));
   const avatarInitials = currentUser?.avatar && !hasPhoto ? currentUser.avatar : displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
@@ -255,7 +265,7 @@ export const CaisseView: React.FC = () => {
                             {u.name}
                           </div>
                           <div className="text-[10px] text-[#6B7873] capitalize">
-                            {u.role === 'gerant' ? 'Admin' : 'Caissière'}
+                            {u.role === 'gerant' ? 'Admin' : u.department ? DEPARTMENTS[u.department].label : 'Caissière'}
                           </div>
                         </div>
                       </button>
@@ -317,26 +327,33 @@ export const CaisseView: React.FC = () => {
             )}
           </div>
 
-          {/* Category Tabs */}
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {visibleCats.map(c => {
-              const isActive = activeCat === c.key;
-              return (
-                <button
-                  key={c.key}
-                  type="button"
-                  onClick={() => setActiveCat(c.key)}
-                  className={`shrink-0 px-4 py-2 rounded-full text-[13px] font-bold cursor-pointer transition-colors duration-150 ${
-                    isActive
-                      ? 'bg-[#0F4C4A] text-white'
-                      : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
-                  }`}
-                >
-                  {c.label}
-                </button>
-              );
-            })}
-          </div>
+          {/* Category Tabs — verrouillé sur le département si assigné, sinon tous les rayons */}
+          {myDept ? (
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#0F4C4A] text-white text-[13px] font-bold w-fit">
+              <span>{myDept.icon}</span>
+              <span>{myDept.label}</span>
+            </div>
+          ) : (
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {visibleCats.map(c => {
+                const isActive = activeCat === c.key;
+                return (
+                  <button
+                    key={c.key}
+                    type="button"
+                    onClick={() => setActiveCat(c.key)}
+                    className={`shrink-0 px-4 py-2 rounded-full text-[13px] font-bold cursor-pointer transition-colors duration-150 ${
+                      isActive
+                        ? 'bg-[#0F4C4A] text-white'
+                        : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Product Grid */}
           <div className="flex-1 overflow-y-auto pr-1">
@@ -433,7 +450,7 @@ export const CaisseView: React.FC = () => {
               Commande en cours
             </h3>
             <span className="bg-[#E4E9E1] text-[#0F4C4A] text-[11px] font-bold px-3 py-1.5 rounded-full">
-              Boutique
+              {myDept ? myDept.label : 'Boutique'}
             </span>
           </div>
 

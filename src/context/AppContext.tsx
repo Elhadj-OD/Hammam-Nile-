@@ -204,10 +204,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }
           const elhadjIndex = ensured.findIndex(u => u.username.toLowerCase() === 'elhadj');
           if (elhadjIndex >= 0) {
-            ensured[elhadjIndex] = { ...ensured[elhadjIndex], password: '3454', role: 'caissier', name: 'Elhadj' };
+            ensured[elhadjIndex] = {
+              ...ensured[elhadjIndex],
+              password: '3454',
+              role: 'caissier',
+              name: 'Elhadj',
+              department: 'boutique_homme',
+            };
           } else {
             ensured.unshift(INITIAL_USERS_LIST[0]);
           }
+          // Ajoute les 4 caisses de département si absentes (comptes créés après le premier chargement)
+          ['femme', 'hammam', 'spa', 'coiffure'].forEach(uname => {
+            if (!ensured.some(u => u.username.toLowerCase() === uname)) {
+              const seed = INITIAL_USERS_LIST.find(u => u.username === uname);
+              if (seed) ensured.push(seed);
+            }
+          });
           return ensured;
         }
       } catch {

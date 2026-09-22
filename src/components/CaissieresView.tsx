@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { User, UserRole, UserGender } from '../types';
+import { User, UserRole, UserGender, CaisseDepartment } from '../types';
+import { DEPARTMENTS } from '../lib/departments';
 import {
   Users,
   UserPlus,
@@ -41,6 +42,7 @@ export const CaissieresView: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [role, setRole] = useState<UserRole>('caissier');
   const [gender, setGender] = useState<UserGender>('femme');
+  const [department, setDepartment] = useState<CaisseDepartment | ''>('');
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,6 +63,7 @@ export const CaissieresView: React.FC = () => {
     setPhone('');
     setRole('caissier');
     setGender('femme');
+    setDepartment('');
     setAvatarPreview('');
     setIsModalOpen(true);
   };
@@ -73,6 +76,7 @@ export const CaissieresView: React.FC = () => {
     setPhone(user.phone || '');
     setRole(user.role);
     setGender(user.gender || 'femme');
+    setDepartment(user.department || '');
     setAvatarPreview(user.avatar || '');
     setIsModalOpen(true);
   };
@@ -112,6 +116,7 @@ export const CaissieresView: React.FC = () => {
       phone: phone.trim(),
       role,
       gender,
+      department: department || undefined,
       avatar: finalAvatar,
       createdAt: editingUser?.createdAt || new Date().toISOString().split('T')[0],
     };
@@ -245,6 +250,14 @@ export const CaissieresView: React.FC = () => {
                             title="Boutique Femme masquée pour ce compte"
                           >
                             Homme
+                          </span>
+                        )}
+                        {u.department && (
+                          <span
+                            className="ml-1 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-[#0F4C4A]/10 text-[#0F4C4A] border border-[#0F4C4A]/20"
+                            title="Caisse dédiée : voit uniquement cette partie"
+                          >
+                            {DEPARTMENTS[u.department].icon} {DEPARTMENTS[u.department].label}
                           </span>
                         )}
                       </div>
@@ -531,6 +544,28 @@ export const CaissieresView: React.FC = () => {
                 </select>
                 <p className="text-[11px] text-[#6B7873] mt-1">
                   La catégorie « Boutique Femme » de la Caisse n'est visible que pour les comptes marqués « Femme ».
+                </p>
+              </div>
+
+              {/* Caisse dédiée (verrouille la caissière sur une seule partie) */}
+              <div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1">
+                  Caisse dédiée
+                </label>
+                <select
+                  value={department}
+                  onChange={e => setDepartment(e.target.value as CaisseDepartment | '')}
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                >
+                  <option value="">Aucune (voit tout le rayon boutique général)</option>
+                  {Object.entries(DEPARTMENTS).map(([key, d]) => (
+                    <option key={key} value={key}>
+                      {d.icon} {d.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-[#6B7873] mt-1">
+                  Si une caisse est choisie, cette caissière ne voit et ne vend que les articles de cette partie à la connexion.
                 </p>
               </div>
 

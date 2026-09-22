@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { ActiveSection, UserRole } from '../types';
+import { DEPARTMENTS } from '../lib/departments';
 import {
   X,
   AlertTriangle,
@@ -27,6 +28,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
   if (!currentUser) return null;
 
   const isGerant = currentUser.role === 'gerant';
+  const myDept = currentUser.department ? DEPARTMENTS[currentUser.department] : null;
+  const caisseLabel = myDept ? `${myDept.icon} ${myDept.label}` : 'Caisse';
   // L'admin vérifie les deux parties ; une caissière ne prélève que sur sa partie (genre)
   const prelevementLabel = isGerant
     ? 'Prélèvements Hammam'
@@ -135,7 +138,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                 >
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 </svg>
-                <span>Caisse</span>
+                <span>{caisseLabel}</span>
               </div>
               {cart.length > 0 && (
                 <span

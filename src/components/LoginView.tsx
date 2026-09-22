@@ -16,7 +16,7 @@ export const LoginView: React.FC = () => {
   const { login, settings, firebaseConnected } = useApp();
 
   const [selectedProfile, setSelectedProfile] = useState<'admin' | 'caissier'>('caissier');
-  const [username, setUsername] = useState('elhadj');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -29,7 +29,7 @@ export const LoginView: React.FC = () => {
     if (role === 'admin') {
       setUsername('sophia');
     } else {
-      setUsername('elhadj');
+      setUsername('');
     }
     setTimeout(() => {
       passwordInputRef.current?.focus();
@@ -95,7 +95,7 @@ export const LoginView: React.FC = () => {
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="w-8 h-8 rounded-xl bg-[#004CB7] text-white flex items-center justify-center font-bold text-xs font-mono shadow-xs">
-                    EH
+                    <UserIcon className="w-4 h-4" />
                   </div>
                   <span className="text-[10px] bg-[#004CB7] text-white font-bold px-2 py-0.5 rounded-md">
                     Caisse
@@ -105,10 +105,10 @@ export const LoginView: React.FC = () => {
                   Partie Caisse
                 </div>
                 <div className="text-[11px] text-[#6B7873] mt-0.5">
-                  Nom : <strong className="text-[#004CB7]">elhadj</strong>
+                  Chaque caissière entre son propre identifiant
                 </div>
                 <div className="text-[10px] text-[#6B7873] font-medium mt-1">
-                  Accès direct caissière
+                  Redirection automatique vers sa caisse
                 </div>
               </button>
 
@@ -165,7 +165,7 @@ export const LoginView: React.FC = () => {
                   type="text"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  placeholder="elhadj"
+                  placeholder="ex: femme, hammam, spa, coiffure…"
                   className="w-full pl-10 pr-4 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-sm font-semibold text-[#1C2321] focus:outline-none focus:ring-2 focus:ring-[#004CB7] focus:border-transparent transition"
                   required
                 />

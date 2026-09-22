@@ -296,6 +296,42 @@ export const ProduitsView: React.FC = () => {
           >
             🧔 Boutique Homme
           </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('hammam_bains')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+              selectedCategory === 'hammam_bains'
+                ? 'bg-[#0F4C4A] text-white'
+                : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+            }`}
+            title="Caisse dédiée Hammam & Bains"
+          >
+            ♨️ Hammam & Bains
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('spa_massage')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+              selectedCategory === 'spa_massage'
+                ? 'bg-[#0F4C4A] text-white'
+                : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+            }`}
+            title="Caisse dédiée Spa & Massage"
+          >
+            💆 Spa & Massage
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('coiffure_salon')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+              selectedCategory === 'coiffure_salon'
+                ? 'bg-[#0F4C4A] text-white'
+                : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+            }`}
+            title="Caisse dédiée Coiffure & Salon"
+          >
+            💇 Coiffure & Salon
+          </button>
         </div>
       </div>
 
@@ -658,6 +694,9 @@ export const ProduitsView: React.FC = () => {
                     <option value="soins">Soins du Corps</option>
                     <option value="femmes">Boutique Femme</option>
                     <option value="hommes">Boutique Homme</option>
+                    <option value="hammam_bains">Hammam & Bains</option>
+                    <option value="spa_massage">Spa & Massage</option>
+                    <option value="coiffure_salon">Coiffure & Salon</option>
                     <option value="autres">Autres / Coffrets</option>
                   </select>
                 </div>

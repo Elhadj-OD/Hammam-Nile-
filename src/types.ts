@@ -1,18 +1,25 @@
 export type UserRole = 'caissier' | 'gerant';
 export type UserGender = 'femme' | 'homme';
+export type CaisseDepartment =
+  | 'boutique_femme'
+  | 'boutique_homme'
+  | 'hammam_bains'
+  | 'spa_massage'
+  | 'coiffure_salon';
 
 export interface User {
   username: string;
   name: string;
   role: UserRole;
   gender?: UserGender;
+  department?: CaisseDepartment;
   password?: string;
   avatar?: string;
   phone?: string;
   createdAt?: string;
 }
 
-export type ProductCategory = 'savons' | 'huiles' | 'linge' | 'accessoires' | 'coffrets' | 'parfums' | 'boissons' | 'snacks' | 'femmes' | 'hommes' | 'autres';
+export type ProductCategory = 'savons' | 'huiles' | 'linge' | 'accessoires' | 'coffrets' | 'parfums' | 'boissons' | 'snacks' | 'femmes' | 'hommes' | 'hammam_bains' | 'spa_massage' | 'coiffure_salon' | 'autres';
 
 export interface Product {
   id: number;
