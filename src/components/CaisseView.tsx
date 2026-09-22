@@ -15,6 +15,7 @@ const CATS = [
   { key: 'accessoires', label: 'Accessoires' },
   { key: 'coffrets', label: 'Coffrets' },
   { key: 'femmes', label: '💄 Boutique Femme' },
+  { key: 'hommes', label: '🧔 Boutique Homme' },
 ];
 
 export const CaisseView: React.FC = () => {
@@ -79,11 +80,18 @@ export const CaisseView: React.FC = () => {
 
   // La Boutique Femme est réservée aux caissières (genre "femme" ou non renseigné)
   const canAccessBoutiqueFemme = currentUser?.gender !== 'homme';
-  const visibleCats = CATS.filter(c => c.key !== 'femmes' || canAccessBoutiqueFemme);
+  // La Boutique Homme est réservée aux caissiers marqués "homme"
+  const canAccessBoutiqueHomme = currentUser?.gender === 'homme';
+  const visibleCats = CATS.filter(
+    c =>
+      (c.key !== 'femmes' || canAccessBoutiqueFemme) &&
+      (c.key !== 'hommes' || canAccessBoutiqueHomme)
+  );
 
   // Filter products
   const filteredProducts = products.filter(p => {
     if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
+    if (p.category === 'hommes' && !canAccessBoutiqueHomme) return false;
     const matchesCat = activeCat === 'all' || p.category === activeCat;
     const matchesSearch =
       search.trim() === '' ||
@@ -112,7 +120,10 @@ export const CaisseView: React.FC = () => {
       const code = scanCode.trim();
       if (code.length > 2) {
         const found = products.find(
-          p => p.barcode === code && (p.category !== 'femmes' || canAccessBoutiqueFemme)
+          p =>
+            p.barcode === code &&
+            (p.category !== 'femmes' || canAccessBoutiqueFemme) &&
+            (p.category !== 'hommes' || canAccessBoutiqueHomme)
         );
         if (found) {
           addToCart(found);
@@ -132,12 +143,15 @@ export const CaisseView: React.FC = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Revient à "Tous" si l'onglet Boutique Femme devient inaccessible (ex: changement de caissier)
+  // Revient à "Tous" si l'onglet Boutique Femme/Homme devient inaccessible (ex: changement de caissier)
   useEffect(() => {
-    if (activeCat === 'femmes' && !canAccessBoutiqueFemme) {
+    if (
+      (activeCat === 'femmes' && !canAccessBoutiqueFemme) ||
+      (activeCat === 'hommes' && !canAccessBoutiqueHomme)
+    ) {
       setActiveCat('all');
     }
-  }, [activeCat, canAccessBoutiqueFemme]);
+  }, [activeCat, canAccessBoutiqueFemme, canAccessBoutiqueHomme]);
 
   const isGerant = currentUser?.role === 'gerant';
   const displayName = currentUser?.name || (isGerant ? 'Aïchetou' : 'Fatimetou');
