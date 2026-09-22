@@ -21,8 +21,9 @@ export const HammamNileEmblem: React.FC<{
       preserveAspectRatio="xMidYMid meet"
     >
       {/* 
-        Official Hammam Nile Bird / Wing Emblem:
-        Royal Blue aerodynamic silhouette with backward speed feathers
+        Official Hammam Nile Emblem:
+        Royal Blue silhouette of a woman's head, her flowing hair
+        forming the streaked strands on the left
       */}
       <path
         d="M 22 40 
@@ -42,7 +43,7 @@ export const HammamNileEmblem: React.FC<{
       />
       {/* Detailed layered paths reproducing the exact shape from the photo */}
       <g fill={color}>
-        {/* Upper wing body and head */}
+        {/* Head silhouette and flowing hair strands */}
         <path
           d="M 24 43 
              C 45 46 72 50 96 50
@@ -137,7 +138,7 @@ export const HammamNileLogo: React.FC<HammamNileLogoProps> = ({
   // Full stacked variant (as seen on the official photo)
   return (
     <div className={`flex flex-col items-center text-center select-none ${className}`}>
-      {/* Blue Wing / Bird Emblem */}
+      {/* Blue Emblem — woman's head with flowing hair */}
       <div className="mb-2 transition-transform duration-200 hover:scale-105">
         <HammamNileEmblem className={emblemSizes[size]} color={color} />
       </div>
