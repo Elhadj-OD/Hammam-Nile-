@@ -34,10 +34,6 @@ import {
   loadClientsFromFirestore,
   syncSaleToFirestore,
   loadSalesFromFirestore,
-  sendAdminVerificationCode,
-  verifyAdminSecurityCode,
-  auth,
-  googleProvider,
 } from '../lib/firebase';
 import {
   isSupabaseConfigured,
@@ -56,7 +52,6 @@ import {
   getShopSettingsFromSupabase,
   saveShopSettingsToSupabase,
 } from '../lib/supabase';
-import { signInWithPopup } from 'firebase/auth';
 
 interface AppContextType {
   currentUser: User | null;
@@ -67,15 +62,9 @@ interface AppContextType {
   login: (username: string, password?: string) => boolean;
   logout: () => void;
 
-  // Firebase 2FA & Cloud Sync
+  // Cloud Sync
   firebaseConnected: boolean;
   supabaseConnected: boolean;
-  isAdminVerified: boolean;
-  pendingVerificationId: string | null;
-  lastSentCode: string | null;
-  requestAdminEmailCode: (targetEmail?: string) => Promise<{ success: boolean; code: string; message: string }>;
-  verifyAdminEmailCode: (enteredCode: string) => Promise<{ success: boolean; error?: string }>;
-  unlockAdminWithGoogle: () => Promise<{ success: boolean; error?: string }>;
 
   // Password-protected switching modal
   authModal: {
@@ -247,14 +236,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeSection, setActiveSection] = useState<ActiveSection>('caisse');
   const [lastSale, setLastSale] = useState<Sale | null>(null);
 
-  // Firebase Cloud & 2FA State
+  // Firebase Cloud Sync State
   const [firebaseConnected, setFirebaseConnected] = useState<boolean>(false);
   const [supabaseConnected, setSupabaseConnected] = useState<boolean>(isSupabaseConfigured());
-  const [isAdminVerified, setIsAdminVerified] = useState<boolean>(() => {
-    return localStorage.getItem(`${STORAGE_KEY}-admin-verified`) === 'true';
-  });
-  const [pendingVerificationId, setPendingVerificationId] = useState<string | null>(null);
-  const [lastSentCode, setLastSentCode] = useState<string | null>(null);
 
   // App Data
   const [products, setProducts] = useState<Product[]>(() => {
@@ -426,87 +410,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     loadSupabase();
   }, []);
-
-  const requestAdminEmailCode = async (
-    targetEmail?: string
-  ): Promise<{ success: boolean; code: string; message: string }> => {
-    const emailToUse = (targetEmail || settings.adminEmail || 'elhadji3454@gmail.com')
-      .trim()
-      .toLowerCase();
-    const res = await sendAdminVerificationCode(emailToUse);
-    if (res.success) {
-      setPendingVerificationId(res.verificationId);
-      setLastSentCode(res.code);
-      return {
-        success: true,
-        code: res.code,
-        message: `Code de sécurité envoyé avec succès à ${emailToUse}. Veuillez consulter vos emails sur votre téléphone pour relever le code à 6 chiffres.`,
-      };
-    }
-    return {
-      success: false,
-      code: '',
-      message: "Échec de la génération du code de vérification Firebase.",
-    };
-  };
-
-  const verifyAdminEmailCode = async (
-    enteredCode: string
-  ): Promise<{ success: boolean; error?: string }> => {
-    const clean = (enteredCode || '').trim();
-    if (!clean) {
-      return { success: false, error: 'Veuillez saisir le code à 6 chiffres.' };
-    }
-
-    // Direct match with latest dispatched code in state
-    if (lastSentCode && clean === lastSentCode.trim()) {
-      setIsAdminVerified(true);
-      localStorage.setItem(`${STORAGE_KEY}-admin-verified`, 'true');
-      const sophia =
-        users.find(u => u.username.toLowerCase() === 'sophia') || INITIAL_USERS_LIST[1];
-      setCurrentUser(sophia);
-      return { success: true };
-    }
-
-    // Check with Firestore database verification document
-    if (pendingVerificationId) {
-      const res = await verifyAdminSecurityCode(pendingVerificationId, clean);
-      if (res.valid) {
-        setIsAdminVerified(true);
-        localStorage.setItem(`${STORAGE_KEY}-admin-verified`, 'true');
-        const sophia =
-          users.find(u => u.username.toLowerCase() === 'sophia') || INITIAL_USERS_LIST[1];
-        setCurrentUser(sophia);
-        return { success: true };
-      }
-      return { success: false, error: res.message };
-    }
-
-    return {
-      success: false,
-      error: 'Code de sécurité invalide ou expiré. Veuillez redemander un nouveau code.',
-    };
-  };
-
-  const unlockAdminWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      if (result.user) {
-        setIsAdminVerified(true);
-        localStorage.setItem(`${STORAGE_KEY}-admin-verified`, 'true');
-        const sophia =
-          users.find(u => u.username.toLowerCase() === 'sophia') || INITIAL_USERS_LIST[1];
-        setCurrentUser(sophia);
-        return { success: true };
-      }
-      return { success: false, error: 'Connexion Google annulée.' };
-    } catch (err: unknown) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : 'Erreur lors de la connexion Google Firebase.',
-      };
-    }
-  };
 
   useEffect(() => {
     if (currentUser) {
@@ -1247,12 +1150,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setLastSale,
         firebaseConnected,
         supabaseConnected,
-        isAdminVerified,
-        pendingVerificationId,
-        lastSentCode,
-        requestAdminEmailCode,
-        verifyAdminEmailCode,
-        unlockAdminWithGoogle,
       }}
     >
       {children}

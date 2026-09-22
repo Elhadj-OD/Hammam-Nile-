@@ -8,54 +8,28 @@ import {
   AlertCircle,
   X,
   ArrowRight,
-  Mail,
-  Send,
-  CheckCircle2,
-  Copy,
 } from 'lucide-react';
 import { HammamNileEmblem } from './HammamNileLogo';
 
 export const AuthSwitchModal: React.FC = () => {
-  const {
-    authModal,
-    closeAuthModal,
-    verifyAndSwitch,
-    requestAdminEmailCode,
-    verifyAdminEmailCode,
-    settings,
-  } = useApp();
+  const { authModal, closeAuthModal, verifyAndSwitch } = useApp();
 
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [authMethod, setAuthMethod] = useState<'code' | 'password'>('code');
-
-  // Firebase Email Verification State
-  const [email, setEmail] = useState(settings.adminEmail || 'elhadji3454@gmail.com');
-  const [adminCode, setAdminCode] = useState('');
-  const [codeSent, setCodeSent] = useState(false);
-  const [isSendingCode, setIsSendingCode] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (authModal.isOpen) {
       setPassword('');
-      setAdminCode('');
       setError('');
       setShowPassword(false);
-      setCodeSent(false);
-      // If targeting admin, default to code verification to stop cashiers
-      const isTargetAdmin =
-        authModal.targetRole === 'gerant' ||
-        authModal.targetUsername?.toLowerCase() === 'sophia';
-      setAuthMethod(isTargetAdmin ? 'code' : 'password');
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
     }
-  }, [authModal.isOpen, authModal.targetRole, authModal.targetUsername]);
+  }, [authModal.isOpen]);
 
   if (!authModal.isOpen) return null;
 
@@ -65,64 +39,12 @@ export const AuthSwitchModal: React.FC = () => {
   const targetLabel = isAdmin ? 'Partie Admin (Direction)' : 'Partie Caisse (Vente)';
   const targetUser = isAdmin ? 'Sophia' : 'Elhadj';
 
-  const handleSendCode = async () => {
-    if (!email.trim()) {
-      setError("Veuillez saisir l'email de l'administrateur.");
-      return;
-    }
-    setError('');
-    setIsSendingCode(true);
-    setAdminCode(''); // Keep field blank for user to type
-    try {
-      const res = await requestAdminEmailCode(email);
-      if (res.success) {
-        setCodeSent(true);
-      } else {
-        setError(res.message || "Erreur lors de l'envoi du code.");
-      }
-    } catch {
-      setError("Erreur de connexion avec Firebase.");
-    } finally {
-      setIsSendingCode(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    // If switching to admin and using verification code
-    if (isAdmin && authMethod === 'code') {
-      if (!adminCode.trim()) {
-        setError("Veuillez demander et entrer le code de sécurité reçu par email.");
-        return;
-      }
-
-      setIsVerifying(true);
-      try {
-        const verifyRes = await verifyAdminEmailCode(adminCode);
-        if (!verifyRes.success) {
-          setError(verifyRes.error || "Code de sécurité incorrect.");
-          setIsVerifying(false);
-          return;
-        }
-
-        // Successfully verified by Firebase
-        const res = verifyAndSwitch('2630');
-        if (!res.success) {
-          setError(res.error || 'Impossible de basculer.');
-        }
-      } catch {
-        setError("Erreur lors de la vérification du code.");
-      } finally {
-        setIsVerifying(false);
-      }
-      return;
-    }
-
-    // Password verification
     if (!password.trim()) {
-      setError('Veuillez entrer le mot de passe.');
+      setError('Veuillez entrer le code / mot de passe.');
       return;
     }
 
@@ -200,34 +122,6 @@ export const AuthSwitchModal: React.FC = () => {
             </span>
           </div>
 
-          {/* Toggle between code and password if admin */}
-          {isAdmin && (
-            <div className="flex p-1 bg-slate-100 rounded-xl text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => setAuthMethod('code')}
-                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${
-                  authMethod === 'code'
-                    ? 'bg-white text-[#0A3735] shadow-xs'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                Code Email Firebase
-              </button>
-              <button
-                type="button"
-                onClick={() => setAuthMethod('password')}
-                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${
-                  authMethod === 'password'
-                    ? 'bg-white text-[#0A3735] shadow-xs'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                Mot de passe Sophia
-              </button>
-            </div>
-          )}
-
           {/* Error Message */}
           {error && (
             <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 animate-in shake">
@@ -236,107 +130,37 @@ export const AuthSwitchModal: React.FC = () => {
             </div>
           )}
 
-          {/* Verification input based on method */}
-          {isAdmin && authMethod === 'code' ? (
-            <div className="space-y-3 bg-[#F7F3EC] p-3.5 rounded-2xl border border-[#E7E0D3]">
-              <div className="text-[11px] text-[#6B7873] leading-relaxed">
-                Un code de vérification à usage unique est envoyé à l'adresse administrateur pour autoriser l'ouverture de la gérance.
-              </div>
-
-              {/* Email & Send Button */}
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    placeholder="elhadji3454@gmail.com"
-                    className="w-full pl-8 pr-2 py-1.5 bg-white border border-[#E7E0D3] rounded-xl text-xs text-[#1C2321]"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleSendCode}
-                  disabled={isSendingCode}
-                  className="px-3 py-1.5 bg-[#0A3735] hover:bg-[#0F4C4A] text-white text-xs font-bold rounded-xl flex items-center gap-1 cursor-pointer disabled:opacity-50"
-                >
-                  <Send className="w-3 h-3" />
-                  <span>{isSendingCode ? '...' : 'Code'}</span>
-                </button>
-              </div>
-
-              {/* Dispatched Code Notice */}
-              {codeSent && dispatchedCode && (
-                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1">
-                  <div className="flex items-center justify-between text-emerald-800 font-bold">
-                    <span className="flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Code transmis :</span>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleCopyCode}
-                      className="text-[10px] text-emerald-700 underline flex items-center gap-1 cursor-pointer"
-                    >
-                      <Copy className="w-3 h-3" />
-                      <span>{copied ? 'Copié !' : 'Copier'}</span>
-                    </button>
-                  </div>
-                  <div className="font-mono font-extrabold text-sm text-[#0A3735] tracking-widest text-center bg-white py-1 rounded border border-emerald-200">
-                    {dispatchedCode}
-                  </div>
-                </div>
-              )}
-
-              {/* Input for 6 digits code */}
-              <div>
-                <label className="block text-[11px] font-bold text-[#6B7873] uppercase mb-1">
-                  Entrez le code reçu *
-                </label>
-                <input
-                  type="text"
-                  maxLength={6}
-                  value={adminCode}
-                  onChange={e => setAdminCode(e.target.value.replace(/\D/g, ''))}
-                  placeholder="Ex: 123456"
-                  className="w-full py-2 px-3 bg-white border border-[#E7E0D3] rounded-xl text-center font-mono font-bold text-base tracking-widest text-[#0A3735] focus:ring-2 focus:ring-[#0A3735]"
-                  required
-                />
-              </div>
+          {/* Password input */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-bold text-[#6B7873] uppercase tracking-wider">
+                Code / Mot de passe confidentiel
+              </label>
+              <span className="text-[11px] text-[#6B7873] flex items-center gap-1">
+                <Lock className="w-3 h-3 text-[#004CB7]" />
+                <span>Masqué</span>
+              </span>
             </div>
-          ) : (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-bold text-[#6B7873] uppercase tracking-wider">
-                  Mot de passe confidentiel
-                </label>
-                <span className="text-[11px] text-[#6B7873] flex items-center gap-1">
-                  <Lock className="w-3 h-3 text-[#004CB7]" />
-                  <span>Masqué</span>
-                </span>
-              </div>
-              <div className="relative">
-                <input
-                  ref={inputRef}
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-4 pr-12 py-3 bg-[#F7F3EC] border border-[#E7E0D3] rounded-2xl text-base font-medium text-[#1C2321] tracking-widest focus:outline-none focus:ring-2 focus:ring-[#004CB7] focus:border-transparent transition"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(prev => !prev)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#6B7873] hover:text-[#1C2321] cursor-pointer"
-                  title={showPassword ? 'Masquer' : 'Afficher'}
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+            <div className="relative">
+              <input
+                ref={inputRef}
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full pl-4 pr-12 py-3 bg-[#F7F3EC] border border-[#E7E0D3] rounded-2xl text-base font-medium text-[#1C2321] tracking-widest focus:outline-none focus:ring-2 focus:ring-[#004CB7] focus:border-transparent transition"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(prev => !prev)}
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#6B7873] hover:text-[#1C2321] cursor-pointer"
+                title={showPassword ? 'Masquer' : 'Afficher'}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
-          )}
+          </div>
 
           <p className="text-[11px] text-[#6B7873] flex items-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5 text-[#004CB7]" />
@@ -354,14 +178,13 @@ export const AuthSwitchModal: React.FC = () => {
             </button>
             <button
               type="submit"
-              disabled={isVerifying}
               className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold text-white transition flex items-center justify-center gap-2 shadow-md cursor-pointer ${
                 isAdmin
                   ? 'bg-[#0A3735] hover:bg-[#0F4C4A]'
                   : 'bg-[#004CB7] hover:bg-[#003C93]'
               }`}
             >
-              <span>{isVerifying ? 'Vérification...' : 'Valider'}</span>
+              <span>Valider</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
