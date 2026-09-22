@@ -14,6 +14,7 @@ const CATS = [
   { key: 'linge', label: 'Linge' },
   { key: 'accessoires', label: 'Accessoires' },
   { key: 'coffrets', label: 'Coffrets' },
+  { key: 'femmes', label: '💄 Boutique Femme' },
 ];
 
 export const CaisseView: React.FC = () => {
@@ -76,8 +77,13 @@ export const CaisseView: React.FC = () => {
     return `${n.toLocaleString('fr-FR')} ${settings.currency}`;
   };
 
+  // La Boutique Femme est réservée aux caissières (genre "femme" ou non renseigné)
+  const canAccessBoutiqueFemme = currentUser?.gender !== 'homme';
+  const visibleCats = CATS.filter(c => c.key !== 'femmes' || canAccessBoutiqueFemme);
+
   // Filter products
   const filteredProducts = products.filter(p => {
+    if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
     const matchesCat = activeCat === 'all' || p.category === activeCat;
     const matchesSearch =
       search.trim() === '' ||
@@ -105,7 +111,9 @@ export const CaisseView: React.FC = () => {
       e.preventDefault();
       const code = scanCode.trim();
       if (code.length > 2) {
-        const found = products.find(p => p.barcode === code);
+        const found = products.find(
+          p => p.barcode === code && (p.category !== 'femmes' || canAccessBoutiqueFemme)
+        );
         if (found) {
           addToCart(found);
           setScanMsg({ text: `✓ ${found.name} ajouté au ticket`, type: 'ok' });
@@ -123,6 +131,13 @@ export const CaisseView: React.FC = () => {
     const t = setTimeout(() => scanInputRef.current?.focus(), 100);
     return () => clearTimeout(t);
   }, []);
+
+  // Revient à "Tous" si l'onglet Boutique Femme devient inaccessible (ex: changement de caissier)
+  useEffect(() => {
+    if (activeCat === 'femmes' && !canAccessBoutiqueFemme) {
+      setActiveCat('all');
+    }
+  }, [activeCat, canAccessBoutiqueFemme]);
 
   const isGerant = currentUser?.role === 'gerant';
   const displayName = currentUser?.name || (isGerant ? 'Aïchetou' : 'Fatimetou');
@@ -290,7 +305,7 @@ export const CaisseView: React.FC = () => {
 
           {/* Category Tabs */}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {CATS.map(c => {
+            {visibleCats.map(c => {
               const isActive = activeCat === c.key;
               return (
                 <button

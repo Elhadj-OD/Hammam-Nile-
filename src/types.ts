@@ -1,16 +1,18 @@
 export type UserRole = 'caissier' | 'gerant';
+export type UserGender = 'femme' | 'homme';
 
 export interface User {
   username: string;
   name: string;
   role: UserRole;
+  gender?: UserGender;
   password?: string;
   avatar?: string;
   phone?: string;
   createdAt?: string;
 }
 
-export type ProductCategory = 'savons' | 'huiles' | 'linge' | 'accessoires' | 'coffrets' | 'parfums' | 'boissons' | 'snacks' | 'autres';
+export type ProductCategory = 'savons' | 'huiles' | 'linge' | 'accessoires' | 'coffrets' | 'parfums' | 'boissons' | 'snacks' | 'femmes' | 'autres';
 
 export interface Product {
   id: number;

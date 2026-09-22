@@ -263,6 +263,18 @@ export const ProduitsView: React.FC = () => {
           >
             🧺 Linge & Bains
           </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('femmes')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+              selectedCategory === 'femmes'
+                ? 'bg-[#0F4C4A] text-white'
+                : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+            }`}
+            title="Réservée aux caissières marquées « Femme » sur l'écran Caisse"
+          >
+            💄 Boutique Femme
+          </button>
         </div>
       </div>
 
@@ -607,6 +619,7 @@ export const ProduitsView: React.FC = () => {
                     <option value="accessoires">Accessoires & Foutas</option>
                     <option value="linge">Linge & Bains</option>
                     <option value="soins">Soins du Corps</option>
+                    <option value="femmes">Boutique Femme</option>
                     <option value="autres">Autres / Coffrets</option>
                   </select>
                 </div>

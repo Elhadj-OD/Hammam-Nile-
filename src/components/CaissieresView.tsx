@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { User, UserRole } from '../types';
+import { User, UserRole, UserGender } from '../types';
 import {
   Users,
   UserPlus,
@@ -40,6 +40,7 @@ export const CaissieresView: React.FC = () => {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [role, setRole] = useState<UserRole>('caissier');
+  const [gender, setGender] = useState<UserGender>('femme');
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,6 +60,7 @@ export const CaissieresView: React.FC = () => {
     setPassword('');
     setPhone('');
     setRole('caissier');
+    setGender('femme');
     setAvatarPreview('');
     setIsModalOpen(true);
   };
@@ -70,6 +72,7 @@ export const CaissieresView: React.FC = () => {
     setPassword(user.password || '');
     setPhone(user.phone || '');
     setRole(user.role);
+    setGender(user.gender || 'femme');
     setAvatarPreview(user.avatar || '');
     setIsModalOpen(true);
   };
@@ -108,6 +111,7 @@ export const CaissieresView: React.FC = () => {
       password: password.trim() || '1234',
       phone: phone.trim(),
       role,
+      gender,
       avatar: finalAvatar,
       createdAt: editingUser?.createdAt || new Date().toISOString().split('T')[0],
     };
@@ -235,6 +239,14 @@ export const CaissieresView: React.FC = () => {
                         >
                           {u.role === 'gerant' ? 'Gérante / Admin' : 'Caissière'}
                         </span>
+                        {u.gender === 'homme' && (
+                          <span
+                            className="ml-1 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-[#F7F3EC] text-[#6B7873] border border-[#E7E0D3]"
+                            title="Boutique Femme masquée pour ce compte"
+                          >
+                            Homme
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -502,6 +514,24 @@ export const CaissieresView: React.FC = () => {
                     <option value="gerant">Administratrice / Gérante</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Genre (accès Boutique Femme) */}
+              <div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1">
+                  Genre
+                </label>
+                <select
+                  value={gender}
+                  onChange={e => setGender(e.target.value as UserGender)}
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                >
+                  <option value="femme">Femme</option>
+                  <option value="homme">Homme</option>
+                </select>
+                <p className="text-[11px] text-[#6B7873] mt-1">
+                  La catégorie « Boutique Femme » de la Caisse n'est visible que pour les comptes marqués « Femme ».
+                </p>
               </div>
 
               {/* Actions */}
