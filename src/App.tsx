@@ -16,6 +16,7 @@ import { RapportsView } from './components/RapportsView';
 import { ParametresView } from './components/ParametresView';
 import { CaissieresView } from './components/CaissieresView';
 import { PrelevementsHammamView } from './components/PrelevementsHammamView';
+import { AssistantView } from './components/AssistantView';
 import { ReceiptModal } from './components/ReceiptModal';
 import { AuthSwitchModal } from './components/AuthSwitchModal';
 
@@ -56,6 +57,8 @@ const MainLayout: React.FC = () => {
         return <CaissieresView />;
       case 'parametres':
         return <ParametresView />;
+      case 'assistant':
+        return <AssistantView />;
       default:
         return <DashboardView />;
     }

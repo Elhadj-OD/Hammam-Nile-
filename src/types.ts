@@ -196,4 +196,5 @@ export type ActiveSection =
   | 'prelevements-hammam'
   | 'rapports'
   | 'utilisateurs'
-  | 'parametres';
+  | 'parametres'
+  | 'assistant';
