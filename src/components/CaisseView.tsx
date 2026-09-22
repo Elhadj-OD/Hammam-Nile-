@@ -168,6 +168,8 @@ export const CaisseView: React.FC = () => {
   const displayRole = isGerant ? 'Administratrice' : myDept ? myDept.label : 'Caissière';
   const hasPhoto = currentUser?.avatar && (currentUser.avatar.startsWith('data:') || currentUser.avatar.startsWith('http'));
   const avatarInitials = currentUser?.avatar && !hasPhoto ? currentUser.avatar : displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  // Un profil verrouillé par l'admin ne peut pas changer d'espace sur un poste partagé
+  const canSwitchProfile = !currentUser?.locked || isGerant;
 
   return (
     <div className="w-full max-w-[1360px] mx-auto">
@@ -200,13 +202,15 @@ export const CaisseView: React.FC = () => {
               <span className="hidden sm:inline">Sortie Hammam</span>
             </button>
 
-            {/* Cashier Badge with quick switch */}
+            {/* Cashier Badge with quick switch (désactivé si le profil est verrouillé) */}
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setShowCashierSwitch(prev => !prev)}
-                className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-[#F7F3EC] transition cursor-pointer text-left border-0 bg-transparent"
-                title="Changer d'utilisateur / caissière"
+                onClick={() => canSwitchProfile && setShowCashierSwitch(prev => !prev)}
+                className={`flex items-center gap-2.5 p-1 rounded-xl transition text-left border-0 bg-transparent ${
+                  canSwitchProfile ? 'hover:bg-[#F7F3EC] cursor-pointer' : 'cursor-default'
+                }`}
+                title={canSwitchProfile ? "Changer d'utilisateur / caissière" : 'Profil verrouillé par l\'admin — déconnectez-vous pour changer de compte'}
               >
                 {hasPhoto ? (
                   <img
@@ -224,12 +228,12 @@ export const CaisseView: React.FC = () => {
                     {displayName}
                   </span>
                   <span className="text-[11px] text-[#6B7873] block">
-                    {displayRole} ▾
+                    {displayRole} {canSwitchProfile ? '▾' : '🔒'}
                   </span>
                 </div>
               </button>
 
-              {showCashierSwitch && (
+              {showCashierSwitch && canSwitchProfile && (
                 <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-[#E7E0D3] rounded-2xl shadow-xl p-2 z-30 animate-in fade-in zoom-in-95 duration-150">
                   <div className="text-[10px] font-bold uppercase text-[#6B7873] px-2.5 py-1">
                     Sélectionner l'opérateur

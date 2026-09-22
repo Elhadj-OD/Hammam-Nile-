@@ -13,10 +13,19 @@ export interface User {
   role: UserRole;
   gender?: UserGender;
   department?: CaisseDepartment;
+  locked?: boolean;
   password?: string;
   avatar?: string;
   phone?: string;
   createdAt?: string;
+}
+
+export interface PresenceRow {
+  username: string;
+  name: string;
+  role: UserRole;
+  department?: CaisseDepartment | null;
+  lastActive: number;
 }
 
 export type ProductCategory = 'savons' | 'huiles' | 'linge' | 'accessoires' | 'coffrets' | 'parfums' | 'boissons' | 'snacks' | 'femmes' | 'hommes' | 'hammam_bains' | 'spa_massage' | 'coiffure_salon' | 'autres';

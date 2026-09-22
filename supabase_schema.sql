@@ -105,13 +105,25 @@ CREATE TABLE IF NOT EXISTS public.shop_settings (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 7. Activer Row Level Security (RLS) avec politique ouverte pour le POS
+-- 7. Table de Présence (qui est connecté, sur quelle caisse — contrôle des heures)
+-- Ne contient jamais de mot de passe.
+CREATE TABLE IF NOT EXISTS public.presence (
+  username TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  department TEXT,
+  "lastActive" BIGINT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 8. Activer Row Level Security (RLS) avec politique ouverte pour le POS
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sales ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.stock_movements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.hammam_usages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.shop_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.presence ENABLE ROW LEVEL SECURITY;
 
 -- Politiques d'accès (permettant la synchronisation directe depuis l'application avec la clé anon)
 DROP POLICY IF EXISTS "Public access for products" ON public.products;
@@ -132,8 +144,12 @@ CREATE POLICY "Public access for hammam_usages" ON public.hammam_usages FOR ALL 
 DROP POLICY IF EXISTS "Public access for shop_settings" ON public.shop_settings;
 CREATE POLICY "Public access for shop_settings" ON public.shop_settings FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Public access for presence" ON public.presence;
+CREATE POLICY "Public access for presence" ON public.presence FOR ALL USING (true) WITH CHECK (true);
+
 -- Activer les notifications temps réel (Realtime) sur les tables critiques
 ALTER PUBLICATION supabase_realtime ADD TABLE public.products;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.sales;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.clients;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.hammam_usages;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.presence;

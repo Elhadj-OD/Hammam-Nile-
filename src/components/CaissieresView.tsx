@@ -17,7 +17,13 @@ import {
   ShoppingBag,
   Sparkles,
   Calendar,
+  Lock,
+  Unlock,
+  Circle,
 } from 'lucide-react';
+
+// Un compte est considéré "en ligne" s'il a signalé une activité récente
+const ONLINE_THRESHOLD_MS = 2 * 60 * 1000; // 2 minutes
 
 export const CaissieresView: React.FC = () => {
   const {
@@ -27,6 +33,7 @@ export const CaissieresView: React.FC = () => {
     updateUser,
     deleteUser,
     switchUser,
+    presence,
     sales,
     settings,
     setActiveSection,
@@ -43,6 +50,7 @@ export const CaissieresView: React.FC = () => {
   const [role, setRole] = useState<UserRole>('caissier');
   const [gender, setGender] = useState<UserGender>('femme');
   const [department, setDepartment] = useState<CaisseDepartment | ''>('');
+  const [locked, setLocked] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,6 +72,7 @@ export const CaissieresView: React.FC = () => {
     setRole('caissier');
     setGender('femme');
     setDepartment('');
+    setLocked(false);
     setAvatarPreview('');
     setIsModalOpen(true);
   };
@@ -77,6 +86,7 @@ export const CaissieresView: React.FC = () => {
     setRole(user.role);
     setGender(user.gender || 'femme');
     setDepartment(user.department || '');
+    setLocked(user.locked || false);
     setAvatarPreview(user.avatar || '');
     setIsModalOpen(true);
   };
@@ -117,6 +127,7 @@ export const CaissieresView: React.FC = () => {
       role,
       gender,
       department: department || undefined,
+      locked,
       avatar: finalAvatar,
       createdAt: editingUser?.createdAt || new Date().toISOString().split('T')[0],
     };
@@ -146,12 +157,32 @@ export const CaissieresView: React.FC = () => {
     setActiveSection('caisse');
   };
 
+  const handleToggleLock = (u: User) => {
+    updateUser(u.username, { locked: !u.locked });
+  };
+
   // Compute sales stats per user
   const getUserStats = (uUsername: string) => {
     const userSales = sales.filter(s => s.caissier.toLowerCase() === uUsername.toLowerCase());
     const count = userSales.length;
     const totalAmount = userSales.reduce((acc, s) => acc + s.total, 0);
     return { count, totalAmount };
+  };
+
+  // Présence : dernière activité connue pour un utilisateur (via Supabase)
+  const getPresence = (uUsername: string) => {
+    const row = presence.find(p => p.username.toLowerCase() === uUsername.toLowerCase());
+    if (!row) return { online: false, lastActive: null as number | null };
+    return { online: Date.now() - row.lastActive < ONLINE_THRESHOLD_MS, lastActive: row.lastActive };
+  };
+
+  const formatLastSeen = (ts: number) => {
+    const diffMin = Math.round((Date.now() - ts) / 60000);
+    if (diffMin < 1) return "à l'instant";
+    if (diffMin < 60) return `il y a ${diffMin} min`;
+    const diffH = Math.round(diffMin / 60);
+    if (diffH < 24) return `il y a ${diffH} h`;
+    return new Date(ts).toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
   };
 
   const formatPrice = (val: number) => {
@@ -260,12 +291,35 @@ export const CaissieresView: React.FC = () => {
                             {DEPARTMENTS[u.department].icon} {DEPARTMENTS[u.department].label}
                           </span>
                         )}
+                        {u.locked && (
+                          <span
+                            className="ml-1 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200"
+                            title="Ne peut pas changer d'espace depuis cet appareil"
+                          >
+                            <Lock className="w-2.5 h-2.5" />
+                            Verrouillé
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Actions (Edit / Delete) */}
+                  {/* Actions (Edit / Lock / Delete) */}
                   <div className="flex items-center gap-1">
+                    {u.role !== 'gerant' && (
+                      <button
+                        type="button"
+                        onClick={() => handleToggleLock(u)}
+                        className={`p-1.5 rounded-lg transition cursor-pointer ${
+                          u.locked
+                            ? 'text-rose-600 hover:bg-rose-50'
+                            : 'text-[#6B7873] hover:text-[#0F4C4A] hover:bg-[#F7F3EC]'
+                        }`}
+                        title={u.locked ? "Déverrouiller (autoriser le changement d'espace)" : 'Verrouiller sur sa caisse'}
+                      >
+                        {u.locked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(u)}
@@ -305,6 +359,23 @@ export const CaissieresView: React.FC = () => {
                       <span>Inscrite le : {u.createdAt}</span>
                     </div>
                   )}
+                  {(() => {
+                    const p = getPresence(u.username);
+                    return (
+                      <div className="flex items-center gap-2">
+                        <Circle
+                          className={`w-2.5 h-2.5 ${p.online ? 'fill-emerald-500 text-emerald-500' : 'fill-[#B8B2A0] text-[#B8B2A0]'}`}
+                        />
+                        <span>
+                          {p.online
+                            ? 'En ligne maintenant'
+                            : p.lastActive
+                            ? `Vue ${formatLastSeen(p.lastActive)}`
+                            : 'Jamais connectée'}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Performance Stats */}
@@ -568,6 +639,27 @@ export const CaissieresView: React.FC = () => {
                   Si une caisse est choisie, cette caissière ne voit et ne vend que les articles de cette partie à la connexion.
                 </p>
               </div>
+
+              {/* Verrouillage du profil (postes partagés) */}
+              {role === 'caissier' && (
+                <label className="flex items-start gap-2.5 bg-[#F7F3EC] p-3 rounded-xl border border-[#E7E0D3] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={locked}
+                    onChange={e => setLocked(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 accent-[#0F4C4A] cursor-pointer"
+                  />
+                  <span>
+                    <span className="block text-xs font-bold text-[#1C2321] flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5 text-[#0F4C4A]" />
+                      Verrouiller ce profil
+                    </span>
+                    <span className="block text-[11px] text-[#6B7873] mt-0.5">
+                      Utile sur un poste partagé : une fois connectée, cette caissière ne pourra plus basculer vers un autre espace ou compte depuis l'appareil — elle devra se déconnecter et laisser la suivante se reconnecter avec son propre identifiant.
+                    </span>
+                  </span>
+                </label>
+              )}
 
               {/* Actions */}
               <div className="flex justify-end gap-2.5 pt-4 border-t border-[#E7E0D3]">

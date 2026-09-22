@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings } from '../types';
+import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow } from '../types';
 
 // Read credentials from environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -243,5 +243,51 @@ export async function saveShopSettingsToSupabase(settings: ShopSettings): Promis
     if (error) console.warn('Supabase save settings error:', error.message);
   } catch (err) {
     console.warn('Supabase save settings error:', err);
+  }
+}
+
+// ============================================================================
+// 7. PRÉSENCE (qui est connecté, sur quel poste) — pour le contrôle des heures
+// ============================================================================
+export async function getPresenceFromSupabase(): Promise<PresenceRow[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('presence')
+      .select('*');
+
+    if (error) {
+      console.warn('Supabase fetch presence error:', error.message);
+      return null;
+    }
+    return data as PresenceRow[];
+  } catch (err) {
+    console.warn('Supabase error:', err);
+    return null;
+  }
+}
+
+export async function upsertPresenceToSupabase(row: PresenceRow): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('presence')
+      .upsert(row, { onConflict: 'username' });
+    if (error) console.warn('Supabase save presence error:', error.message);
+  } catch (err) {
+    console.warn('Supabase save presence error:', err);
+  }
+}
+
+export async function clearPresenceFromSupabase(username: string): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('presence')
+      .delete()
+      .eq('username', username);
+    if (error) console.warn('Supabase clear presence error:', error.message);
+  } catch (err) {
+    console.warn('Supabase clear presence error:', err);
   }
 }

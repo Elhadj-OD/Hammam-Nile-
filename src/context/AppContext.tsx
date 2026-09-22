@@ -15,6 +15,7 @@ import {
   LineItem,
   PaymentTerms,
   HammamUsage,
+  PresenceRow,
 } from '../types';
 import {
   INITIAL_USERS,
@@ -51,6 +52,9 @@ import {
   saveHammamUsageToSupabase,
   getShopSettingsFromSupabase,
   saveShopSettingsToSupabase,
+  getPresenceFromSupabase,
+  upsertPresenceToSupabase,
+  clearPresenceFromSupabase,
 } from '../lib/supabase';
 
 interface AppContextType {
@@ -88,7 +92,11 @@ interface AppContextType {
   addUser: (user: User) => void;
   updateUser: (username: string, updates: Partial<User>) => void;
   deleteUser: (username: string) => void;
-  
+
+  // Présence (qui est connecté, pour le contrôle des heures par l'admin)
+  presence: PresenceRow[];
+
+
   // Products & Inventory
   products: Product[];
   addProduct: (product: Omit<Product, 'id'>) => void;
@@ -307,6 +315,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : INITIAL_SETTINGS;
   });
 
+  // Présence : qui est connecté, pour le contrôle des heures par l'admin
+  const [presence, setPresence] = useState<PresenceRow[]>([]);
+
   // Save changes to localStorage
   useEffect(() => {
     localStorage.setItem(`${STORAGE_KEY}-products`, JSON.stringify(products));
@@ -432,6 +443,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [currentUser]);
 
+  const touchPresence = (user: User) => {
+    upsertPresenceToSupabase({
+      username: user.username,
+      name: user.name,
+      role: user.role,
+      department: user.department || null,
+      lastActive: Date.now(),
+    });
+  };
+
+  // Présence : signal régulier tant qu'une session reste ouverte sur cet appareil
+  useEffect(() => {
+    if (!currentUser) return;
+    touchPresence(currentUser);
+    const interval = setInterval(() => touchPresence(currentUser), 45000);
+    return () => clearInterval(interval);
+  }, [currentUser?.username]);
+
+  // Présence : l'admin récupère régulièrement qui est actuellement connecté
+  useEffect(() => {
+    if (currentUser?.role !== 'gerant') return;
+    const fetchPresence = async () => {
+      const rows = await getPresenceFromSupabase();
+      if (rows) setPresence(rows);
+    };
+    fetchPresence();
+    const interval = setInterval(fetchPresence, 15000);
+    return () => clearInterval(interval);
+  }, [currentUser?.role]);
+
   // Auth & Team Management
   const addUser = (newUser: User) => {
     setUsers(prev => {
@@ -524,6 +565,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     setCurrentUser(targetUser);
+    touchPresence(targetUser);
     if (authModal.onSuccessSection) {
       setActiveSection(authModal.onSuccessSection);
     } else if (targetUser.role === 'gerant') {
@@ -536,13 +578,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return { success: true };
   };
 
+  // Un compte verrouillé par l'admin ne peut pas changer d'espace depuis l'appareil partagé
   const switchUser = (username: string) => {
     if (currentUser?.username.toLowerCase() === username.toLowerCase()) return;
+    if (currentUser?.locked && currentUser.role !== 'gerant') return;
     openAuthModal({ targetUsername: username });
   };
 
   const switchRole = (role: UserRole) => {
     if (currentUser?.role === role) return;
+    if (currentUser?.locked && currentUser.role !== 'gerant') return;
     openAuthModal({ targetRole: role });
   };
 
@@ -555,6 +600,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!user) return false;
     if (!cleanPass || user.password !== cleanPass) return false;
     setCurrentUser(user);
+    touchPresence(user);
     if (user.role === 'gerant') {
       setActiveSection('dashboard');
     } else {
@@ -564,6 +610,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const logout = () => {
+    if (currentUser) clearPresenceFromSupabase(currentUser.username);
     setCurrentUser(null);
     setCart([]);
     setActiveSection('dashboard');
@@ -1126,6 +1173,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addUser,
         updateUser,
         deleteUser,
+        presence,
         products,
         addProduct,
         updateProduct,
