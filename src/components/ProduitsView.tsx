@@ -42,6 +42,11 @@ export const ProduitsView: React.FC = () => {
 
   const emojiOptions = ['🧼', '🧤', '🫙', '🧴', '🧺', '🕯️', '🌸', '✨', '🍃', '🍵', '🧽', '🌿'];
 
+  // Un code-barres déjà attribué à un autre produit — évite les doublons au scan
+  const duplicateProduct = products.find(
+    p => barcode.trim().length > 3 && p.barcode === barcode.trim() && p.id !== editingProduct?.id
+  );
+
   const openAddForm = () => {
     setEditingProduct(null);
     setName('');
@@ -98,6 +103,10 @@ export const ProduitsView: React.FC = () => {
     }
     if (isNaN(priceNum) || priceNum <= 0) {
       alert('Veuillez renseigner un prix supérieur à 0.');
+      return;
+    }
+    if (duplicateProduct) {
+      alert(`Ce code-barres est déjà utilisé par « ${duplicateProduct.name} ». Modifiez ce produit au lieu d'en créer un nouveau.`);
       return;
     }
 
@@ -500,6 +509,22 @@ export const ProduitsView: React.FC = () => {
                   )}
                 </span>
               </div>
+
+              {/* ── Article déjà enregistré avec ce code-barres ── */}
+              {duplicateProduct && (
+                <div className="flex items-center justify-between gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5">
+                  <span className="text-[12px] text-amber-800">
+                    Ce code-barres est déjà utilisé par <strong>« {duplicateProduct.name} »</strong> (stock actuel : {duplicateProduct.qty}). Scanner un article déjà enregistré ne crée pas de doublon.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => openEditForm(duplicateProduct)}
+                    className="shrink-0 text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2.5 py-1.5 rounded-lg cursor-pointer transition"
+                  >
+                    Modifier ce produit
+                  </button>
+                </div>
+              )}
 
               {/* ── Code-barres ── */}
               <div>
