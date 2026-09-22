@@ -197,6 +197,9 @@ CREATE POLICY "Public update for shop_settings" ON public.shop_settings FOR UPDA
 
 -- Activer les notifications temps réel (Realtime) sur les tables critiques
 -- (protégé contre une exécution répétée : ignore l'erreur si déjà activé)
+-- Indispensable pour que les changements faits sur un appareil (ex: la
+-- gérante ajoute un produit) apparaissent sans rechargement de page sur
+-- les autres appareils connectés (ex: la caisse d'une vendeuse).
 DO $$
 BEGIN
   BEGIN
@@ -212,7 +215,19 @@ BEGIN
   EXCEPTION WHEN duplicate_object THEN NULL;
   END;
   BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.stock_movements;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END;
+  BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE public.hammam_usages;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END;
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.shop_settings;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END;
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;
   EXCEPTION WHEN duplicate_object THEN NULL;
   END;
 END $$;

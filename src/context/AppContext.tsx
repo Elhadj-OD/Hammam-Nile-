@@ -39,6 +39,7 @@ import {
 import {
   isSupabaseConfigured,
   supabase,
+  subscribeToTable,
   getProductsFromSupabase,
   saveProductToSupabase,
   deleteProductFromSupabase,
@@ -411,6 +412,60 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     loadSupabase();
   }, []);
 
+  // Synchronisation temps réel : sans ça, un changement fait sur un
+  // appareil (ex: la gérante ajoute un produit sur sa tablette) n'apparaît
+  // sur les autres (ex: la caisse d'une vendeuse) qu'au prochain
+  // rechargement complet de la page — ce que les policies "publiques" ne
+  // suffisent pas à garantir, il faut un abonnement actif.
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+
+    const upsertById = <T extends { id: number }>(list: T[], row: T): T[] => {
+      const idx = list.findIndex(x => x.id === row.id);
+      if (idx >= 0) {
+        const next = [...list];
+        next[idx] = row;
+        return next;
+      }
+      return [row, ...list];
+    };
+    const removeById = <T extends { id: number }>(list: T[], id: number): T[] => list.filter(x => x.id !== id);
+
+    const unsubscribers = [
+      subscribeToTable<Product>('products', ({ eventType, new: row, old }) => {
+        setProducts(prev => {
+          if (eventType === 'DELETE') return removeById(prev, (old as Product).id);
+          return upsertById(prev, row as Product);
+        });
+      }),
+      subscribeToTable<Sale>('sales', ({ eventType, new: row }) => {
+        if (eventType === 'DELETE') return;
+        setSales(prev => upsertById(prev, row as Sale).sort((a, b) => b.timestamp - a.timestamp));
+      }),
+      subscribeToTable<Client>('clients', ({ eventType, new: row, old }) => {
+        setClients(prev => {
+          if (eventType === 'DELETE') return removeById(prev, (old as Client).id);
+          return upsertById(prev, row as Client);
+        });
+      }),
+      subscribeToTable<StockMovement>('stock_movements', ({ eventType, new: row }) => {
+        if (eventType !== 'INSERT') return;
+        setMovements(prev => (prev.some(m => m.id === (row as StockMovement).id) ? prev : [row as StockMovement, ...prev]));
+      }),
+      subscribeToTable<HammamUsage>('hammam_usages', ({ eventType, new: row, old }) => {
+        setHammamUsages(prev => {
+          if (eventType === 'DELETE') return removeById(prev, (old as HammamUsage).id);
+          return prev.some(u => u.id === (row as HammamUsage).id) ? prev : upsertById(prev, row as HammamUsage);
+        });
+      }),
+      subscribeToTable<{ id: number; settings: ShopSettings }>('shop_settings', ({ new: row }) => {
+        if (row?.settings) setSettings(row.settings);
+      }),
+    ];
+
+    return () => unsubscribers.forEach(unsub => unsub());
+  }, []);
+
   // Session Supabase Auth : restaure la session existante au chargement,
   // puis reste synchronisé (autre onglet, rafraîchissement de token,
   // déconnexion). C'est la SEULE source de vérité pour "qui est connecté" —
@@ -457,6 +512,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       subscription.subscription.unsubscribe();
     };
   }, []);
+
+  // Équipe : se resynchronise en direct dès qu'un profil change côté
+  // serveur (ex: la gérante modifie un rôle ou déverrouille un compte
+  // depuis un autre appareil). Nécessite une session active (RLS lecture
+  // réservée aux comptes authentifiés) : abonnement recréé à la connexion.
+  useEffect(() => {
+    if (!isSupabaseConfigured() || !currentUser) return;
+    const unsubscribe = subscribeToTable('profiles', () => {
+      refreshUsers();
+    });
+    return unsubscribe;
+  }, [currentUser?.id]);
 
   const touchPresence = (user: User) => {
     upsertPresenceToSupabase({

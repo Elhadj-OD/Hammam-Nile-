@@ -196,8 +196,14 @@ DROP POLICY IF EXISTS "Public access for presence" ON public.presence;
 CREATE POLICY "Public access for presence" ON public.presence FOR ALL USING (true) WITH CHECK (true);
 
 -- Activer les notifications temps réel (Realtime) sur les tables critiques
+-- Indispensable pour que les changements faits sur un appareil (ex: la
+-- gérante ajoute un produit) apparaissent sans rechargement de page sur
+-- les autres appareils connectés (ex: la caisse d'une vendeuse).
 ALTER PUBLICATION supabase_realtime ADD TABLE public.products;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.sales;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.clients;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.stock_movements;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.hammam_usages;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.shop_settings;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.presence;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;

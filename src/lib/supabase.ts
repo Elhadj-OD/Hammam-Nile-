@@ -291,3 +291,43 @@ export async function clearPresenceFromSupabase(username: string): Promise<void>
     console.warn('Supabase clear presence error:', err);
   }
 }
+
+// ============================================================================
+// 8. SYNCHRONISATION TEMPS RÉEL (Realtime)
+// ============================================================================
+// La réplication logique Postgres est activée sur ces tables
+// (ALTER PUBLICATION supabase_realtime ADD TABLE ..., voir les scripts
+// supabase_*.sql), mais ça ne sert à rien tant que le client ne s'abonne
+// pas : sans ça, chaque appareil ne voit les changements des autres
+// qu'au prochain rechargement complet de la page.
+export type RealtimeChangeEvent<T> = {
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+  new: T | null;
+  old: T | null;
+};
+
+export function subscribeToTable<T extends object>(
+  table: string,
+  onChange: (event: RealtimeChangeEvent<T>) => void
+): () => void {
+  if (!supabase) return () => {};
+
+  const channel = supabase
+    .channel(`realtime:${table}`)
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table },
+      payload => {
+        onChange({
+          eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+          new: (Object.keys(payload.new || {}).length > 0 ? payload.new : null) as T | null,
+          old: (Object.keys(payload.old || {}).length > 0 ? payload.old : null) as T | null,
+        });
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase?.removeChannel(channel);
+  };
+}

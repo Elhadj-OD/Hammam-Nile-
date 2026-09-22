@@ -48,3 +48,11 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Authenticated read profiles" ON public.profiles;
 CREATE POLICY "Authenticated read profiles" ON public.profiles
   FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Temps réel : pour que la liste d'équipe se mette à jour sans
+-- rechargement de page quand un profil change sur un autre appareil.
+DO $$
+BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
