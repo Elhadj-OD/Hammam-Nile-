@@ -15,26 +15,11 @@ import { HammamNileLogo } from './HammamNileLogo';
 export const LoginView: React.FC = () => {
   const { login, settings, firebaseConnected } = useApp();
 
-  const [selectedProfile, setSelectedProfile] = useState<'admin' | 'caissier'>('caissier');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const passwordInputRef = useRef<HTMLInputElement>(null);
-
-  const selectRole = (role: 'admin' | 'caissier') => {
-    setSelectedProfile(role);
-    setError('');
-    setPassword('');
-    if (role === 'admin') {
-      setUsername('sophia');
-    } else {
-      setUsername('');
-    }
-    setTimeout(() => {
-      passwordInputRef.current?.focus();
-    }, 50);
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +43,7 @@ export const LoginView: React.FC = () => {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#004CB7]/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#B8874B]/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-lg w-full relative z-10">
+      <div className="max-w-md w-full relative z-10">
         {/* Card */}
         <div className="bg-white rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-[#E7E0D3] p-6 sm:p-8">
           {/* Official Logo & Header */}
@@ -75,72 +60,6 @@ export const LoginView: React.FC = () => {
                 <span>Synchronisation Cloud Active</span>
               </div>
             )}
-          </div>
-
-          {/* Section Selector: Admin vs Caisse */}
-          <div className="mb-5">
-            <label className="block text-[11px] font-bold text-[#6B7873] uppercase tracking-wider mb-2 text-center">
-              Sélectionnez la partie à ouvrir
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              {/* Caisse Option */}
-              <button
-                type="button"
-                onClick={() => selectRole('caissier')}
-                className={`p-3.5 rounded-2xl border text-left transition cursor-pointer relative ${
-                  selectedProfile === 'caissier'
-                    ? 'border-[#004CB7] bg-[#F0F5FD] ring-2 ring-[#004CB7]/20 shadow-xs'
-                    : 'border-[#E7E0D3] bg-[#F7F3EC] hover:bg-[#EFE8D8]/60 opacity-75 hover:opacity-100'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="w-8 h-8 rounded-xl bg-[#004CB7] text-white flex items-center justify-center font-bold text-xs font-mono shadow-xs">
-                    <UserIcon className="w-4 h-4" />
-                  </div>
-                  <span className="text-[10px] bg-[#004CB7] text-white font-bold px-2 py-0.5 rounded-md">
-                    Caisse
-                  </span>
-                </div>
-                <div className="font-bold text-sm text-[#1C2321]">
-                  Partie Caisse
-                </div>
-                <div className="text-[11px] text-[#6B7873] mt-0.5">
-                  Chaque caissière entre son propre identifiant
-                </div>
-                <div className="text-[10px] text-[#6B7873] font-medium mt-1">
-                  Redirection automatique vers sa caisse
-                </div>
-              </button>
-
-              {/* Admin Option */}
-              <button
-                type="button"
-                onClick={() => selectRole('admin')}
-                className={`p-3.5 rounded-2xl border text-left transition cursor-pointer relative ${
-                  selectedProfile === 'admin'
-                    ? 'border-[#0A3735] bg-[#E4E9E1]/80 ring-2 ring-[#0A3735]/20 shadow-xs'
-                    : 'border-[#E7E0D3] bg-[#F7F3EC] hover:bg-[#EFE8D8]/60 opacity-75 hover:opacity-100'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="w-8 h-8 rounded-xl bg-[#0A3735] text-white flex items-center justify-center font-bold text-xs font-mono shadow-xs">
-                    SO
-                  </div>
-                  <span className="text-[10px] bg-[#0A3735] text-white font-bold px-2 py-0.5 rounded-md">
-                    Admin
-                  </span>
-                </div>
-                <div className="font-bold text-sm text-[#1C2321]">
-                  Partie Admin
-                </div>
-                <div className="text-[11px] text-[#6B7873] mt-0.5">
-                  Direction & Gérance
-                </div>
-                <div className="text-[10px] text-[#6B7873] font-medium mt-1">
-                  Accès direct avec code
-                </div>
-              </button>
-            </div>
           </div>
 
           {/* Error Message */}
@@ -165,9 +84,10 @@ export const LoginView: React.FC = () => {
                   type="text"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  placeholder="ex: femme, hammam, spa, coiffure…"
+                  placeholder="Votre identifiant"
                   className="w-full pl-10 pr-4 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-sm font-semibold text-[#1C2321] focus:outline-none focus:ring-2 focus:ring-[#004CB7] focus:border-transparent transition"
                   required
+                  autoFocus
                 />
               </div>
             </div>
@@ -194,7 +114,6 @@ export const LoginView: React.FC = () => {
                   placeholder="••••••••"
                   className="w-full pl-10 pr-11 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-sm font-semibold text-[#1C2321] focus:outline-none focus:ring-2 focus:ring-[#004CB7] focus:border-transparent transition tracking-widest"
                   required
-                  autoFocus
                 />
                 <button
                   type="button"
@@ -209,16 +128,10 @@ export const LoginView: React.FC = () => {
 
             <button
               type="submit"
-              className={`w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white ${
-                selectedProfile === 'admin'
-                  ? 'bg-[#0A3735] hover:bg-[#0F4C4A]'
-                  : 'bg-[#004CB7] hover:bg-[#003C93]'
-              }`}
+              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white bg-[#0F4C4A] hover:bg-[#0A3735]"
             >
               <Lock className="w-4 h-4" />
-              <span>
-                {selectedProfile === 'admin' ? "Ouvrir l'Espace Admin" : 'Ouvrir la Caisse'}
-              </span>
+              <span>Se connecter</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </form>
@@ -230,7 +143,7 @@ export const LoginView: React.FC = () => {
               <span>Authentification Sécurisée Hammam Nile</span>
             </div>
             <p className="text-[11px] text-[#6B7873]/80 mt-1">
-              Chaque partie (Caisse, Admin) s'ouvre avec son propre identifiant et son propre code confidentiel.
+              Chaque personne se connecte avec son propre identifiant et son propre code confidentiel.
             </p>
           </div>
         </div>
