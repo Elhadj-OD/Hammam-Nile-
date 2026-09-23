@@ -35,8 +35,9 @@ const CATEGORY_OPTIONS: { value: ProductCategory; label: string }[] = [
   { value: 'femmes', label: 'Boutique Femme' },
   { value: 'hommes', label: 'Boutique Homme' },
   { value: 'hammam_bains', label: 'Hammam & Bains' },
-  { value: 'spa_massage', label: 'Spa & Massage' },
+  { value: 'spa_massage', label: 'Esthétique' },
   { value: 'coiffure_salon', label: 'Coiffure & Salon' },
+  { value: 'epilation_traditionnelle', label: 'Épilation Traditionnelle' },
   { value: 'autres', label: 'Autres / Coffrets' },
 ];
 

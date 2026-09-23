@@ -5,7 +5,8 @@ export type CaisseDepartment =
   | 'boutique_homme'
   | 'hammam_bains'
   | 'spa_massage'
-  | 'coiffure_salon';
+  | 'coiffure_salon'
+  | 'epilation_traditionnelle';
 
 export interface User {
   id?: string; // Supabase Auth user id (uuid) — absent tant que le profil n'a pas été migré
@@ -30,7 +31,7 @@ export interface PresenceRow {
   lastActive: number;
 }
 
-export type ProductCategory = 'savons' | 'huiles' | 'linge' | 'accessoires' | 'coffrets' | 'parfums' | 'boissons' | 'snacks' | 'femmes' | 'hommes' | 'hammam_bains' | 'spa_massage' | 'coiffure_salon' | 'autres';
+export type ProductCategory = 'savons' | 'huiles' | 'linge' | 'accessoires' | 'coffrets' | 'parfums' | 'boissons' | 'snacks' | 'femmes' | 'hommes' | 'hammam_bains' | 'spa_massage' | 'coiffure_salon' | 'epilation_traditionnelle' | 'autres';
 
 export interface Product {
   id: number;
