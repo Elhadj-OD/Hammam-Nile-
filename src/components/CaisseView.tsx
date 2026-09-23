@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { PaymentMethod } from '../types';
 import { DEPARTMENTS } from '../lib/departments';
+import { MOBILE_OPERATORS } from '../lib/mobileOperators';
 import {
   Search,
   Receipt,
@@ -633,14 +634,14 @@ export const CaisseView: React.FC = () => {
                 }`}
               >
                 <span>📱</span>
-                <span>Mobile (Bankily)</span>
+                <span>Mobile Money</span>
               </button>
             </div>
 
             {/* Select Mauritanian Mobile Wallet if mobile payment chosen */}
             {paymentMethod === 'mobile' && (
               <div className="mt-2 flex flex-wrap gap-1.5">
-                {['Bankily', 'Masrivi', 'Sedad', 'Click'].map(op => (
+                {MOBILE_OPERATORS.map(op => (
                   <button
                     key={op}
                     type="button"
