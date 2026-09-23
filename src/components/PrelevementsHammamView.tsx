@@ -40,10 +40,14 @@ export const PrelevementsHammamView: React.FC = () => {
   const [filterCabin, setFilterCabin] = useState('all');
   const [filterPeriod, setFilterPeriod] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
+  // Un caissier "homme" gère le hammam garçon : uniquement VIP/Simple/Enfant,
+  // pas les cabines de soins (gommage, massage, esthétique...) réservées aux femmes.
+  const isHommeCashier = currentUser?.role !== 'gerant' && currentUser?.gender === 'homme';
+
   // Form state
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
-  const [cabin, setCabin] = useState<string>('Cabine de Gommage');
+  const [cabin, setCabin] = useState<string>(isHommeCashier ? 'VIP' : 'Cabine de Gommage');
   const [customCabin, setCustomCabin] = useState<string>('');
   const [requestedBy, setRequestedBy] = useState<string>('Khadija (Gommeuse)');
   const [customRequestedBy, setCustomRequestedBy] = useState<string>('');
@@ -59,6 +63,9 @@ export const PrelevementsHammamView: React.FC = () => {
     'Accueil & Espace Détente',
     'Autre espace',
   ];
+
+  const hommeCabins = ['VIP', 'Simple', 'Enfant'];
+  const cabinFormOptions = isHommeCashier ? hommeCabins : defaultCabins;
 
   const staffSuggestions = [
     'Khadija (Gommeuse)',
@@ -80,6 +87,8 @@ export const PrelevementsHammamView: React.FC = () => {
   const canAccessBoutiqueFemme = isGerant || currentUser?.gender !== 'homme';
   const canAccessBoutiqueHomme = isGerant || currentUser?.gender === 'homme';
   const genderLabel = isGerant ? null : currentUser?.gender === 'homme' ? 'Hommes' : 'Femmes';
+  // La gérante voit tout : cabines femmes + types hammam homme réunis dans le filtre.
+  const cabinFilterOptions = isGerant ? [...defaultCabins, ...hommeCabins] : cabinFormOptions;
 
   const accessibleProducts = products.filter(p => {
     if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
@@ -172,7 +181,7 @@ export const PrelevementsHammamView: React.FC = () => {
       // Reset form
       setSelectedProductId('');
       setQuantity(1);
-      setCabin('Cabine de Gommage');
+      setCabin(isHommeCashier ? 'VIP' : 'Cabine de Gommage');
       setCustomCabin('');
       setRequestedBy('Khadija (Gommeuse)');
       setCustomRequestedBy('');
@@ -291,7 +300,7 @@ export const PrelevementsHammamView: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">
-              Cabines Concernées
+              {isHommeCashier ? 'Types Concernés' : 'Cabines Concernées'}
             </span>
             <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#0F4C4A] flex items-center justify-center">
               <Building2 className="w-4 h-4" />
@@ -301,7 +310,7 @@ export const PrelevementsHammamView: React.FC = () => {
             {Object.keys(cabinBreakdown).length}
           </div>
           <p className="text-[11px] text-[#6B7873] mt-1">
-            Espaces de soins approvisionnés
+            {isHommeCashier ? 'Types de client servis' : 'Espaces de soins approvisionnés'}
           </p>
         </div>
       </div>
@@ -310,7 +319,7 @@ export const PrelevementsHammamView: React.FC = () => {
       {Object.keys(cabinBreakdown).length > 0 && (
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <h3 className="text-xs font-bold text-[#6B7873] uppercase tracking-wider mb-3">
-            Répartition par Espace & Cabine du Hammam
+            {isHommeCashier ? 'Répartition par Type de Client' : 'Répartition par Espace & Cabine du Hammam'}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {Object.entries(cabinBreakdown).map(([cab, data]) => (
@@ -373,7 +382,7 @@ export const PrelevementsHammamView: React.FC = () => {
             className="text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-semibold focus:outline-none focus:border-[#0F4C4A]"
           >
             <option value="all">Toutes les Cabines ({hammamUsages.length})</option>
-            {defaultCabins.map(c => (
+            {cabinFilterOptions.map(c => (
               <option key={c} value={c}>
                 {c}
               </option>
@@ -630,14 +639,14 @@ export const PrelevementsHammamView: React.FC = () => {
               {/* Cabin / Space */}
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                  Destination / Cabine Hammam *
+                  {isHommeCashier ? 'Type de Client Hammam *' : 'Destination / Cabine Hammam *'}
                 </label>
                 <select
                   value={cabin}
                   onChange={e => setCabin(e.target.value)}
                   className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
                 >
-                  {defaultCabins.map(c => (
+                  {cabinFormOptions.map(c => (
                     <option key={c} value={c}>
                       {c}
                     </option>
