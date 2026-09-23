@@ -14,10 +14,20 @@ import {
   CheckCircle2,
   AlertCircle,
   Search,
+  ShoppingBag,
+  Minus,
 } from 'lucide-react';
 
+interface BoutiqueCartItem {
+  productId: number;
+  name: string;
+  price: number;
+  qty: number;
+  emoji?: string;
+}
+
 export const CommissionsLaveursView: React.FC = () => {
-  const { laveurCommissions, addLaveurCommission, deleteLaveurCommission, settings } = useApp();
+  const { laveurCommissions, addLaveurCommission, deleteLaveurCommission, settings, products } = useApp();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [search, setSearch] = useState('');
@@ -31,6 +41,8 @@ export const CommissionsLaveursView: React.FC = () => {
   const [payment, setPayment] = useState<'cash' | 'mobile'>('cash');
   const [paymentDetail, setPaymentDetail] = useState('');
   const [formError, setFormError] = useState('');
+  const [productSearch, setProductSearch] = useState('');
+  const [boutiqueCart, setBoutiqueCart] = useState<BoutiqueCartItem[]>([]);
 
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
 
@@ -97,6 +109,7 @@ export const CommissionsLaveursView: React.FC = () => {
       bonus,
       payment,
       paymentDetail: payment === 'mobile' ? paymentDetail.trim() : undefined,
+      products: boutiqueCart.map(item => ({ productId: item.productId, qty: item.qty })),
     });
 
     setShowAddModal(false);
@@ -106,7 +119,50 @@ export const CommissionsLaveursView: React.FC = () => {
     setPayment('cash');
     setPaymentDetail('');
     setFormError('');
+    setProductSearch('');
+    setBoutiqueCart([]);
   };
+
+  const productMatches = useMemo(() => {
+    const q = productSearch.trim().toLowerCase();
+    if (!q) return [];
+    return products.filter(p => p.name.toLowerCase().includes(q) && p.qty > 0).slice(0, 6);
+  }, [products, productSearch]);
+
+  const addProductToCart = (productId: number) => {
+    const prod = products.find(p => p.id === productId);
+    if (!prod) return;
+    setBoutiqueCart(prev => {
+      const existing = prev.find(i => i.productId === productId);
+      if (existing) {
+        return prev.map(i =>
+          i.productId === productId ? { ...i, qty: Math.min(i.qty + 1, prod.qty) } : i
+        );
+      }
+      return [...prev, { productId: prod.id, name: prod.name, price: prod.price, qty: 1, emoji: prod.emoji }];
+    });
+    setProductSearch('');
+  };
+
+  const changeCartQty = (productId: number, delta: number) => {
+    setBoutiqueCart(prev =>
+      prev
+        .map(i => {
+          if (i.productId !== productId) return i;
+          const prod = products.find(p => p.id === productId);
+          const max = prod?.qty ?? i.qty;
+          const nextQty = Math.max(0, Math.min(i.qty + delta, max));
+          return { ...i, qty: nextQty };
+        })
+        .filter(i => i.qty > 0)
+    );
+  };
+
+  const removeFromCart = (productId: number) => {
+    setBoutiqueCart(prev => prev.filter(i => i.productId !== productId));
+  };
+
+  const boutiqueSubtotal = boutiqueCart.reduce((sum, i) => sum + i.price * i.qty, 0);
 
   const handleDelete = (c: LaveurCommission) => {
     if (window.confirm(`Supprimer ce service de ${c.laveurName} (${formatPrice(c.total)}) ?`)) {
@@ -123,11 +179,11 @@ export const CommissionsLaveursView: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-[#0F4C4A] text-xs font-bold uppercase tracking-wider mb-1">
             <Users className="w-4 h-4" />
-            <span>Commissions Laveurs</span>
+            <span>Hammam</span>
           </div>
-          <h1 className="text-2xl font-bold font-display text-[#1C2321]">Services & Commissions</h1>
+          <h1 className="text-2xl font-bold font-display text-[#1C2321]">Hammam — Services & Commissions</h1>
           <p className="text-sm text-[#6B7873] mt-1">
-            Enregistrez chaque service par type de client — la commission fixe se calcule automatiquement, plus un bonus/pourboire optionnel.
+            Enregistrez chaque service par type de client — la commission fixe se calcule automatiquement, plus un bonus/pourboire optionnel. Vous pouvez aussi ajouter les articles boutique achetés par le même client.
           </p>
         </div>
 
@@ -364,7 +420,11 @@ export const CommissionsLaveursView: React.FC = () => {
               </div>
               <button
                 type="button"
-                onClick={() => setShowAddModal(false)}
+                onClick={() => {
+                  setShowAddModal(false);
+                  setProductSearch('');
+                  setBoutiqueCart([]);
+                }}
                 className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#1C2321] hover:bg-[#F7F3EC]"
               >
                 <X className="w-5 h-5" />
@@ -477,6 +537,85 @@ export const CommissionsLaveursView: React.FC = () => {
                 />
               </div>
 
+              {/* Boutique products (optional) */}
+              <div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1.5 flex items-center gap-1.5">
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>Articles boutique achetés (optionnel)</span>
+                </label>
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 text-[#6B7873] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={productSearch}
+                    onChange={e => setProductSearch(e.target.value)}
+                    placeholder="Rechercher un produit boutique..."
+                    className="w-full text-xs pl-8 pr-3 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
+                  />
+                </div>
+                {productMatches.length > 0 && (
+                  <div className="mt-1.5 border border-[#E7E0D3] rounded-xl overflow-hidden divide-y divide-[#E7E0D3]">
+                    {productMatches.map(p => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => addProductToCart(p.id)}
+                        className="w-full flex items-center justify-between gap-2 px-3 py-2 text-xs bg-white hover:bg-[#F7F3EC] transition cursor-pointer"
+                      >
+                        <span className="flex items-center gap-1.5 text-[#1C2321] font-semibold">
+                          {p.emoji && <span>{p.emoji}</span>}
+                          <span>{p.name}</span>
+                        </span>
+                        <span className="text-[#6B7873] font-bold">{formatPrice(p.price)}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {boutiqueCart.length > 0 && (
+                  <div className="mt-2 space-y-1.5">
+                    {boutiqueCart.map(item => (
+                      <div
+                        key={item.productId}
+                        className="flex items-center justify-between gap-2 p-2 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-xs"
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          {item.emoji && <span>{item.emoji}</span>}
+                          <span className="font-semibold text-[#1C2321] truncate">{item.name}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => changeCartQty(item.productId, -1)}
+                            className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4E9E1] cursor-pointer"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="w-5 text-center font-bold">{item.qty}</span>
+                          <button
+                            type="button"
+                            onClick={() => changeCartQty(item.productId, 1)}
+                            className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4E9E1] cursor-pointer"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                          <span className="w-16 text-right font-bold text-[#0F4C4A]">
+                            {formatPrice(item.price * item.qty)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeFromCart(item.productId)}
+                            className="p-1 rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Summary */}
               <div className="bg-[#E4E9E1]/60 p-3.5 rounded-xl border border-[#0F4C4A]/20 space-y-1.5 text-xs">
                 <div className="flex justify-between text-[#0A3735]">
@@ -484,24 +623,40 @@ export const CommissionsLaveursView: React.FC = () => {
                   <span className="font-bold">{formatPrice(grid.price)}</span>
                 </div>
                 <div className="flex justify-between text-[#0A3735]">
-                  <span>Commission fixe</span>
+                  <span>Commission fixe (laveur)</span>
                   <span className="font-bold">{formatPrice(grid.commission)}</span>
                 </div>
                 <div className="flex justify-between text-[#0A3735]">
-                  <span>Bonus</span>
+                  <span>Bonus (laveur)</span>
                   <span className="font-bold">{formatPrice(bonus)}</span>
                 </div>
-                <div className="flex justify-between pt-1.5 border-t border-[#0F4C4A]/20 text-sm font-extrabold text-[#0F4C4A]">
-                  <span>Total à percevoir</span>
+                <div className="flex justify-between pt-1.5 border-t border-[#0F4C4A]/20 font-extrabold text-[#0F4C4A]">
+                  <span>Total commission laveur</span>
                   <span>{formatPrice(grid.commission + bonus)}</span>
                 </div>
+                {boutiqueCart.length > 0 && (
+                  <>
+                    <div className="flex justify-between text-[#B8874B] pt-1.5 border-t border-[#0F4C4A]/20">
+                      <span>Articles boutique (→ inventaire)</span>
+                      <span className="font-bold">{formatPrice(boutiqueSubtotal)}</span>
+                    </div>
+                    <div className="flex justify-between pt-1.5 border-t border-[#0F4C4A]/20 text-sm font-extrabold text-[#1C2321]">
+                      <span>Total payé par le client</span>
+                      <span>{formatPrice(grid.commission + bonus + boutiqueSubtotal)}</span>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Buttons */}
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setProductSearch('');
+                    setBoutiqueCart([]);
+                  }}
                   className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4E9E1] transition cursor-pointer"
                 >
                   Annuler
