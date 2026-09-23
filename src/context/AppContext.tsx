@@ -210,6 +210,7 @@ interface AppContextType {
     serviceOrCabin: string;
     requestedBy: string;
     notes?: string;
+    customerPhone?: string;
   }) => boolean;
   deleteHammamUsage: (id: number) => void;
 
@@ -1214,6 +1215,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     serviceOrCabin: string;
     requestedBy: string;
     notes?: string;
+    customerPhone?: string;
   }): boolean => {
     const product = products.find(p => p.id === data.productId);
     if (!product) return false;
@@ -1242,6 +1244,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       time: timeStr,
       timestamp: Date.now(),
       notes: data.notes,
+      customerPhone: data.customerPhone?.trim() || undefined,
     };
 
     setHammamUsages(prev => [newUsage, ...prev]);
