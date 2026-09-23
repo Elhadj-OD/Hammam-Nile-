@@ -116,7 +116,29 @@ CREATE TABLE IF NOT EXISTS public.presence (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 8. Activer Row Level Security (RLS) avec politique ouverte pour le POS
+-- 8. Table des Profils (identité applicative liée à Supabase Auth)
+-- Remplace l'ancienne liste d'utilisateurs stockée en clair côté client
+-- (src/data/initialData.ts). Un profil n'existe que pour un compte Supabase
+-- Auth réel (id = auth.users.id) ; aucun mot de passe n'est stocké ici,
+-- Supabase Auth le gère lui-même (hashé, jamais lisible).
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  username TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'caissier' CHECK (role IN ('caissier', 'gerant')),
+  gender TEXT CHECK (gender IN ('femme', 'homme')),
+  department TEXT,
+  locked BOOLEAN NOT NULL DEFAULT false,
+  avatar TEXT,
+  phone TEXT,
+  must_change_password BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
+
+-- 9. Activer Row Level Security (RLS) avec politique ouverte pour le POS
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sales ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
@@ -124,32 +146,64 @@ ALTER TABLE public.stock_movements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.hammam_usages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.shop_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.presence ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- profiles : lecture réservée aux comptes authentifiés (liste d'équipe,
+-- écran "switch user"). AUCUNE policy INSERT/UPDATE/DELETE cliente :
+-- toute écriture passe par api/admin-users.ts (clé service_role côté
+-- serveur), qui vérifie que l'appelant est 'gerant' avant de modifier
+-- un autre compte que le sien.
+DROP POLICY IF EXISTS "Authenticated read profiles" ON public.profiles;
+CREATE POLICY "Authenticated read profiles" ON public.profiles
+  FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Politiques d'accès (permettant la synchronisation directe depuis l'application avec la clé anon)
+-- Chaque table n'ouvre que les opérations réellement utilisées par l'application
+-- (voir src/lib/supabase.ts) : les journaux d'audit sont en écriture seule
+-- (insert-only, jamais modifiés ni supprimés) et les ventes/paramètres ne sont
+-- jamais supprimés depuis le client.
 DROP POLICY IF EXISTS "Public access for products" ON public.products;
-CREATE POLICY "Public access for products" ON public.products FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for products" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Public insert for products" ON public.products FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update for products" ON public.products FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Public delete for products" ON public.products FOR DELETE USING (true);
 
 DROP POLICY IF EXISTS "Public access for sales" ON public.sales;
-CREATE POLICY "Public access for sales" ON public.sales FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for sales" ON public.sales FOR SELECT USING (true);
+CREATE POLICY "Public insert for sales" ON public.sales FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update for sales" ON public.sales FOR UPDATE USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public access for clients" ON public.clients;
-CREATE POLICY "Public access for clients" ON public.clients FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for clients" ON public.clients FOR SELECT USING (true);
+CREATE POLICY "Public insert for clients" ON public.clients FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update for clients" ON public.clients FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Public delete for clients" ON public.clients FOR DELETE USING (true);
 
 DROP POLICY IF EXISTS "Public access for stock_movements" ON public.stock_movements;
-CREATE POLICY "Public access for stock_movements" ON public.stock_movements FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for stock_movements" ON public.stock_movements FOR SELECT USING (true);
+CREATE POLICY "Public insert for stock_movements" ON public.stock_movements FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public access for hammam_usages" ON public.hammam_usages;
-CREATE POLICY "Public access for hammam_usages" ON public.hammam_usages FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for hammam_usages" ON public.hammam_usages FOR SELECT USING (true);
+CREATE POLICY "Public insert for hammam_usages" ON public.hammam_usages FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public access for shop_settings" ON public.shop_settings;
-CREATE POLICY "Public access for shop_settings" ON public.shop_settings FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read for shop_settings" ON public.shop_settings FOR SELECT USING (true);
+CREATE POLICY "Public insert for shop_settings" ON public.shop_settings FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update for shop_settings" ON public.shop_settings FOR UPDATE USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public access for presence" ON public.presence;
 CREATE POLICY "Public access for presence" ON public.presence FOR ALL USING (true) WITH CHECK (true);
 
 -- Activer les notifications temps réel (Realtime) sur les tables critiques
+-- Indispensable pour que les changements faits sur un appareil (ex: la
+-- gérante ajoute un produit) apparaissent sans rechargement de page sur
+-- les autres appareils connectés (ex: la caisse d'une vendeuse).
 ALTER PUBLICATION supabase_realtime ADD TABLE public.products;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.sales;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.clients;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.stock_movements;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.hammam_usages;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.shop_settings;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.presence;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;

@@ -22,7 +22,7 @@ service cloud.firestore {
         && incoming().name is string
         && incoming().name.size() > 0
         && incoming().name.size() <= 100;
-      allow delete: if true;
+      allow delete: if false;
     }
 
     // Sales Collection
@@ -32,7 +32,7 @@ service cloud.firestore {
         && incoming().total is number
         && incoming().caissier is string;
       allow update: if isValidId(saleId);
-      allow delete: if true;
+      allow delete: if false;
     }
 
     // Security Verifications (2FA Email Code for Admin)

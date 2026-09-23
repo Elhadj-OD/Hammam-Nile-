@@ -19,9 +19,10 @@ export const LoginView: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -30,9 +31,11 @@ export const LoginView: React.FC = () => {
       return;
     }
 
-    const success = login(username, password);
-    if (!success) {
-      setError('Identifiant ou code incorrect.');
+    setLoading(true);
+    const res = await login(username, password);
+    setLoading(false);
+    if (!res.success) {
+      setError(res.error || 'Identifiant ou code incorrect.');
       passwordInputRef.current?.select();
     }
   };
@@ -128,11 +131,12 @@ export const LoginView: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white bg-[#0F4C4A] hover:bg-[#0A3735]"
+              disabled={loading}
+              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white bg-[#0F4C4A] hover:bg-[#0A3735] disabled:opacity-60"
             >
               <Lock className="w-4 h-4" />
-              <span>Se connecter</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <span>{loading ? 'Connexion…' : 'Se connecter'}</span>
+              {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />}
             </button>
           </form>
 
