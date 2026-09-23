@@ -110,7 +110,6 @@ CREATE TABLE IF NOT EXISTS public.hammam_usages (
   time TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
   notes TEXT,
-  "customerPhone" TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

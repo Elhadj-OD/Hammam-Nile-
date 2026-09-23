@@ -185,7 +185,6 @@ export interface HammamUsage {
   time: string;
   timestamp: number;
   notes?: string;
-  customerPhone?: string;
 }
 
 export type ActiveSection =

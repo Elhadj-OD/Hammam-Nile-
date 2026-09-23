@@ -40,18 +40,19 @@ export const PrelevementsHammamView: React.FC = () => {
   const [filterCabin, setFilterCabin] = useState('all');
   const [filterPeriod, setFilterPeriod] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
-  // Un caissier "homme" gère le hammam garçon : uniquement VIP/Simple/Enfant,
-  // pas les cabines de soins (gommage, massage, esthétique...) réservées aux femmes.
+  // Un caissier "homme" gère le hammam garçon : ce module sert uniquement à
+  // tracer les produits amenés du stock (magasin) vers ce côté — pas de
+  // classement par type de client (ça, c'est le module "Hammam").
   const isHommeCashier = currentUser?.role !== 'gerant' && currentUser?.gender === 'homme';
+  const HOMME_DESTINATION = 'Hammam Homme';
 
   // Form state
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
-  const [cabin, setCabin] = useState<string>(isHommeCashier ? 'VIP' : 'Cabine de Gommage');
+  const [cabin, setCabin] = useState<string>(isHommeCashier ? HOMME_DESTINATION : 'Cabine de Gommage');
   const [customCabin, setCustomCabin] = useState<string>('');
   const [requestedBy, setRequestedBy] = useState<string>('Khadija (Gommeuse)');
   const [customRequestedBy, setCustomRequestedBy] = useState<string>('');
-  const [customerPhone, setCustomerPhone] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [formError, setFormError] = useState<string>('');
 
@@ -64,9 +65,6 @@ export const PrelevementsHammamView: React.FC = () => {
     'Accueil & Espace Détente',
     'Autre espace',
   ];
-
-  const hommeCabins = ['VIP', 'Simple', 'Enfant'];
-  const cabinFormOptions = isHommeCashier ? hommeCabins : defaultCabins;
 
   const staffSuggestions = [
     'Khadija (Gommeuse)',
@@ -88,8 +86,12 @@ export const PrelevementsHammamView: React.FC = () => {
   const canAccessBoutiqueFemme = isGerant || currentUser?.gender !== 'homme';
   const canAccessBoutiqueHomme = isGerant || currentUser?.gender === 'homme';
   const genderLabel = isGerant ? null : currentUser?.gender === 'homme' ? 'Hommes' : 'Femmes';
-  // La gérante voit tout : cabines femmes + types hammam homme réunis dans le filtre.
-  const cabinFilterOptions = isGerant ? [...defaultCabins, ...hommeCabins] : cabinFormOptions;
+  // La gérante voit tout : cabines femmes + destination hammam homme réunies dans le filtre.
+  const cabinFilterOptions = isGerant
+    ? [...defaultCabins, HOMME_DESTINATION]
+    : isHommeCashier
+      ? [HOMME_DESTINATION]
+      : defaultCabins;
 
   const accessibleProducts = products.filter(p => {
     if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
@@ -107,7 +109,6 @@ export const PrelevementsHammamView: React.FC = () => {
       u.productName.toLowerCase().includes(search.toLowerCase()) ||
       u.serviceOrCabin.toLowerCase().includes(search.toLowerCase()) ||
       u.requestedBy.toLowerCase().includes(search.toLowerCase()) ||
-      (u.customerPhone && u.customerPhone.toLowerCase().includes(search.toLowerCase())) ||
       (u.notes && u.notes.toLowerCase().includes(search.toLowerCase()));
 
     const matchesCabin = filterCabin === 'all' || u.serviceOrCabin === filterCabin;
@@ -176,7 +177,6 @@ export const PrelevementsHammamView: React.FC = () => {
       serviceOrCabin: effectiveCabin,
       requestedBy: effectiveRequestedBy,
       notes: notes.trim() || undefined,
-      customerPhone: customerPhone.trim() || undefined,
     });
 
     if (ok) {
@@ -184,11 +184,10 @@ export const PrelevementsHammamView: React.FC = () => {
       // Reset form
       setSelectedProductId('');
       setQuantity(1);
-      setCabin(isHommeCashier ? 'VIP' : 'Cabine de Gommage');
+      setCabin(isHommeCashier ? HOMME_DESTINATION : 'Cabine de Gommage');
       setCustomCabin('');
       setRequestedBy('Khadija (Gommeuse)');
       setCustomRequestedBy('');
-      setCustomerPhone('');
       setNotes('');
       setFormError('');
     } else {
@@ -198,9 +197,9 @@ export const PrelevementsHammamView: React.FC = () => {
 
   // CSV Export
   const handleExportCSV = () => {
-    let csv = `Réf,Date,Heure,Produit,Quantité,Prix Unitaire (${settings.currency}),Valeur Totale (${settings.currency}),Espace Hammam,Numéro Client,Demandé par,Remis par,Notes\n`;
+    let csv = `Réf,Date,Heure,Produit,Quantité,Prix Unitaire (${settings.currency}),Valeur Totale (${settings.currency}),Espace Hammam,Demandé par,Remis par,Notes\n`;
     filteredUsages.forEach(u => {
-      csv += `"#${u.id}","${u.date}","${u.time}","${u.productName}","${u.qty}","${u.unitPrice}","${u.totalValue}","${u.serviceOrCabin}","${u.customerPhone || ''}","${u.requestedBy}","${u.takenByStaff}","${u.notes || ''}"\n`;
+      csv += `"#${u.id}","${u.date}","${u.time}","${u.productName}","${u.qty}","${u.unitPrice}","${u.totalValue}","${u.serviceOrCabin}","${u.requestedBy}","${u.takenByStaff}","${u.notes || ''}"\n`;
     });
 
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -304,7 +303,7 @@ export const PrelevementsHammamView: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">
-              {isHommeCashier ? 'Types Concernés' : 'Cabines Concernées'}
+              Cabines Concernées
             </span>
             <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#0F4C4A] flex items-center justify-center">
               <Building2 className="w-4 h-4" />
@@ -314,7 +313,7 @@ export const PrelevementsHammamView: React.FC = () => {
             {Object.keys(cabinBreakdown).length}
           </div>
           <p className="text-[11px] text-[#6B7873] mt-1">
-            {isHommeCashier ? 'Types de client servis' : 'Espaces de soins approvisionnés'}
+            Espaces de soins approvisionnés
           </p>
         </div>
       </div>
@@ -323,7 +322,7 @@ export const PrelevementsHammamView: React.FC = () => {
       {Object.keys(cabinBreakdown).length > 0 && (
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <h3 className="text-xs font-bold text-[#6B7873] uppercase tracking-wider mb-3">
-            {isHommeCashier ? 'Répartition par Type de Client' : 'Répartition par Espace & Cabine du Hammam'}
+            Répartition par Espace & Cabine du Hammam
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {Object.entries(cabinBreakdown).map(([cab, data]) => (
@@ -366,7 +365,7 @@ export const PrelevementsHammamView: React.FC = () => {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Rechercher par produit, cabine, numéro client, demandeur ou note..."
+            placeholder="Rechercher par produit, cabine, demandeur ou note..."
             className="w-full text-xs pl-10 pr-4 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
           />
           {search && (
@@ -476,9 +475,6 @@ export const PrelevementsHammamView: React.FC = () => {
                       <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#E4E9E1] text-[#0F4C4A] border border-[#0F4C4A]/20">
                         {u.serviceOrCabin}
                       </span>
-                      {u.customerPhone && (
-                        <div className="text-[10px] text-[#6B7873] mt-1">{u.customerPhone}</div>
-                      )}
                     </td>
                     <td className="py-3 px-4 text-center whitespace-nowrap">
                       <span className="inline-flex items-center justify-center font-bold px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">
@@ -646,45 +642,38 @@ export const PrelevementsHammamView: React.FC = () => {
               {/* Cabin / Space */}
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                  {isHommeCashier ? 'Type de Client Hammam *' : 'Destination / Cabine Hammam *'}
+                  Destination / Cabine Hammam *
                 </label>
-                <select
-                  value={cabin}
-                  onChange={e => setCabin(e.target.value)}
-                  className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
-                >
-                  {cabinFormOptions.map(c => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-                {cabin === 'Autre espace' && (
-                  <input
-                    type="text"
-                    value={customCabin}
-                    onChange={e => setCustomCabin(e.target.value)}
-                    placeholder="Préciser l'espace (ex: Cabine VIP, Réserve étage...)"
-                    required
-                    className="mt-2 w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
-                  />
+                {isHommeCashier ? (
+                  <div className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium">
+                    {HOMME_DESTINATION}
+                  </div>
+                ) : (
+                  <>
+                    <select
+                      value={cabin}
+                      onChange={e => setCabin(e.target.value)}
+                      className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
+                    >
+                      {defaultCabins.map(c => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
+                    {cabin === 'Autre espace' && (
+                      <input
+                        type="text"
+                        value={customCabin}
+                        onChange={e => setCustomCabin(e.target.value)}
+                        placeholder="Préciser l'espace (ex: Cabine VIP, Réserve étage...)"
+                        required
+                        className="mt-2 w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
+                      />
+                    )}
+                  </>
                 )}
               </div>
-
-              {isHommeCashier && (
-                <div>
-                  <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                    Numéro du client (optionnel)
-                  </label>
-                  <input
-                    type="tel"
-                    value={customerPhone}
-                    onChange={e => setCustomerPhone(e.target.value)}
-                    placeholder="ex: 41 23 45 67"
-                    className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
-                  />
-                </div>
-              )}
 
               {/* Requested by */}
               <div>
@@ -796,12 +785,6 @@ export const PrelevementsHammamView: React.FC = () => {
                   {selectedTicket.serviceOrCabin}
                 </span>
               </div>
-              {selectedTicket.customerPhone && (
-                <div className="flex justify-between text-[#6B7873]">
-                  <span>Numéro du client :</span>
-                  <span className="font-bold text-[#1C2321]">{selectedTicket.customerPhone}</span>
-                </div>
-              )}
               <div className="flex justify-between text-[#6B7873]">
                 <span>Article prélevé :</span>
                 <span className="font-bold text-[#1C2321]">
