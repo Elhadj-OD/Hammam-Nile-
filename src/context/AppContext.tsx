@@ -219,6 +219,8 @@ interface AppContextType {
     laveurName: string;
     clientType: ClientType;
     bonus: number;
+    payment: 'cash' | 'mobile';
+    paymentDetail?: string;
   }) => LaveurCommission;
   deleteLaveurCommission: (id: number) => void;
 
@@ -1295,6 +1297,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     laveurName: string;
     clientType: ClientType;
     bonus: number;
+    payment: 'cash' | 'mobile';
+    paymentDetail?: string;
   }): LaveurCommission => {
     const grid = CLIENT_TYPE_GRID[data.clientType];
     const now = new Date();
@@ -1307,6 +1311,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       commission: grid.commission,
       bonus,
       total: grid.commission + bonus,
+      payment: data.payment,
+      paymentDetail: data.paymentDetail?.trim() || undefined,
       date: now.toLocaleDateString('fr-FR'),
       time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
       timestamp: now.getTime(),
