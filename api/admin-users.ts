@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSupabaseAdmin, getCallerProfile, generateTempPassword } from './_supabaseAdmin';
+import { getSupabaseAdmin, getCallerProfile, generateTempPassword } from './_supabaseAdmin.js';
 
 // Gestion des comptes staff (création, modification, suppression,
 // réinitialisation de mot de passe). Utilise la clé service_role

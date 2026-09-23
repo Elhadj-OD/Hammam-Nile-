@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSupabaseAdmin, usernameToEmail } from './_supabaseAdmin';
+import { getSupabaseAdmin, usernameToEmail } from './_supabaseAdmin.js';
 
 // Résout un identifiant ("sophia") vers l'e-mail Supabase Auth réel
 // associé à ce compte, AVANT toute connexion — c'est-à-dire sans session,
