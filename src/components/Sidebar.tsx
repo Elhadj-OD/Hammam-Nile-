@@ -74,14 +74,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
       {/* Mobile backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 xl:hidden"
           onClick={() => setMobileOpen && setMobileOpen(false)}
         />
       )}
 
       <aside
-        className={`fixed lg:static top-0 bottom-0 left-0 z-50 w-[218px] bg-[#072423] text-[#EFE8D8] flex flex-col p-[22px_16px] transition-transform duration-300 ease-in-out shrink-0 border-r border-[#E7E0D3]/10 ${
-          mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed xl:static top-0 bottom-0 left-0 z-50 w-[218px] bg-[#072423] text-[#EFE8D8] flex flex-col p-[22px_16px] transition-transform duration-300 ease-in-out shrink-0 border-r border-[#E7E0D3]/10 ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'
         }`}
       >
         {/* Brand Header with official logo */}
@@ -106,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {setMobileOpen && (
             <button
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden p-1 text-[#EFE8D8]/70 hover:text-white rounded-lg"
+              className="xl:hidden p-1 text-[#EFE8D8]/70 hover:text-white rounded-lg"
             >
               <X className="w-5 h-5" />
             </button>

@@ -221,7 +221,8 @@ interface AppContextType {
     bonus: number;
     payment: 'cash' | 'mobile';
     paymentDetail?: string;
-    products?: { productId: number; qty: number }[];
+    customerPhone?: string;
+    products?: { productId: number; qty: number; price?: number }[];
   }) => LaveurCommission;
   deleteLaveurCommission: (id: number) => void;
 
@@ -1300,7 +1301,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     bonus: number;
     payment: 'cash' | 'mobile';
     paymentDetail?: string;
-    products?: { productId: number; qty: number }[];
+    customerPhone?: string;
+    products?: { productId: number; qty: number; price?: number }[];
   }): LaveurCommission => {
     const grid = CLIENT_TYPE_GRID[data.clientType];
     const now = new Date();
@@ -1317,7 +1319,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const prod = products.find(pr => pr.id === p.productId);
           if (!prod) return null;
           const cartQty = Math.min(p.qty, prod.qty);
-          return cartQty > 0 ? { ...prod, cartQty } : null;
+          const price = p.price != null && p.price >= 0 ? p.price : prod.price;
+          return cartQty > 0 ? { ...prod, price, cartQty } : null;
         })
         .filter((x): x is Product & { cartQty: number } => x !== null);
 
@@ -1354,7 +1357,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           discount: 0,
           total: subtotal,
           payment: data.payment,
-          paymentDetail: data.paymentDetail?.trim() || (data.payment === 'cash' ? 'Espèces' : 'Mobile Money'),
+          paymentDetail: data.payment === 'cash' ? 'Espèces' : data.paymentDetail?.trim() || 'Mobile Money',
           items: cartItems.map(c => ({
             id: c.id,
             name: c.name,
@@ -1366,6 +1369,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           })),
           timestamp,
           customerName: `Client Hammam (${laveurName})`,
+          customerPhone: data.customerPhone?.trim() || undefined,
         };
         setSales(prev => [newSale, ...prev]);
         setLastSale(newSale);
@@ -1384,7 +1388,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       bonus,
       total: grid.commission + bonus,
       payment: data.payment,
-      paymentDetail: data.paymentDetail?.trim() || undefined,
+      paymentDetail: data.payment === 'mobile' ? data.paymentDetail?.trim() || undefined : undefined,
+      customerPhone: data.customerPhone?.trim() || undefined,
       date: now.toLocaleDateString('fr-FR'),
       time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
       timestamp,

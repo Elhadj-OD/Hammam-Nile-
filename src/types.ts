@@ -216,6 +216,7 @@ export interface LaveurCommission {
   total: number;
   payment: 'cash' | 'mobile';
   paymentDetail?: string;
+  customerPhone?: string;
   date: string;
   time: string;
   timestamp: number;

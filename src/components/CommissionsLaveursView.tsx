@@ -16,6 +16,8 @@ import {
   Search,
   ShoppingBag,
   Minus,
+  Pencil,
+  PackagePlus,
 } from 'lucide-react';
 
 interface BoutiqueCartItem {
@@ -26,8 +28,10 @@ interface BoutiqueCartItem {
   emoji?: string;
 }
 
+const MOBILE_OPERATORS = ['Bankily', 'Masrivi', 'Sedad', 'Click'];
+
 export const CommissionsLaveursView: React.FC = () => {
-  const { laveurCommissions, addLaveurCommission, deleteLaveurCommission, settings, products } = useApp();
+  const { laveurCommissions, addLaveurCommission, deleteLaveurCommission, settings, products, addProduct } = useApp();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [search, setSearch] = useState('');
@@ -39,10 +43,16 @@ export const CommissionsLaveursView: React.FC = () => {
   const [clientType, setClientType] = useState<ClientType>('simple');
   const [bonus, setBonus] = useState<number>(0);
   const [payment, setPayment] = useState<'cash' | 'mobile'>('cash');
-  const [paymentDetail, setPaymentDetail] = useState('');
+  const [mobileOperator, setMobileOperator] = useState<string>('Bankily');
+  const [customerPhone, setCustomerPhone] = useState('');
   const [formError, setFormError] = useState('');
   const [productSearch, setProductSearch] = useState('');
   const [boutiqueCart, setBoutiqueCart] = useState<BoutiqueCartItem[]>([]);
+  const [editingPriceId, setEditingPriceId] = useState<number | null>(null);
+  const [showNewProductForm, setShowNewProductForm] = useState(false);
+  const [newProductName, setNewProductName] = useState('');
+  const [newProductPrice, setNewProductPrice] = useState('');
+  const [newProductQty, setNewProductQty] = useState('1');
 
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
 
@@ -98,7 +108,7 @@ export const CommissionsLaveursView: React.FC = () => {
       setFormError('Le bonus ne peut pas être négatif.');
       return;
     }
-    if (payment === 'mobile' && !paymentDetail.trim()) {
+    if (payment === 'mobile' && !customerPhone.trim()) {
       setFormError('Veuillez indiquer le numéro mobile money du client.');
       return;
     }
@@ -108,8 +118,9 @@ export const CommissionsLaveursView: React.FC = () => {
       clientType,
       bonus,
       payment,
-      paymentDetail: payment === 'mobile' ? paymentDetail.trim() : undefined,
-      products: boutiqueCart.map(item => ({ productId: item.productId, qty: item.qty })),
+      paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
+      customerPhone: payment === 'mobile' ? customerPhone.trim() : undefined,
+      products: boutiqueCart.map(item => ({ productId: item.productId, qty: item.qty, price: item.price })),
     });
 
     setShowAddModal(false);
@@ -117,10 +128,16 @@ export const CommissionsLaveursView: React.FC = () => {
     setClientType('simple');
     setBonus(0);
     setPayment('cash');
-    setPaymentDetail('');
+    setMobileOperator('Bankily');
+    setCustomerPhone('');
     setFormError('');
     setProductSearch('');
     setBoutiqueCart([]);
+    setEditingPriceId(null);
+    setShowNewProductForm(false);
+    setNewProductName('');
+    setNewProductPrice('');
+    setNewProductQty('1');
   };
 
   const productMatches = useMemo(() => {
@@ -374,7 +391,16 @@ export const CommissionsLaveursView: React.FC = () => {
                       </span>
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap text-[#6B7873]">
-                      {c.payment === 'mobile' ? `Mobile${c.paymentDetail ? ` (${c.paymentDetail})` : ''}` : 'Espèces'}
+                      {c.payment === 'mobile' ? (
+                        <div>
+                          <div className="font-semibold text-[#1C2321]">
+                            📱 Mobile{c.paymentDetail ? ` (${c.paymentDetail})` : ''}
+                          </div>
+                          {c.customerPhone && <div className="text-[10px]">{c.customerPhone}</div>}
+                        </div>
+                      ) : (
+                        '💵 Espèces'
+                      )}
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap font-bold text-[#0F4C4A]">
                       {formatPrice(c.commission)}
@@ -424,6 +450,8 @@ export const CommissionsLaveursView: React.FC = () => {
                   setShowAddModal(false);
                   setProductSearch('');
                   setBoutiqueCart([]);
+                  setShowNewProductForm(false);
+                  setEditingPriceId(null);
                 }}
                 className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#1C2321] hover:bg-[#F7F3EC]"
               >
@@ -510,14 +538,32 @@ export const CommissionsLaveursView: React.FC = () => {
                   </button>
                 </div>
                 {payment === 'mobile' && (
-                  <input
-                    type="tel"
-                    value={paymentDetail}
-                    onChange={e => setPaymentDetail(e.target.value)}
-                    placeholder="Numéro mobile money du client"
-                    required
-                    className="mt-2 w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
-                  />
+                  <>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {MOBILE_OPERATORS.map(op => (
+                        <button
+                          key={op}
+                          type="button"
+                          onClick={() => setMobileOperator(op)}
+                          className={`flex-1 min-w-[65px] py-1.5 px-2 rounded-lg text-[11px] font-bold transition cursor-pointer border ${
+                            mobileOperator === op
+                              ? 'bg-[#0F4C4A] text-white border-[#0F4C4A]'
+                              : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4E9E1]'
+                          }`}
+                        >
+                          {op}
+                        </button>
+                      ))}
+                    </div>
+                    <input
+                      type="tel"
+                      value={customerPhone}
+                      onChange={e => setCustomerPhone(e.target.value)}
+                      placeholder="Numéro mobile money du client"
+                      required
+                      className="mt-2 w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                    />
+                  </>
                 )}
               </div>
 
@@ -539,17 +585,87 @@ export const CommissionsLaveursView: React.FC = () => {
 
               {/* Boutique products (optional) */}
               <div>
-                <label className="block text-xs font-bold text-[#1C2321] mb-1.5 flex items-center gap-1.5">
-                  <ShoppingBag className="w-3.5 h-3.5" />
-                  <span>Articles boutique achetés (optionnel)</span>
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-[#1C2321] flex items-center gap-1.5">
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Articles boutique achetés (optionnel)</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowNewProductForm(v => !v)}
+                    className="flex items-center gap-1 text-[10px] font-bold text-[#0F4C4A] hover:text-[#0A3735] cursor-pointer"
+                  >
+                    <PackagePlus className="w-3.5 h-3.5" />
+                    <span>Nouveau produit</span>
+                  </button>
+                </div>
+
+                {showNewProductForm && (
+                  <div className="mb-2 p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl space-y-2">
+                    <input
+                      type="text"
+                      value={newProductName}
+                      onChange={e => setNewProductName(e.target.value)}
+                      placeholder="Nom du nouveau produit"
+                      className="w-full text-xs p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={newProductPrice}
+                        onChange={e => setNewProductPrice(e.target.value)}
+                        placeholder={`Prix (${settings.currency})`}
+                        className="w-full text-xs p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                      />
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={newProductQty}
+                        onChange={e => setNewProductQty(e.target.value)}
+                        placeholder="Quantité en stock"
+                        className="w-full text-xs p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const priceNum = parseInt(newProductPrice) || 0;
+                        const qtyNum = Math.max(1, parseInt(newProductQty) || 1);
+                        if (!newProductName.trim() || priceNum <= 0) return;
+                        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                        addProduct({
+                          name: newProductName.trim(),
+                          category: 'autres',
+                          price: priceNum,
+                          qty: qtyNum,
+                          minQty: 0,
+                        });
+                        setBoutiqueCart(prev => [
+                          ...prev,
+                          { productId: newId, name: newProductName.trim(), price: priceNum, qty: 1 },
+                        ]);
+                        setNewProductName('');
+                        setNewProductPrice('');
+                        setNewProductQty('1');
+                        setShowNewProductForm(false);
+                      }}
+                      className="w-full py-2 bg-[#0F4C4A] text-white rounded-lg text-xs font-bold hover:bg-[#0A3735] transition cursor-pointer"
+                    >
+                      Créer et ajouter au panier
+                    </button>
+                  </div>
+                )}
+
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 text-[#6B7873] absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={productSearch}
                     onChange={e => setProductSearch(e.target.value)}
-                    placeholder="Rechercher un produit boutique..."
+                    placeholder="Rechercher un produit boutique existant..."
                     className="w-full text-xs pl-8 pr-3 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
                   />
                 </div>
@@ -577,38 +693,72 @@ export const CommissionsLaveursView: React.FC = () => {
                     {boutiqueCart.map(item => (
                       <div
                         key={item.productId}
-                        className="flex items-center justify-between gap-2 p-2 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-xs"
+                        className="p-2 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-xs space-y-1.5"
                       >
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          {item.emoji && <span>{item.emoji}</span>}
-                          <span className="font-semibold text-[#1C2321] truncate">{item.name}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => changeCartQty(item.productId, -1)}
-                            className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4E9E1] cursor-pointer"
-                          >
-                            <Minus className="w-3 h-3" />
-                          </button>
-                          <span className="w-5 text-center font-bold">{item.qty}</span>
-                          <button
-                            type="button"
-                            onClick={() => changeCartQty(item.productId, 1)}
-                            className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4E9E1] cursor-pointer"
-                          >
-                            <Plus className="w-3 h-3" />
-                          </button>
-                          <span className="w-16 text-right font-bold text-[#0F4C4A]">
-                            {formatPrice(item.price * item.qty)}
-                          </span>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            {item.emoji && <span>{item.emoji}</span>}
+                            <span className="font-semibold text-[#1C2321] truncate">{item.name}</span>
+                          </div>
                           <button
                             type="button"
                             onClick={() => removeFromCart(item.productId)}
-                            className="p-1 rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer"
+                            className="p-1 rounded-lg text-rose-600 hover:bg-rose-50 cursor-pointer shrink-0"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => changeCartQty(item.productId, -1)}
+                              className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4E9E1] cursor-pointer"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <span className="w-5 text-center font-bold">{item.qty}</span>
+                            <button
+                              type="button"
+                              onClick={() => changeCartQty(item.productId, 1)}
+                              className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4E9E1] cursor-pointer"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#6B7873]">Prix unitaire</span>
+                            {editingPriceId === item.productId ? (
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                autoFocus
+                                value={item.price}
+                                onChange={e => {
+                                  const val = Math.max(0, parseInt(e.target.value) || 0);
+                                  setBoutiqueCart(prev =>
+                                    prev.map(i => (i.productId === item.productId ? { ...i, price: val } : i))
+                                  );
+                                }}
+                                onBlur={() => setEditingPriceId(null)}
+                                className="w-16 text-right font-bold text-[#0F4C4A] bg-white border border-[#0F4C4A]/40 rounded-lg px-1 py-0.5 font-mono focus:outline-none"
+                              />
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => setEditingPriceId(item.productId)}
+                                title="Modifier le prix pour cette vente"
+                                className="font-bold text-[#0F4C4A] flex items-center gap-0.5 cursor-pointer hover:underline"
+                              >
+                                <Pencil className="w-2.5 h-2.5 opacity-60" />
+                                {formatPrice(item.price)}
+                              </button>
+                            )}
+                          </div>
+                          <span className="font-extrabold text-[#1C2321] w-16 text-right">
+                            {formatPrice(item.price * item.qty)}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -656,6 +806,8 @@ export const CommissionsLaveursView: React.FC = () => {
                     setShowAddModal(false);
                     setProductSearch('');
                     setBoutiqueCart([]);
+                    setShowNewProductForm(false);
+                    setEditingPriceId(null);
                   }}
                   className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4E9E1] transition cursor-pointer"
                 >
