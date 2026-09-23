@@ -38,6 +38,7 @@ const CATEGORY_OPTIONS: { value: ProductCategory; label: string }[] = [
   { value: 'spa_massage', label: 'Esthétique' },
   { value: 'coiffure_salon', label: 'Coiffure & Salon' },
   { value: 'epilation_traditionnelle', label: 'Épilation Traditionnelle' },
+  { value: 'fitness_gym', label: 'Fitness Gym' },
   { value: 'autres', label: 'Autres / Coffrets' },
 ];
 

@@ -11,4 +11,5 @@ export const DEPARTMENTS: Record<
   spa_massage: { label: 'Esthétique', icon: '💆', category: 'spa_massage' },
   coiffure_salon: { label: 'Coiffure & Salon', icon: '💇', category: 'coiffure_salon' },
   epilation_traditionnelle: { label: 'Épilation Traditionnelle', icon: '🪡', category: 'epilation_traditionnelle' },
+  fitness_gym: { label: 'Fitness Gym', icon: '🏋️', category: 'fitness_gym' },
 };
