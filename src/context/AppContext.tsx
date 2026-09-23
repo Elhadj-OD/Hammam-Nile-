@@ -18,7 +18,10 @@ import {
   PaymentTerms,
   HammamUsage,
   PresenceRow,
+  LaveurCommission,
+  ClientType,
 } from '../types';
+import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
 import {
   INITIAL_PRODUCTS,
   INITIAL_CLIENTS,
@@ -52,6 +55,9 @@ import {
   saveMovementToSupabase,
   getHammamUsagesFromSupabase,
   saveHammamUsageToSupabase,
+  getLaveurCommissionsFromSupabase,
+  saveLaveurCommissionToSupabase,
+  deleteLaveurCommissionFromSupabase,
   getShopSettingsFromSupabase,
   saveShopSettingsToSupabase,
   getPresenceFromSupabase,
@@ -207,6 +213,15 @@ interface AppContextType {
   }) => boolean;
   deleteHammamUsage: (id: number) => void;
 
+  // Commissions Laveurs
+  laveurCommissions: LaveurCommission[];
+  addLaveurCommission: (data: {
+    laveurName: string;
+    clientType: ClientType;
+    bonus: number;
+  }) => LaveurCommission;
+  deleteLaveurCommission: (id: number) => void;
+
   // Settings
   settings: ShopSettings;
   updateSettings: (newSettings: Partial<ShopSettings>) => void;
@@ -292,6 +307,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : INITIAL_HAMMAM_USAGES;
   });
 
+  const [laveurCommissions, setLaveurCommissions] = useState<LaveurCommission[]>(() => {
+    const saved = localStorage.getItem(`${STORAGE_KEY}-laveur-commissions`);
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [settings, setSettings] = useState<ShopSettings>(() => {
     const saved = localStorage.getItem(`${STORAGE_KEY}-settings`);
     return saved ? JSON.parse(saved) : INITIAL_SETTINGS;
@@ -328,6 +348,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem(`${STORAGE_KEY}-hammam-usages`, JSON.stringify(hammamUsages));
   }, [hammamUsages]);
+
+  useEffect(() => {
+    localStorage.setItem(`${STORAGE_KEY}-laveur-commissions`, JSON.stringify(laveurCommissions));
+  }, [laveurCommissions]);
 
   useEffect(() => {
     localStorage.setItem(`${STORAGE_KEY}-settings`, JSON.stringify(settings));
@@ -383,12 +407,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!isSupabaseConfigured()) return;
     async function loadSupabase() {
       try {
-        const [sbProducts, sbSales, sbClients, sbMovements, sbUsages, sbSettings] = await Promise.all([
+        const [sbProducts, sbSales, sbClients, sbMovements, sbUsages, sbCommissions, sbSettings] = await Promise.all([
           getProductsFromSupabase(),
           getSalesFromSupabase(),
           getClientsFromSupabase(),
           getMovementsFromSupabase(),
           getHammamUsagesFromSupabase(),
+          getLaveurCommissionsFromSupabase(),
           getShopSettingsFromSupabase(),
         ]);
 
@@ -403,6 +428,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (sbClients && sbClients.length > 0) setClients(sbClients);
         if (sbMovements && sbMovements.length > 0) setMovements(sbMovements);
         if (sbUsages && sbUsages.length > 0) setHammamUsages(sbUsages);
+        if (sbCommissions && sbCommissions.length > 0) setLaveurCommissions(sbCommissions);
         if (sbSettings) setSettings(sbSettings);
 
         setSupabaseConnected(true);
@@ -457,6 +483,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setHammamUsages(prev => {
           if (eventType === 'DELETE') return removeById(prev, (old as HammamUsage).id);
           return prev.some(u => u.id === (row as HammamUsage).id) ? prev : upsertById(prev, row as HammamUsage);
+        });
+      }),
+      subscribeToTable<LaveurCommission>('laveur_commissions', ({ eventType, new: row, old }) => {
+        setLaveurCommissions(prev => {
+          if (eventType === 'DELETE') return removeById(prev, (old as LaveurCommission).id);
+          return prev.some(c => c.id === (row as LaveurCommission).id) ? prev : upsertById(prev, row as LaveurCommission);
         });
       }),
       subscribeToTable<{ id: number; settings: ShopSettings }>('shop_settings', ({ new: row }) => {
@@ -1258,6 +1290,38 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setHammamUsages(prev => prev.filter(u => u.id !== id));
   };
 
+  // Commissions Laveurs
+  const addLaveurCommission = (data: {
+    laveurName: string;
+    clientType: ClientType;
+    bonus: number;
+  }): LaveurCommission => {
+    const grid = CLIENT_TYPE_GRID[data.clientType];
+    const now = new Date();
+    const bonus = Math.max(0, data.bonus || 0);
+    const newCommission: LaveurCommission = {
+      id: Date.now(),
+      laveurName: data.laveurName.trim(),
+      clientType: data.clientType,
+      price: grid.price,
+      commission: grid.commission,
+      bonus,
+      total: grid.commission + bonus,
+      date: now.toLocaleDateString('fr-FR'),
+      time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: now.getTime(),
+      recordedBy: currentUser?.username || 'admin',
+    };
+    setLaveurCommissions(prev => [newCommission, ...prev]);
+    saveLaveurCommissionToSupabase(newCommission);
+    return newCommission;
+  };
+
+  const deleteLaveurCommission = (id: number) => {
+    setLaveurCommissions(prev => prev.filter(c => c.id !== id));
+    deleteLaveurCommissionFromSupabase(id);
+  };
+
   // Settings
   const updateSettings = (newSettings: Partial<ShopSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
@@ -1327,6 +1391,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         hammamUsages,
         addHammamUsage,
         deleteHammamUsage,
+        laveurCommissions,
+        addLaveurCommission,
+        deleteLaveurCommission,
         settings,
         updateSettings,
         resetDemoData,
