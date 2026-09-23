@@ -90,7 +90,9 @@ export const CaissieresView: React.FC = () => {
     setEditingUser(user);
     setName(user.name);
     setUsername(user.username);
-    setEmail(user.email || '');
+    // Un e-mail synthétique interne (...@hammamnile.local) n'est pas un
+    // vrai e-mail à afficher/réutiliser — le champ reste vide dans ce cas.
+    setEmail(user.email && !user.email.endsWith('@hammamnile.local') ? user.email : '');
     setPhone(user.phone || '');
     setRole(user.role);
     setGender(user.gender || 'femme');
@@ -128,8 +130,8 @@ export const CaissieresView: React.FC = () => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    if (!cleanEmail || !cleanEmail.includes('@')) {
-      alert('Veuillez renseigner une adresse e-mail réelle (nécessaire pour la récupération de mot de passe).');
+    if (cleanEmail && !cleanEmail.includes('@')) {
+      alert('Adresse e-mail invalide.');
       return;
     }
 
@@ -625,21 +627,20 @@ export const CaissieresView: React.FC = () => {
               {/* E-mail réel (récupération de mot de passe) */}
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                  E-mail réel *
+                  E-mail (optionnel)
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="ex: fatou@gmail.com"
-                  required
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
                   className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
                 />
                 <p className="text-[11px] text-[#6B7873] mt-1">
-                  Utilisé uniquement pour la récupération de mot de passe en cas d'oubli — la connexion se fait toujours avec l'identifiant, pas l'e-mail.
+                  Utile pour la récupération de mot de passe en cas d'oubli — la connexion se fait toujours avec l'identifiant, pas l'e-mail. Laissez vide si la caissière n'a pas d'e-mail.
                 </p>
               </div>
 
