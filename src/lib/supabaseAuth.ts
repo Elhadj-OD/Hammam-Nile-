@@ -137,6 +137,7 @@ export async function createStaffUser(data: {
   department?: CaisseDepartment;
   phone?: string;
   avatar?: string;
+  password?: string;
 }): Promise<{ success: boolean; error?: string; tempPassword?: string }> {
   return callAdminUsersApi<{ tempPassword?: string }>({ action: 'create', ...data });
 }
@@ -162,9 +163,10 @@ export async function deleteStaffUser(username: string): Promise<{ success: bool
 }
 
 export async function resetStaffPassword(
-  username: string
+  username: string,
+  password?: string
 ): Promise<{ success: boolean; error?: string; tempPassword?: string }> {
-  return callAdminUsersApi<{ tempPassword?: string }>({ action: 'resetPassword', username });
+  return callAdminUsersApi<{ tempPassword?: string }>({ action: 'resetPassword', username, password });
 }
 
 export async function changeOwnPassword(newPassword: string): Promise<{ success: boolean; error?: string }> {

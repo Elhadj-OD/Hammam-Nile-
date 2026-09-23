@@ -21,6 +21,7 @@ interface CreatePayload {
   department?: string;
   phone?: string;
   avatar?: string;
+  password?: string;
 }
 
 interface UpdatePayload {
@@ -46,6 +47,7 @@ interface DeletePayload {
 interface ResetPasswordPayload {
   action: 'resetPassword';
   username: string;
+  password?: string;
 }
 
 interface ChangeOwnPasswordPayload {
@@ -105,6 +107,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           res.status(400).json({ error: 'Rôle invalide.' });
           return;
         }
+        const customPassword = (body.password || '').trim();
+        if (customPassword && customPassword.length < 6) {
+          res.status(400).json({ error: 'Le mot de passe doit contenir au moins 6 caractères.' });
+          return;
+        }
 
         const { data: existing } = await admin
           .from('profiles')
@@ -116,7 +123,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return;
         }
 
-        const tempPassword = generateTempPassword();
+        // La gérante peut choisir le mot de passe elle-même ; sinon un
+        // mot de passe temporaire aléatoire est généré.
+        const tempPassword = customPassword || generateTempPassword();
         const { data: created, error: createErr } = await admin.auth.admin.createUser({
           email,
           password: tempPassword,
@@ -294,13 +303,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return;
         }
 
+        const customResetPassword = (body.password || '').trim();
+        if (customResetPassword && customResetPassword.length < 6) {
+          res.status(400).json({ error: 'Le mot de passe doit contenir au moins 6 caractères.' });
+          return;
+        }
+
         const { data: target } = await admin.from('profiles').select('id').eq('username', username).maybeSingle();
         if (!target) {
           res.status(404).json({ error: 'Compte introuvable.' });
           return;
         }
 
-        const tempPassword = generateTempPassword();
+        const tempPassword = customResetPassword || generateTempPassword();
         const { error: pwErr } = await admin.auth.admin.updateUserById(target.id, { password: tempPassword });
         if (pwErr) {
           console.error('admin-users resetPassword error:', pwErr);
