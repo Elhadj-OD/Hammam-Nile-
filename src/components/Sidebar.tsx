@@ -358,7 +358,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                 <circle cx="12" cy="8" r="5" />
                 <path d="M20 21a8 8 0 0 0-16 0" />
               </svg>
-              <span>Commissions Laveurs</span>
+              <span>Hammam</span>
             </div>
             {laveurCommissions.length > 0 && (
               <span

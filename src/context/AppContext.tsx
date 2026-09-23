@@ -221,6 +221,7 @@ interface AppContextType {
     bonus: number;
     payment: 'cash' | 'mobile';
     paymentDetail?: string;
+    products?: { productId: number; qty: number }[];
   }) => LaveurCommission;
   deleteLaveurCommission: (id: number) => void;
 
@@ -1292,20 +1293,91 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setHammamUsages(prev => prev.filter(u => u.id !== id));
   };
 
-  // Commissions Laveurs
+  // Commissions Laveurs (Hammam)
   const addLaveurCommission = (data: {
     laveurName: string;
     clientType: ClientType;
     bonus: number;
     payment: 'cash' | 'mobile';
     paymentDetail?: string;
+    products?: { productId: number; qty: number }[];
   }): LaveurCommission => {
     const grid = CLIENT_TYPE_GRID[data.clientType];
     const now = new Date();
+    const timestamp = now.getTime();
     const bonus = Math.max(0, data.bonus || 0);
+    const laveurName = data.laveurName.trim();
+
+    // Articles boutique achetés en même temps : l'argent et le stock partent
+    // dans les ventes/inventaire normaux, séparés de la commission du laveur.
+    const requestedItems = (data.products || []).filter(p => p.qty > 0);
+    if (requestedItems.length > 0) {
+      const cartItems = requestedItems
+        .map(p => {
+          const prod = products.find(pr => pr.id === p.productId);
+          if (!prod) return null;
+          const cartQty = Math.min(p.qty, prod.qty);
+          return cartQty > 0 ? { ...prod, cartQty } : null;
+        })
+        .filter((x): x is Product & { cartQty: number } => x !== null);
+
+      if (cartItems.length > 0) {
+        setProducts(prev =>
+          prev.map(prod => {
+            const match = cartItems.find(c => c.id === prod.id);
+            return match ? { ...prod, qty: Math.max(0, prod.qty - match.cartQty) } : prod;
+          })
+        );
+
+        const newMovements: StockMovement[] = cartItems.map(item => ({
+          id: Math.random() * 1000000 + Date.now(),
+          productId: item.id,
+          productName: item.name,
+          type: 'out',
+          qty: item.cartQty,
+          reason: `Vente Boutique — Hammam (${laveurName})`,
+          date: now.toLocaleDateString('fr-FR'),
+          time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+          timestamp,
+          user: currentUser?.username || 'caissier',
+        }));
+        setMovements(prev => [...newMovements, ...prev]);
+
+        const subtotal = cartItems.reduce((sum, c) => sum + c.price * c.cartQty, 0);
+        const newSale: Sale = {
+          id: sales.length > 0 ? Math.max(...sales.map(s => s.id)) + 1 : 1,
+          caissier: currentUser?.username || 'caissier',
+          caissierName: currentUser?.name || 'Caissier',
+          date: now.toLocaleDateString('fr-FR'),
+          time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+          subtotal,
+          discount: 0,
+          total: subtotal,
+          payment: data.payment,
+          paymentDetail: data.paymentDetail?.trim() || (data.payment === 'cash' ? 'Espèces' : 'Mobile Money'),
+          items: cartItems.map(c => ({
+            id: c.id,
+            name: c.name,
+            price: c.price,
+            qty: c.cartQty,
+            category: c.category,
+            emoji: c.emoji,
+            image: c.image,
+          })),
+          timestamp,
+          customerName: `Client Hammam (${laveurName})`,
+        };
+        setSales(prev => [newSale, ...prev]);
+        setLastSale(newSale);
+        syncSaleToFirestore(newSale).catch(console.error);
+        saveSaleToSupabase(newSale);
+        newMovements.forEach(m => saveMovementToSupabase(m));
+      }
+    }
+
     const newCommission: LaveurCommission = {
       id: Date.now(),
-      laveurName: data.laveurName.trim(),
+      laveurName,
       clientType: data.clientType,
       price: grid.price,
       commission: grid.commission,
@@ -1315,7 +1387,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       paymentDetail: data.paymentDetail?.trim() || undefined,
       date: now.toLocaleDateString('fr-FR'),
       time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-      timestamp: now.getTime(),
+      timestamp,
       recordedBy: currentUser?.username || 'admin',
     };
     setLaveurCommissions(prev => [newCommission, ...prev]);
