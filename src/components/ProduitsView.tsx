@@ -320,9 +320,21 @@ export const ProduitsView: React.FC = () => {
                 ? 'bg-[#0F4C4A] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
-            title="Caisse dédiée Spa & Massage"
+            title="Caisse dédiée Esthétique"
           >
-            💆 Spa & Massage
+            💆 Esthétique
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('epilation_traditionnelle')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+              selectedCategory === 'epilation_traditionnelle'
+                ? 'bg-[#0F4C4A] text-white'
+                : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+            }`}
+            title="Caisse dédiée Épilation Traditionnelle"
+          >
+            🪡 Épilation Traditionnelle
           </button>
           <button
             type="button"
@@ -699,8 +711,9 @@ export const ProduitsView: React.FC = () => {
                     <option value="femmes">Boutique Femme</option>
                     <option value="hommes">Boutique Homme</option>
                     <option value="hammam_bains">Hammam & Bains</option>
-                    <option value="spa_massage">Spa & Massage</option>
+                    <option value="spa_massage">Esthétique</option>
                     <option value="coiffure_salon">Coiffure & Salon</option>
+                    <option value="epilation_traditionnelle">Épilation Traditionnelle</option>
                     <option value="autres">Autres / Coffrets</option>
                   </select>
                 </div>
