@@ -338,6 +338,18 @@ export const ProduitsView: React.FC = () => {
           </button>
           <button
             type="button"
+            onClick={() => setSelectedCategory('fitness_gym')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+              selectedCategory === 'fitness_gym'
+                ? 'bg-[#0F4C4A] text-white'
+                : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+            }`}
+            title="Caisse dédiée Fitness Gym"
+          >
+            🏋️ Fitness Gym
+          </button>
+          <button
+            type="button"
             onClick={() => setSelectedCategory('coiffure_salon')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'coiffure_salon'
@@ -714,6 +726,7 @@ export const ProduitsView: React.FC = () => {
                     <option value="spa_massage">Esthétique</option>
                     <option value="coiffure_salon">Coiffure & Salon</option>
                     <option value="epilation_traditionnelle">Épilation Traditionnelle</option>
+                    <option value="fitness_gym">Fitness Gym</option>
                     <option value="autres">Autres / Coffrets</option>
                   </select>
                 </div>
