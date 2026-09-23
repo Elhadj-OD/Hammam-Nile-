@@ -119,10 +119,14 @@ interface AppContextType {
     department?: CaisseDepartment;
     phone?: string;
     avatar?: string;
+    password?: string;
   }) => Promise<{ success: boolean; error?: string; tempPassword?: string }>;
   updateUser: (username: string, updates: Partial<User>) => Promise<{ success: boolean; error?: string }>;
   deleteUser: (username: string) => Promise<{ success: boolean; error?: string }>;
-  resetUserPassword: (username: string) => Promise<{ success: boolean; error?: string; tempPassword?: string }>;
+  resetUserPassword: (
+    username: string,
+    password?: string
+  ) => Promise<{ success: boolean; error?: string; tempPassword?: string }>;
 
   // Présence (qui est connecté, pour le contrôle des heures par l'admin)
   presence: PresenceRow[];
@@ -604,6 +608,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     department?: CaisseDepartment;
     phone?: string;
     avatar?: string;
+    password?: string;
   }) => {
     const res = await createStaffUser(newUser);
     if (res.success) await refreshUsers();
@@ -629,8 +634,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return res;
   };
 
-  const resetUserPassword = async (username: string) => {
-    return resetStaffPassword(username);
+  const resetUserPassword = async (username: string, password?: string) => {
+    return resetStaffPassword(username, password);
   };
 
   const completePasswordChange = async (newPassword: string) => {

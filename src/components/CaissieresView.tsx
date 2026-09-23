@@ -51,10 +51,18 @@ export const CaissieresView: React.FC = () => {
   // main propre — jamais stocké ni renvoyé ensuite.
   const [tempPasswordInfo, setTempPasswordInfo] = useState<{ name: string; username: string; tempPassword: string } | null>(null);
 
+  // Réinitialisation du mot de passe : la gérante choisit soit de générer
+  // un mot de passe automatique, soit d'en taper un elle-même.
+  const [resetPasswordTarget, setResetPasswordTarget] = useState<User | null>(null);
+  const [resetPasswordCustom, setResetPasswordCustom] = useState('');
+  const [resetPasswordError, setResetPasswordError] = useState('');
+  const [resettingPassword, setResettingPassword] = useState(false);
+
   // Form State
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [role, setRole] = useState<UserRole>('caissier');
   const [gender, setGender] = useState<UserGender>('femme');
@@ -77,6 +85,7 @@ export const CaissieresView: React.FC = () => {
     setName('');
     setUsername('');
     setEmail('');
+    setPassword('');
     setPhone('');
     setRole('caissier');
     setGender('femme');
@@ -93,6 +102,7 @@ export const CaissieresView: React.FC = () => {
     // Un e-mail synthétique interne (...@hammamnile.local) n'est pas un
     // vrai e-mail à afficher/réutiliser — le champ reste vide dans ce cas.
     setEmail(user.email && !user.email.endsWith('@hammamnile.local') ? user.email : '');
+    setPassword('');
     setPhone(user.phone || '');
     setRole(user.role);
     setGender(user.gender || 'femme');
@@ -135,6 +145,12 @@ export const CaissieresView: React.FC = () => {
       return;
     }
 
+    const cleanPassword = password.trim();
+    if (!editingUser && cleanPassword && cleanPassword.length < 6) {
+      alert('Le mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
+
     const cleanUsername = (username.trim() || name.trim().split(' ')[0]).toLowerCase().replace(/[^a-z0-9]/g, '');
 
     // Default avatar if none uploaded
@@ -167,6 +183,7 @@ export const CaissieresView: React.FC = () => {
         gender,
         department: department || undefined,
         avatar: finalAvatar,
+        password: cleanPassword || undefined,
       });
       setSubmitting(false);
       if (!res.success) {
@@ -203,17 +220,31 @@ export const CaissieresView: React.FC = () => {
     if (!res.success) alert(res.error || 'Impossible de modifier le verrouillage.');
   };
 
-  const handleResetPassword = async (u: User) => {
-    if (!window.confirm(`Générer un nouveau mot de passe temporaire pour ${u.name} ? L'ancien cessera immédiatement de fonctionner.`)) {
+  const handleOpenResetPassword = (u: User) => {
+    setResetPasswordTarget(u);
+    setResetPasswordCustom('');
+    setResetPasswordError('');
+  };
+
+  const handleConfirmResetPassword = async () => {
+    if (!resetPasswordTarget) return;
+    const cleanCustom = resetPasswordCustom.trim();
+    if (cleanCustom && cleanCustom.length < 6) {
+      setResetPasswordError('Le mot de passe doit contenir au moins 6 caractères.');
       return;
     }
-    const res = await resetUserPassword(u.username);
+    setResettingPassword(true);
+    const res = await resetUserPassword(resetPasswordTarget.username, cleanCustom || undefined);
+    setResettingPassword(false);
     if (!res.success) {
-      alert(res.error || 'Impossible de réinitialiser le mot de passe.');
+      setResetPasswordError(res.error || 'Impossible de réinitialiser le mot de passe.');
       return;
     }
+    const targetName = resetPasswordTarget.name;
+    const targetUsername = resetPasswordTarget.username;
+    setResetPasswordTarget(null);
     if (res.tempPassword) {
-      setTempPasswordInfo({ name: u.name, username: u.username, tempPassword: res.tempPassword });
+      setTempPasswordInfo({ name: targetName, username: targetUsername, tempPassword: res.tempPassword });
     }
   };
 
@@ -378,9 +409,9 @@ export const CaissieresView: React.FC = () => {
                     )}
                     <button
                       type="button"
-                      onClick={() => handleResetPassword(u)}
+                      onClick={() => handleOpenResetPassword(u)}
                       className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#B8874B] hover:bg-[#F7F3EC] transition cursor-pointer"
-                      title="Réinitialiser le mot de passe (génère un code temporaire à usage unique)"
+                      title="Réinitialiser le mot de passe (générer un code, ou en choisir un)"
                     >
                       <Key className="w-4 h-4" />
                     </button>
@@ -617,12 +648,29 @@ export const CaissieresView: React.FC = () => {
                   disabled={!!editingUser}
                   className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A] disabled:opacity-60"
                 />
-                {!editingUser && (
-                  <p className="text-[11px] text-[#6B7873] mt-1">
-                    Un mot de passe temporaire sera généré automatiquement et affiché une seule fois après la création — à transmettre en main propre. La caissière devra le changer à sa première connexion.
-                  </p>
-                )}
               </div>
+
+              {/* Mot de passe (facultatif : sinon généré automatiquement) */}
+              {!editingUser && (
+                <div>
+                  <label className="block text-xs font-bold text-[#1C2321] mb-1">
+                    Mot de passe (optionnel)
+                  </label>
+                  <input
+                    type="text"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Laissez vide pour générer automatiquement"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                  />
+                  <p className="text-[11px] text-[#6B7873] mt-1">
+                    Vous pouvez choisir vous-même le mot de passe (min. 6 caractères) ou laisser vide pour qu'un mot de passe temporaire soit généré et affiché une seule fois après la création. Dans tous les cas, la caissière devra le changer à sa première connexion.
+                  </p>
+                </div>
+              )}
 
               {/* E-mail réel (récupération de mot de passe) */}
               <div>
@@ -765,6 +813,58 @@ export const CaissieresView: React.FC = () => {
       )}
 
       {/* Mot de passe temporaire — affiché UNE SEULE FOIS après création ou réinitialisation */}
+      {resetPasswordTarget && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#E7E0D3]">
+            <div className="w-11 h-11 rounded-2xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center mb-3">
+              <Key className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold font-display text-[#1C2321] mb-1">
+              Réinitialiser le mot de passe de {resetPasswordTarget.name}
+            </h3>
+            <p className="text-xs text-[#6B7873] mb-3">
+              L'ancien mot de passe cessera immédiatement de fonctionner. Choisissez-en un vous-même, ou laissez vide pour en générer un automatiquement.
+            </p>
+
+            {resetPasswordError && (
+              <div className="mb-3 p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium">
+                {resetPasswordError}
+              </div>
+            )}
+
+            <input
+              type="text"
+              value={resetPasswordCustom}
+              onChange={e => setResetPasswordCustom(e.target.value)}
+              placeholder="Laissez vide pour générer automatiquement"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              className="w-full text-sm p-2.5 mb-4 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+            />
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setResetPasswordTarget(null)}
+                disabled={resettingPassword}
+                className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4E9E1] transition cursor-pointer disabled:opacity-60"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmResetPassword}
+                disabled={resettingPassword}
+                className="flex-1 py-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition cursor-pointer disabled:opacity-60"
+              >
+                {resettingPassword ? 'En cours...' : 'Confirmer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {tempPasswordInfo && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#E7E0D3]">
