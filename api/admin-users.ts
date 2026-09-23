@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSupabaseAdmin, getCallerProfile, generateTempPassword } from './_supabaseAdmin.js';
+import { getSupabaseAdmin, getCallerProfile, generateTempPassword, usernameToEmail } from './_supabaseAdmin.js';
 
 // Gestion des comptes staff (création, modification, suppression,
 // réinitialisation de mot de passe). Utilise la clé service_role
@@ -89,15 +89,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         const username = sanitizeUsername(body.username || '');
         const name = (body.name || '').trim();
-        const email = (body.email || '').trim().toLowerCase();
+        const rawEmail = (body.email || '').trim().toLowerCase();
         if (!username || !name) {
           res.status(400).json({ error: "Identifiant et nom complet requis." });
           return;
         }
-        if (!email || !email.includes('@')) {
-          res.status(400).json({ error: 'Adresse e-mail réelle requise (nécessaire pour la récupération de mot de passe).' });
+        if (rawEmail && !rawEmail.includes('@')) {
+          res.status(400).json({ error: 'Adresse e-mail invalide.' });
           return;
         }
+        // Pas d'e-mail réel fourni : e-mail synthétique interne, invisible pour
+        // la caissière (elle se connecte toujours avec son identifiant).
+        const email = rawEmail || usernameToEmail(username);
         if (body.role !== 'caissier' && body.role !== 'gerant') {
           res.status(400).json({ error: 'Rôle invalide.' });
           return;
@@ -201,17 +204,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // rester synchronisés, sinon la connexion utiliserait un e-mail
         // qui ne correspond plus au compte Auth réel.
         if (typeof updates.email === 'string') {
-          if (!updates.email.includes('@')) {
+          if (updates.email && !updates.email.includes('@')) {
             res.status(400).json({ error: 'Adresse e-mail invalide.' });
             return;
           }
+          // Champ vidé : retombe sur l'e-mail synthétique interne (pas d'e-mail
+          // réel requis), invisible pour la caissière.
+          const finalEmail = updates.email || usernameToEmail(username);
+          updates.email = finalEmail;
           const { data: target } = await admin.from('profiles').select('id').eq('username', username).maybeSingle();
           if (!target) {
             res.status(404).json({ error: 'Compte introuvable.' });
             return;
           }
           const { error: emailErr } = await admin.auth.admin.updateUserById(target.id, {
-            email: updates.email,
+            email: finalEmail,
             email_confirm: true,
           });
           if (emailErr) {
