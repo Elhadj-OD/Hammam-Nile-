@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { ClientType, LaveurCommission } from '../types';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
+import { MOBILE_OPERATORS } from '../lib/mobileOperators';
 import {
   Users,
   Plus,
@@ -27,8 +28,6 @@ interface BoutiqueCartItem {
   qty: number;
   emoji?: string;
 }
-
-const MOBILE_OPERATORS = ['Bankily', 'Masrivi', 'Sedad', 'Click'];
 
 export const CommissionsLaveursView: React.FC = () => {
   const { laveurCommissions, addLaveurCommission, deleteLaveurCommission, settings, products, addProduct } = useApp();
