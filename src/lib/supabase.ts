@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow } from '../types';
+import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow, LaveurCommission } from '../types';
 
 // Read credentials from environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -293,7 +293,54 @@ export async function clearPresenceFromSupabase(username: string): Promise<void>
 }
 
 // ============================================================================
-// 8. SYNCHRONISATION TEMPS RÉEL (Realtime)
+// 8. COMMISSIONS LAVEURS
+// ============================================================================
+export async function getLaveurCommissionsFromSupabase(): Promise<LaveurCommission[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('laveur_commissions')
+      .select('*')
+      .order('timestamp', { ascending: false });
+
+    if (error) {
+      console.warn('Supabase fetch laveur commissions error:', error.message);
+      return null;
+    }
+    return data as LaveurCommission[];
+  } catch (err) {
+    console.warn('Supabase error:', err);
+    return null;
+  }
+}
+
+export async function saveLaveurCommissionToSupabase(commission: LaveurCommission): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('laveur_commissions')
+      .insert(commission);
+    if (error) console.warn('Supabase save laveur commission error:', error.message);
+  } catch (err) {
+    console.warn('Supabase save laveur commission error:', err);
+  }
+}
+
+export async function deleteLaveurCommissionFromSupabase(id: number): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('laveur_commissions')
+      .delete()
+      .eq('id', id);
+    if (error) console.warn('Supabase delete laveur commission error:', error.message);
+  } catch (err) {
+    console.warn('Supabase delete laveur commission error:', err);
+  }
+}
+
+// ============================================================================
+// 9. SYNCHRONISATION TEMPS RÉEL (Realtime)
 // ============================================================================
 // La réplication logique Postgres est activée sur ces tables
 // (ALTER PUBLICATION supabase_realtime ADD TABLE ..., voir les scripts

@@ -17,6 +17,7 @@ import { RapportsView } from './components/RapportsView';
 import { ParametresView } from './components/ParametresView';
 import { CaissieresView } from './components/CaissieresView';
 import { PrelevementsHammamView } from './components/PrelevementsHammamView';
+import { CommissionsLaveursView } from './components/CommissionsLaveursView';
 import { AssistantView } from './components/AssistantView';
 import { ReceiptModal } from './components/ReceiptModal';
 import { AuthSwitchModal } from './components/AuthSwitchModal';
@@ -64,6 +65,8 @@ const MainLayout: React.FC = () => {
         return <MouvementsView />;
       case 'prelevements-hammam':
         return <PrelevementsHammamView />;
+      case 'commissions-laveurs':
+        return <CommissionsLaveursView />;
       case 'rapports':
         return <RapportsView />;
       case 'utilisateurs':

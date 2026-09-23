@@ -198,7 +198,24 @@ export type ActiveSection =
   | 'produits'
   | 'mouvements'
   | 'prelevements-hammam'
+  | 'commissions-laveurs'
   | 'rapports'
   | 'utilisateurs'
   | 'parametres'
   | 'assistant';
+
+export type ClientType = 'vip' | 'simple' | 'enfant';
+
+export interface LaveurCommission {
+  id: number;
+  laveurName: string;
+  clientType: ClientType;
+  price: number;
+  commission: number;
+  bonus: number;
+  total: number;
+  date: string;
+  time: string;
+  timestamp: number;
+  recordedBy: string;
+}
