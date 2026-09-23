@@ -153,6 +153,9 @@ export const AuthSwitchModal: React.FC = () => {
                 placeholder="••••••••"
                 className="w-full pl-4 pr-12 py-3 bg-[#F7F3EC] border border-[#E7E0D3] rounded-2xl text-base font-medium text-[#1C2321] tracking-widest focus:outline-none focus:ring-2 focus:ring-[#004CB7] focus:border-transparent transition"
                 autoComplete="current-password"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
               />
               <button
                 type="button"
