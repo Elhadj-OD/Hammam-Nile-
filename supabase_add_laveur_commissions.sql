@@ -19,12 +19,19 @@ CREATE TABLE IF NOT EXISTS public.laveur_commissions (
   commission NUMERIC NOT NULL,
   bonus NUMERIC NOT NULL DEFAULT 0,
   total NUMERIC NOT NULL,
+  payment TEXT NOT NULL DEFAULT 'cash' CHECK (payment IN ('cash', 'mobile')),
+  "paymentDetail" TEXT,
   date TEXT NOT NULL,
   time TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
   "recordedBy" TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Si la table existait déjà (premier passage avant l'ajout du mode de
+-- paiement), ajoute les colonnes sans rien casser.
+ALTER TABLE public.laveur_commissions ADD COLUMN IF NOT EXISTS payment TEXT NOT NULL DEFAULT 'cash';
+ALTER TABLE public.laveur_commissions ADD COLUMN IF NOT EXISTS "paymentDetail" TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_laveur_commissions_timestamp ON public.laveur_commissions(timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_laveur_commissions_laveur ON public.laveur_commissions("laveurName");

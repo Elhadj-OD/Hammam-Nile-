@@ -28,6 +28,8 @@ export const CommissionsLaveursView: React.FC = () => {
   const [laveurName, setLaveurName] = useState('');
   const [clientType, setClientType] = useState<ClientType>('simple');
   const [bonus, setBonus] = useState<number>(0);
+  const [payment, setPayment] = useState<'cash' | 'mobile'>('cash');
+  const [paymentDetail, setPaymentDetail] = useState('');
   const [formError, setFormError] = useState('');
 
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
@@ -84,13 +86,25 @@ export const CommissionsLaveursView: React.FC = () => {
       setFormError('Le bonus ne peut pas être négatif.');
       return;
     }
+    if (payment === 'mobile' && !paymentDetail.trim()) {
+      setFormError('Veuillez indiquer le numéro mobile money du client.');
+      return;
+    }
 
-    addLaveurCommission({ laveurName: laveurName.trim(), clientType, bonus });
+    addLaveurCommission({
+      laveurName: laveurName.trim(),
+      clientType,
+      bonus,
+      payment,
+      paymentDetail: payment === 'mobile' ? paymentDetail.trim() : undefined,
+    });
 
     setShowAddModal(false);
     setLaveurName('');
     setClientType('simple');
     setBonus(0);
+    setPayment('cash');
+    setPaymentDetail('');
     setFormError('');
   };
 
@@ -282,6 +296,7 @@ export const CommissionsLaveursView: React.FC = () => {
                   <th className="py-3 px-4">Date & Heure</th>
                   <th className="py-3 px-4">Laveur</th>
                   <th className="py-3 px-4">Type Client</th>
+                  <th className="py-3 px-4">Paiement</th>
                   <th className="py-3 px-4 text-right">Commission</th>
                   <th className="py-3 px-4 text-right">Bonus</th>
                   <th className="py-3 px-4 text-right">Total</th>
@@ -301,6 +316,9 @@ export const CommissionsLaveursView: React.FC = () => {
                       <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#E4E9E1] text-[#0F4C4A] border border-[#0F4C4A]/20">
                         {CLIENT_TYPE_GRID[c.clientType].label}
                       </span>
+                    </td>
+                    <td className="py-3 px-4 whitespace-nowrap text-[#6B7873]">
+                      {c.payment === 'mobile' ? `Mobile${c.paymentDetail ? ` (${c.paymentDetail})` : ''}` : 'Espèces'}
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap font-bold text-[#0F4C4A]">
                       {formatPrice(c.commission)}
@@ -402,6 +420,45 @@ export const CommissionsLaveursView: React.FC = () => {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Payment method */}
+              <div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1.5">Mode de paiement du client *</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPayment('cash')}
+                    className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                      payment === 'cash'
+                        ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white shadow-xs'
+                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                    }`}
+                  >
+                    Espèces
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPayment('mobile')}
+                    className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                      payment === 'mobile'
+                        ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white shadow-xs'
+                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                    }`}
+                  >
+                    Mobile Money
+                  </button>
+                </div>
+                {payment === 'mobile' && (
+                  <input
+                    type="tel"
+                    value={paymentDetail}
+                    onChange={e => setPaymentDetail(e.target.value)}
+                    placeholder="Numéro mobile money du client"
+                    required
+                    className="mt-2 w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                  />
+                )}
               </div>
 
               {/* Bonus */}

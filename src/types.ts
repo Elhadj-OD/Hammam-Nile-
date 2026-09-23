@@ -214,6 +214,8 @@ export interface LaveurCommission {
   commission: number;
   bonus: number;
   total: number;
+  payment: 'cash' | 'mobile';
+  paymentDetail?: string;
   date: string;
   time: string;
   timestamp: number;
