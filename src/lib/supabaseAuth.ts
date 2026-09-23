@@ -15,6 +15,7 @@ interface ProfileRow {
   id: string;
   username: string;
   name: string;
+  email: string | null;
   role: UserRole;
   gender: UserGender | null;
   department: CaisseDepartment | null;
@@ -30,6 +31,7 @@ function profileToUser(p: ProfileRow): User {
     id: p.id,
     username: p.username,
     name: p.name,
+    email: p.email || undefined,
     role: p.role,
     gender: p.gender || undefined,
     department: p.department || undefined,
@@ -41,15 +43,30 @@ function profileToUser(p: ProfileRow): User {
   };
 }
 
+async function resolveLoginEmail(username: string): Promise<string> {
+  try {
+    const res = await fetch('/api/resolve-login-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.email) return data.email as string;
+    }
+  } catch {
+    // silencieux : on retombe sur l'adresse synthétique ci-dessous
+  }
+  return usernameToEmail(username);
+}
+
 export async function signInWithUsername(
   username: string,
   password: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: "La connexion au serveur n'est pas configurée." };
-  const { error } = await supabase.auth.signInWithPassword({
-    email: usernameToEmail(username),
-    password,
-  });
+  const email = await resolveLoginEmail(username);
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { success: false, error: 'Identifiant ou mot de passe incorrect.' };
   return { success: true };
 }
@@ -114,6 +131,7 @@ async function callAdminUsersApi<T = unknown>(
 export async function createStaffUser(data: {
   username: string;
   name: string;
+  email: string;
   role: UserRole;
   gender?: UserGender;
   department?: CaisseDepartment;
@@ -127,6 +145,7 @@ export async function updateStaffUser(
   username: string,
   updates: Partial<{
     name: string;
+    email: string;
     role: UserRole;
     gender: UserGender;
     department: CaisseDepartment | null;

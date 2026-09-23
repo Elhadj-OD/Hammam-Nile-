@@ -107,6 +107,7 @@ interface AppContextType {
   addUser: (user: {
     username: string;
     name: string;
+    email: string;
     role: UserRole;
     gender?: UserGender;
     department?: CaisseDepartment;
@@ -561,6 +562,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const addUser = async (newUser: {
     username: string;
     name: string;
+    email: string;
     role: UserRole;
     gender?: UserGender;
     department?: CaisseDepartment;
