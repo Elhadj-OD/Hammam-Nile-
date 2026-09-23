@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   username TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
+  email TEXT,
   role TEXT NOT NULL DEFAULT 'caissier' CHECK (role IN ('caissier', 'gerant')),
   gender TEXT CHECK (gender IN ('femme', 'homme')),
   department TEXT,
@@ -35,6 +36,10 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Si la table existait déjà (premier passage de ce fichier avant l'ajout
+-- des e-mails réels), ajoute la colonne sans rien casser.
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
 

@@ -11,6 +11,7 @@ export interface User {
   id?: string; // Supabase Auth user id (uuid) — absent tant que le profil n'a pas été migré
   username: string;
   name: string;
+  email?: string;
   role: UserRole;
   gender?: UserGender;
   department?: CaisseDepartment;

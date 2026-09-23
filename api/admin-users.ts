@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSupabaseAdmin, getCallerProfile, usernameToEmail, generateTempPassword } from './_supabaseAdmin';
+import { getSupabaseAdmin, getCallerProfile, generateTempPassword } from './_supabaseAdmin';
 
 // Gestion des comptes staff (création, modification, suppression,
 // réinitialisation de mot de passe). Utilise la clé service_role
@@ -15,6 +15,7 @@ interface CreatePayload {
   action: 'create';
   username: string;
   name: string;
+  email: string;
   role: Role;
   gender?: 'femme' | 'homme';
   department?: string;
@@ -27,6 +28,7 @@ interface UpdatePayload {
   username: string;
   updates: Partial<{
     name: string;
+    email: string;
     role: Role;
     gender: 'femme' | 'homme';
     department: string | null;
@@ -87,8 +89,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         const username = sanitizeUsername(body.username || '');
         const name = (body.name || '').trim();
+        const email = (body.email || '').trim().toLowerCase();
         if (!username || !name) {
           res.status(400).json({ error: "Identifiant et nom complet requis." });
+          return;
+        }
+        if (!email || !email.includes('@')) {
+          res.status(400).json({ error: 'Adresse e-mail réelle requise (nécessaire pour la récupération de mot de passe).' });
           return;
         }
         if (body.role !== 'caissier' && body.role !== 'gerant') {
@@ -99,16 +106,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { data: existing } = await admin
           .from('profiles')
           .select('id')
-          .eq('username', username)
+          .or(`username.eq.${username},email.eq.${email}`)
           .maybeSingle();
         if (existing) {
-          res.status(409).json({ error: `L'identifiant "${username}" est déjà utilisé.` });
+          res.status(409).json({ error: `L'identifiant ou l'e-mail est déjà utilisé.` });
           return;
         }
 
         const tempPassword = generateTempPassword();
         const { data: created, error: createErr } = await admin.auth.admin.createUser({
-          email: usernameToEmail(username),
+          email,
           password: tempPassword,
           email_confirm: true,
           user_metadata: { username },
@@ -123,6 +130,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           id: created.user.id,
           username,
           name,
+          email,
           role: body.role,
           gender: body.gender || null,
           department: body.department || null,
@@ -158,6 +166,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (caller.role === 'gerant') {
           // La gérante peut tout modifier sauf le rôle du dernier compte gérant
           if (body.updates.name !== undefined) updates.name = body.updates.name.trim();
+          if (body.updates.email !== undefined) updates.email = body.updates.email.trim().toLowerCase();
           if (body.updates.role !== undefined) updates.role = body.updates.role;
           if (body.updates.gender !== undefined) updates.gender = body.updates.gender;
           if (body.updates.department !== undefined) updates.department = body.updates.department;
@@ -166,6 +175,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           if (body.updates.avatar !== undefined) updates.avatar = body.updates.avatar;
         } else {
           // Une caissière ne peut modifier que ses propres coordonnées, jamais son rôle
+          if (body.updates.email !== undefined) updates.email = body.updates.email.trim().toLowerCase();
           if (body.updates.phone !== undefined) updates.phone = body.updates.phone;
           if (body.updates.avatar !== undefined) updates.avatar = body.updates.avatar;
         }
@@ -185,6 +195,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (Object.keys(updates).length === 0) {
           res.status(400).json({ error: 'Aucune modification valide.' });
           return;
+        }
+
+        // L'e-mail est aussi l'identifiant Supabase Auth : les deux doivent
+        // rester synchronisés, sinon la connexion utiliserait un e-mail
+        // qui ne correspond plus au compte Auth réel.
+        if (typeof updates.email === 'string') {
+          if (!updates.email.includes('@')) {
+            res.status(400).json({ error: 'Adresse e-mail invalide.' });
+            return;
+          }
+          const { data: target } = await admin.from('profiles').select('id').eq('username', username).maybeSingle();
+          if (!target) {
+            res.status(404).json({ error: 'Compte introuvable.' });
+            return;
+          }
+          const { error: emailErr } = await admin.auth.admin.updateUserById(target.id, {
+            email: updates.email,
+            email_confirm: true,
+          });
+          if (emailErr) {
+            console.error('admin-users email sync error:', emailErr);
+            res.status(500).json({ error: "Impossible de mettre à jour l'e-mail (peut-être déjà utilisé)." });
+            return;
+          }
         }
 
         updates.updated_at = new Date().toISOString();

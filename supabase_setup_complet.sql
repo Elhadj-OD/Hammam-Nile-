@@ -129,6 +129,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   username TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
+  email TEXT,
   role TEXT NOT NULL DEFAULT 'caissier' CHECK (role IN ('caissier', 'gerant')),
   gender TEXT CHECK (gender IN ('femme', 'homme')),
   department TEXT,
