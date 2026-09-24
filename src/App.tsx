@@ -18,6 +18,7 @@ import { ParametresView } from './components/ParametresView';
 import { CaissieresView } from './components/CaissieresView';
 import { PrelevementsHammamView } from './components/PrelevementsHammamView';
 import { CommissionsLaveursView } from './components/CommissionsLaveursView';
+import { LaveursView } from './components/LaveursView';
 import { DechargeView } from './components/DechargeView';
 import { AssistantView } from './components/AssistantView';
 import { ReceiptModal } from './components/ReceiptModal';
@@ -68,6 +69,8 @@ const MainLayout: React.FC = () => {
         return <PrelevementsHammamView />;
       case 'commissions-laveurs':
         return <CommissionsLaveursView />;
+      case 'laveurs':
+        return <LaveursView />;
       case 'rapports':
         return <RapportsView />;
       case 'decharge':

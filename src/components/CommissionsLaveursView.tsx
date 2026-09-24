@@ -19,6 +19,9 @@ import {
   Minus,
   Pencil,
   PackagePlus,
+  Smartphone,
+  Banknote,
+  Droplet,
 } from 'lucide-react';
 
 interface BoutiqueCartItem {
@@ -35,6 +38,7 @@ export const CommissionsLaveursView: React.FC = () => {
     addLaveurCommission,
     updateLaveurCommission,
     deleteLaveurCommission,
+    laveurs,
     settings,
     products,
     addProduct,
@@ -65,8 +69,9 @@ export const CommissionsLaveursView: React.FC = () => {
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
 
   const knownLaveurs = useMemo(
-    () => Array.from(new Set(laveurCommissions.map(c => c.laveurName))).sort(),
-    [laveurCommissions]
+    () =>
+      Array.from(new Set([...laveurs.map(l => l.name), ...laveurCommissions.map(c => c.laveurName)])).sort(),
+    [laveurs, laveurCommissions]
   );
 
   const filteredCommissions = useMemo(() => {
@@ -90,6 +95,17 @@ export const CommissionsLaveursView: React.FC = () => {
   const totalCommissions = filteredCommissions.reduce((sum, c) => sum + c.commission, 0);
   const totalBonus = filteredCommissions.reduce((sum, c) => sum + c.bonus, 0);
   const totalGeneral = filteredCommissions.reduce((sum, c) => sum + c.total, 0);
+
+  // Ce que les clients ont réellement payé (hammam + bonus + boutique),
+  // réparti par mode de règlement, et par nature (hammam / boutique).
+  const totalMobileMoney = filteredCommissions
+    .filter(c => c.payment === 'mobile')
+    .reduce((sum, c) => sum + c.price + c.bonus + (c.boutiqueTotal || 0), 0);
+  const totalEspeces = filteredCommissions
+    .filter(c => c.payment === 'cash')
+    .reduce((sum, c) => sum + c.price + c.bonus + (c.boutiqueTotal || 0), 0);
+  const totalHammam = filteredCommissions.reduce((sum, c) => sum + c.price, 0);
+  const totalBoutique = filteredCommissions.reduce((sum, c) => sum + (c.boutiqueTotal || 0), 0);
 
   // Récapitulatif par laveur (sur la période filtrée)
   const perLaveur = useMemo(() => {
@@ -291,6 +307,49 @@ export const CommissionsLaveursView: React.FC = () => {
             </div>
           </div>
           <div className="text-2xl font-black text-[#1C2321] mt-2 font-display">{filteredCommissions.length}</div>
+        </div>
+      </div>
+
+      {/* KPI Cards — encaissements réels du client (hammam + bonus + boutique) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">Total Mobile Money</span>
+            <div className="w-8 h-8 rounded-xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+              <Smartphone className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-[#0F4C4A] mt-2 font-display">{formatPrice(totalMobileMoney)}</div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">Total Espèces</span>
+            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#B8874B] flex items-center justify-center">
+              <Banknote className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-[#1C2321] mt-2 font-display">{formatPrice(totalEspeces)}</div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">Total Hammam</span>
+            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#0F4C4A] flex items-center justify-center">
+              <Droplet className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-[#1C2321] mt-2 font-display">{formatPrice(totalHammam)}</div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">Total Boutique</span>
+            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#5F7D6D] flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="text-2xl font-black text-[#1C2321] mt-2 font-display">{formatPrice(totalBoutique)}</div>
         </div>
       </div>
 

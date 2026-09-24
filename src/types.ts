@@ -199,6 +199,7 @@ export type ActiveSection =
   | 'mouvements'
   | 'prelevements-hammam'
   | 'commissions-laveurs'
+  | 'laveurs'
   | 'rapports'
   | 'decharge'
   | 'utilisateurs'
@@ -223,6 +224,15 @@ export interface LaveurCommission {
   time: string;
   timestamp: number;
   recordedBy: string;
+}
+
+// Profil d'un laveur (juste un nom — pas de compte, pas de connexion) :
+// permet de le "déclarer" avant son premier service et de retrouver
+// facilement ses gains cumulés (commissions + bonus).
+export interface Laveur {
+  id: number;
+  name: string;
+  createdAt: string;
 }
 
 // Clôture journalière (décharge) : compare les totaux calculés à partir des
