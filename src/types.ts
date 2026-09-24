@@ -200,6 +200,7 @@ export type ActiveSection =
   | 'prelevements-hammam'
   | 'commissions-laveurs'
   | 'rapports'
+  | 'decharge'
   | 'utilisateurs'
   | 'parametres'
   | 'assistant';
@@ -221,4 +222,21 @@ export interface LaveurCommission {
   time: string;
   timestamp: number;
   recordedBy: string;
+}
+
+// Clôture journalière (décharge) : compare les totaux calculés à partir des
+// ventes/commissions déjà enregistrées dans l'app au comptage réel (espèces
+// en caisse, solde mobile money), pour détecter tout écart.
+export interface Decharge {
+  id: number;
+  dateDecharge: string; // "JJ/MM/AAAA"
+  totalEspeceCalcule: number;
+  totalMobileMoneyCalcule: number;
+  nombreTransactions: number;
+  montantEspeceReel: number;
+  montantMobileMoneyReel: number;
+  ecartEspece: number;
+  ecartMobileMoney: number;
+  faitPar: string;
+  timestamp: number;
 }
