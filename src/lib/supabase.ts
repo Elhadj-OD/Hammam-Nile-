@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow, LaveurCommission, Decharge } from '../types';
+import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow, LaveurCommission, Decharge, Laveur } from '../types';
 
 // Read credentials from environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -352,6 +352,44 @@ export async function deleteLaveurCommissionFromSupabase(id: number): Promise<vo
     if (error) console.warn('Supabase delete laveur commission error:', error.message);
   } catch (err) {
     console.warn('Supabase delete laveur commission error:', err);
+  }
+}
+
+// ============================================================================
+// 8b. PROFILS DES LAVEURS
+// ============================================================================
+export async function getLaveursFromSupabase(): Promise<Laveur[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase.from('laveurs').select('*').order('name');
+    if (error) {
+      console.warn('Supabase fetch laveurs error:', error.message);
+      return null;
+    }
+    return (data || []).map(row => ({ id: row.id, name: row.name, createdAt: row.created_at })) as Laveur[];
+  } catch (err) {
+    console.warn('Supabase error:', err);
+    return null;
+  }
+}
+
+export async function saveLaveurToSupabase(laveur: Laveur): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase.from('laveurs').insert({ id: laveur.id, name: laveur.name });
+    if (error) console.warn('Supabase save laveur error:', error.message);
+  } catch (err) {
+    console.warn('Supabase save laveur error:', err);
+  }
+}
+
+export async function deleteLaveurFromSupabase(id: number): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase.from('laveurs').delete().eq('id', id);
+    if (error) console.warn('Supabase delete laveur error:', error.message);
+  } catch (err) {
+    console.warn('Supabase delete laveur error:', err);
   }
 }
 

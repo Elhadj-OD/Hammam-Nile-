@@ -21,6 +21,7 @@ import {
   LaveurCommission,
   ClientType,
   Decharge,
+  Laveur,
 } from '../types';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
 import {
@@ -60,6 +61,9 @@ import {
   saveLaveurCommissionToSupabase,
   updateLaveurCommissionInSupabase,
   deleteLaveurCommissionFromSupabase,
+  getLaveursFromSupabase,
+  saveLaveurToSupabase,
+  deleteLaveurFromSupabase,
   getDechargesFromSupabase,
   saveDechargeToSupabase,
   getShopSettingsFromSupabase,
@@ -245,6 +249,11 @@ interface AppContextType {
   ) => void;
   deleteLaveurCommission: (id: number) => void;
 
+  // Profils des laveurs (juste un nom, pas de compte)
+  laveurs: Laveur[];
+  addLaveur: (name: string) => { success: boolean; error?: string };
+  deleteLaveur: (id: number) => void;
+
   // Décharge (clôture journalière) — accès gérante uniquement (RLS)
   decharges: Decharge[];
   addOrUpdateDecharge: (data: {
@@ -346,6 +355,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [laveurs, setLaveurs] = useState<Laveur[]>(() => {
+    const saved = localStorage.getItem(`${STORAGE_KEY}-laveurs`);
+    return saved ? JSON.parse(saved) : [];
+  });
+
   // Pas de cache localStorage : réservé à la gérante (RLS), rechargé depuis
   // Supabase à chaque session pour ne jamais garder de décharge périmée.
   const [decharges, setDecharges] = useState<Decharge[]>([]);
@@ -390,6 +404,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem(`${STORAGE_KEY}-laveur-commissions`, JSON.stringify(laveurCommissions));
   }, [laveurCommissions]);
+
+  useEffect(() => {
+    localStorage.setItem(`${STORAGE_KEY}-laveurs`, JSON.stringify(laveurs));
+  }, [laveurs]);
 
   useEffect(() => {
     localStorage.setItem(`${STORAGE_KEY}-settings`, JSON.stringify(settings));
@@ -445,13 +463,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!isSupabaseConfigured()) return;
     async function loadSupabase() {
       try {
-        const [sbProducts, sbSales, sbClients, sbMovements, sbUsages, sbCommissions, sbSettings] = await Promise.all([
+        const [sbProducts, sbSales, sbClients, sbMovements, sbUsages, sbCommissions, sbLaveurs, sbSettings] = await Promise.all([
           getProductsFromSupabase(),
           getSalesFromSupabase(),
           getClientsFromSupabase(),
           getMovementsFromSupabase(),
           getHammamUsagesFromSupabase(),
           getLaveurCommissionsFromSupabase(),
+          getLaveursFromSupabase(),
           getShopSettingsFromSupabase(),
         ]);
 
@@ -467,6 +486,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (sbMovements && sbMovements.length > 0) setMovements(sbMovements);
         if (sbUsages && sbUsages.length > 0) setHammamUsages(sbUsages);
         if (sbCommissions && sbCommissions.length > 0) setLaveurCommissions(sbCommissions);
+        if (sbLaveurs && sbLaveurs.length > 0) setLaveurs(sbLaveurs);
         if (sbSettings) setSettings(sbSettings);
 
         setSupabaseConnected(true);
@@ -527,6 +547,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setLaveurCommissions(prev => {
           if (eventType === 'DELETE') return removeById(prev, (old as LaveurCommission).id);
           return prev.some(c => c.id === (row as LaveurCommission).id) ? prev : upsertById(prev, row as LaveurCommission);
+        });
+      }),
+      subscribeToTable<Laveur>('laveurs', ({ eventType, new: row, old }) => {
+        setLaveurs(prev => {
+          if (eventType === 'DELETE') return removeById(prev, (old as Laveur).id);
+          return prev.some(l => l.id === (row as Laveur).id) ? prev : upsertById(prev, row as Laveur);
         });
       }),
       // La RLS ne livre ces événements qu'à la gérante — sans effet pour les autres comptes.
@@ -1496,6 +1522,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     deleteLaveurCommissionFromSupabase(id);
   };
 
+  // Profils des laveurs
+  const addLaveur = (name: string): { success: boolean; error?: string } => {
+    const cleanName = name.trim();
+    if (!cleanName) return { success: false, error: 'Veuillez indiquer un nom.' };
+    if (laveurs.some(l => l.name.toLowerCase() === cleanName.toLowerCase())) {
+      return { success: false, error: 'Ce laveur est déjà enregistré.' };
+    }
+    const newLaveur: Laveur = {
+      id: Date.now(),
+      name: cleanName,
+      createdAt: new Date().toISOString(),
+    };
+    setLaveurs(prev => [...prev, newLaveur].sort((a, b) => a.name.localeCompare(b.name)));
+    saveLaveurToSupabase(newLaveur);
+    return { success: true };
+  };
+
+  const deleteLaveur = (id: number) => {
+    setLaveurs(prev => prev.filter(l => l.id !== id));
+    deleteLaveurFromSupabase(id);
+  };
+
   // Décharge (clôture journalière) — une seule par jour : refaire la
   // décharge du même jour corrige l'existante (upsert sur dateDecharge).
   const addOrUpdateDecharge = async (data: {
@@ -1605,6 +1653,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addLaveurCommission,
         updateLaveurCommission,
         deleteLaveurCommission,
+        laveurs,
+        addLaveur,
+        deleteLaveur,
         decharges,
         addOrUpdateDecharge,
         settings,
