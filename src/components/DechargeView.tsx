@@ -44,13 +44,17 @@ export const DechargeView: React.FC = () => {
     [laveurCommissions, selectedDate]
   );
 
+  // c.total (commission + bonus) est ce que touche le LAVEUR, pas ce que le
+  // client a payé au comptoir — on utilise price + bonus (le prix du hammam
+  // encaissé, plus le pourboire). Le boutiqueTotal est déjà compté via la
+  // vente liée dans `sales`, donc jamais additionné ici pour éviter un double comptage.
   const totalEspeceCalcule =
     daySales.filter(s => s.payment === 'cash').reduce((sum, s) => sum + s.total, 0) +
-    dayCommissions.filter(c => c.payment === 'cash').reduce((sum, c) => sum + c.total, 0);
+    dayCommissions.filter(c => c.payment === 'cash').reduce((sum, c) => sum + c.price + c.bonus, 0);
 
   const totalMobileMoneyCalcule =
     daySales.filter(s => s.payment === 'mobile').reduce((sum, s) => sum + s.total, 0) +
-    dayCommissions.filter(c => c.payment === 'mobile').reduce((sum, c) => sum + c.total, 0);
+    dayCommissions.filter(c => c.payment === 'mobile').reduce((sum, c) => sum + c.price + c.bonus, 0);
 
   const nombreTransactions = daySales.length + dayCommissions.length;
 
