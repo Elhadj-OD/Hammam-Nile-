@@ -751,14 +751,20 @@ export const CaissieresView: React.FC = () => {
                   className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
                 >
                   <option value="">Aucune (voit tout le rayon boutique général)</option>
-                  {Object.entries(DEPARTMENTS).map(([key, d]) => (
-                    <option key={key} value={key}>
-                      {d.icon} {d.label}
-                    </option>
-                  ))}
+                  {Object.entries(DEPARTMENTS)
+                    // "Hammam & Bains" n'est pas une caisse à part : le hammam des
+                    // femmes se vend dans la caisse Boutique Femme (même logique
+                    // que le hammam des garçons dans Boutique Homme).
+                    .filter(([key]) => key !== 'hammam_bains')
+                    .map(([key, d]) => (
+                      <option key={key} value={key}>
+                        {d.icon} {d.label}
+                        {key === 'boutique_femme' ? ' (+ Hammam)' : ''}
+                      </option>
+                    ))}
                 </select>
                 <p className="text-[11px] text-[#6B7873] mt-1">
-                  Si une caisse est choisie, cette caissière ne voit et ne vend que les articles de cette partie à la connexion.
+                  Si une caisse est choisie, cette caissière ne voit et ne vend que les articles de cette partie à la connexion. « Boutique Femme » inclut aussi les services hammam pour femmes (Hammam simple, Gommage, Signature...).
                 </p>
               </div>
 
