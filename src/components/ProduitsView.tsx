@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { Product, ProductCategory } from '../types';
+import { DEPARTMENTS } from '../lib/departments';
 import {
   Package,
   Plus,
@@ -22,12 +23,16 @@ import {
 export const ProduitsView: React.FC = () => {
   const { products, addProduct, updateProduct, deleteProduct, settings, currentUser } = useApp();
 
-  // La gérante gère tout le catalogue ; une caissière ne voit/gère que le
-  // rayon de son genre (même règle que sur l'écran Caisse).
+  // La gérante gère tout le catalogue. Une caissière avec un département
+  // assigné (Hammam & Bains, Esthétique...) ne voit/gère que le rayon de
+  // ce département ; sinon elle est limitée par son genre (Boutique Femme/
+  // Homme) — exactement les mêmes règles que sur l'écran Caisse.
   const isGerant = currentUser?.role === 'gerant';
+  const myDept = !isGerant && currentUser?.department ? DEPARTMENTS[currentUser.department] : null;
   const canAccessBoutiqueFemme = isGerant || currentUser?.gender !== 'homme';
   const canAccessBoutiqueHomme = isGerant || currentUser?.gender === 'homme';
   const accessibleProducts = products.filter(p => {
+    if (myDept) return p.category === myDept.category;
     if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
     if (p.category === 'hommes' && !canAccessBoutiqueHomme) return false;
     return true;
@@ -61,7 +66,7 @@ export const ProduitsView: React.FC = () => {
   const openAddForm = () => {
     setEditingProduct(null);
     setName('');
-    setCategory('savons');
+    setCategory(myDept ? myDept.category : 'savons');
     setPrice('');
     setQty('20');
     setMinQty('5');
@@ -231,6 +236,12 @@ export const ProduitsView: React.FC = () => {
           />
         </div>
 
+        {myDept ? (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#0F4C4A] text-white text-[13px] font-bold w-fit shrink-0">
+            <span>{myDept.icon}</span>
+            <span>{myDept.label}</span>
+          </div>
+        ) : (
         <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto">
           <button
             type="button"
@@ -376,6 +387,7 @@ export const ProduitsView: React.FC = () => {
             💇 Coiffure & Salon
           </button>
         </div>
+        )}
       </div>
 
       {/* Product List / Table */}
@@ -725,25 +737,32 @@ export const ProduitsView: React.FC = () => {
                   <label className="block text-xs font-bold text-[#1C2321] mb-1">
                     Catégorie
                   </label>
-                  <select
-                    value={category}
-                    onChange={e => setCategory(e.target.value as ProductCategory)}
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
-                  >
-                    <option value="savons">Savons & Gommages</option>
-                    <option value="huiles">Huiles & Parfums</option>
-                    <option value="accessoires">Accessoires & Foutas</option>
-                    <option value="linge">Linge & Bains</option>
-                    <option value="soins">Soins du Corps</option>
-                    {canAccessBoutiqueFemme && <option value="femmes">Boutique Femme</option>}
-                    {canAccessBoutiqueHomme && <option value="hommes">Boutique Homme</option>}
-                    <option value="hammam_bains">Hammam & Bains</option>
-                    <option value="spa_massage">Esthétique</option>
-                    <option value="coiffure_salon">Coiffure & Salon</option>
-                    <option value="epilation_traditionnelle">Épilation Traditionnelle</option>
-                    <option value="fitness_gym">Fitness Gym</option>
-                    <option value="autres">Autres / Coffrets</option>
-                  </select>
+                  {myDept ? (
+                    <div className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans flex items-center gap-1.5">
+                      <span>{myDept.icon}</span>
+                      <span>{myDept.label}</span>
+                    </div>
+                  ) : (
+                    <select
+                      value={category}
+                      onChange={e => setCategory(e.target.value as ProductCategory)}
+                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                    >
+                      <option value="savons">Savons & Gommages</option>
+                      <option value="huiles">Huiles & Parfums</option>
+                      <option value="accessoires">Accessoires & Foutas</option>
+                      <option value="linge">Linge & Bains</option>
+                      <option value="soins">Soins du Corps</option>
+                      {canAccessBoutiqueFemme && <option value="femmes">Boutique Femme</option>}
+                      {canAccessBoutiqueHomme && <option value="hommes">Boutique Homme</option>}
+                      <option value="hammam_bains">Hammam & Bains</option>
+                      <option value="spa_massage">Esthétique</option>
+                      <option value="coiffure_salon">Coiffure & Salon</option>
+                      <option value="epilation_traditionnelle">Épilation Traditionnelle</option>
+                      <option value="fitness_gym">Fitness Gym</option>
+                      <option value="autres">Autres / Coffrets</option>
+                    </select>
+                  )}
                 </div>
 
                 <div>
