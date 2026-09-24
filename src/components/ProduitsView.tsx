@@ -20,7 +20,18 @@ import {
 } from 'lucide-react';
 
 export const ProduitsView: React.FC = () => {
-  const { products, addProduct, updateProduct, deleteProduct, settings } = useApp();
+  const { products, addProduct, updateProduct, deleteProduct, settings, currentUser } = useApp();
+
+  // La gérante gère tout le catalogue ; une caissière ne voit/gère que le
+  // rayon de son genre (même règle que sur l'écran Caisse).
+  const isGerant = currentUser?.role === 'gerant';
+  const canAccessBoutiqueFemme = isGerant || currentUser?.gender !== 'homme';
+  const canAccessBoutiqueHomme = isGerant || currentUser?.gender === 'homme';
+  const accessibleProducts = products.filter(p => {
+    if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
+    if (p.category === 'hommes' && !canAccessBoutiqueHomme) return false;
+    return true;
+  });
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -147,7 +158,7 @@ export const ProduitsView: React.FC = () => {
     return `${val.toLocaleString('fr-FR')} ${settings.currency}`;
   };
 
-  const filteredProducts = products.filter(p => {
+  const filteredProducts = accessibleProducts.filter(p => {
     const matchesSearch =
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.description && p.description.toLowerCase().includes(search.toLowerCase()));
@@ -155,8 +166,8 @@ export const ProduitsView: React.FC = () => {
     return matchesSearch && matchesCat;
   });
 
-  const totalPieces = products.reduce((acc, p) => acc + p.qty, 0);
-  const totalValuation = products.reduce((acc, p) => acc + p.price * p.qty, 0);
+  const totalPieces = accessibleProducts.reduce((acc, p) => acc + p.qty, 0);
+  const totalValuation = accessibleProducts.reduce((acc, p) => acc + p.price * p.qty, 0);
 
   return (
     <div className="space-y-6 max-w-[1360px] mx-auto pb-12">
@@ -190,7 +201,7 @@ export const ProduitsView: React.FC = () => {
         <div className="bg-white p-4.5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="text-xs text-[#6B7873] font-bold uppercase">Nombre de Références</div>
           <div className="text-2xl font-bold font-display text-[#1C2321] mt-1">
-            {products.length} articles
+            {accessibleProducts.length} articles
           </div>
         </div>
         <div className="bg-white p-4.5 rounded-2xl border border-[#E7E0D3] shadow-xs">
@@ -230,7 +241,7 @@ export const ProduitsView: React.FC = () => {
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
           >
-            Tous ({products.length})
+            Tous ({accessibleProducts.length})
           </button>
           <button
             type="button"
@@ -276,30 +287,34 @@ export const ProduitsView: React.FC = () => {
           >
             🧺 Linge & Bains
           </button>
-          <button
-            type="button"
-            onClick={() => setSelectedCategory('femmes')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
-              selectedCategory === 'femmes'
-                ? 'bg-[#0F4C4A] text-white'
-                : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
-            }`}
-            title="Réservée aux caissières marquées « Femme » sur l'écran Caisse"
-          >
-            💄 Boutique Femme
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedCategory('hommes')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
-              selectedCategory === 'hommes'
-                ? 'bg-[#0F4C4A] text-white'
-                : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
-            }`}
-            title="Réservée aux caissiers marqués « Homme » sur l'écran Caisse"
-          >
-            🧔 Boutique Homme
-          </button>
+          {canAccessBoutiqueFemme && (
+            <button
+              type="button"
+              onClick={() => setSelectedCategory('femmes')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                selectedCategory === 'femmes'
+                  ? 'bg-[#0F4C4A] text-white'
+                  : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+              }`}
+              title="Réservée aux caissières marquées « Femme » sur l'écran Caisse"
+            >
+              💄 Boutique Femme
+            </button>
+          )}
+          {canAccessBoutiqueHomme && (
+            <button
+              type="button"
+              onClick={() => setSelectedCategory('hommes')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                selectedCategory === 'hommes'
+                  ? 'bg-[#0F4C4A] text-white'
+                  : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+              }`}
+              title="Réservée aux caissiers marqués « Homme » sur l'écran Caisse"
+            >
+              🧔 Boutique Homme
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setSelectedCategory('hammam_bains')}
@@ -720,8 +735,8 @@ export const ProduitsView: React.FC = () => {
                     <option value="accessoires">Accessoires & Foutas</option>
                     <option value="linge">Linge & Bains</option>
                     <option value="soins">Soins du Corps</option>
-                    <option value="femmes">Boutique Femme</option>
-                    <option value="hommes">Boutique Homme</option>
+                    {canAccessBoutiqueFemme && <option value="femmes">Boutique Femme</option>}
+                    {canAccessBoutiqueHomme && <option value="hommes">Boutique Homme</option>}
                     <option value="hammam_bains">Hammam & Bains</option>
                     <option value="spa_massage">Esthétique</option>
                     <option value="coiffure_salon">Coiffure & Salon</option>

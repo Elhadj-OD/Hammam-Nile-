@@ -30,9 +30,18 @@ interface BoutiqueCartItem {
 }
 
 export const CommissionsLaveursView: React.FC = () => {
-  const { laveurCommissions, addLaveurCommission, deleteLaveurCommission, settings, products, addProduct } = useApp();
+  const {
+    laveurCommissions,
+    addLaveurCommission,
+    updateLaveurCommission,
+    deleteLaveurCommission,
+    settings,
+    products,
+    addProduct,
+  } = useApp();
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingCommission, setEditingCommission] = useState<LaveurCommission | null>(null);
   const [search, setSearch] = useState('');
   const [filterLaveur, setFilterLaveur] = useState('all');
   const [filterPeriod, setFilterPeriod] = useState<'today' | 'week' | 'month' | 'all'>('today');
@@ -95,6 +104,38 @@ export const CommissionsLaveursView: React.FC = () => {
     return Object.entries(map).sort((a, b) => b[1].total - a[1].total);
   }, [filteredCommissions]);
 
+  const resetForm = () => {
+    setShowAddModal(false);
+    setEditingCommission(null);
+    setLaveurName('');
+    setClientType('simple');
+    setBonus(0);
+    setPayment('cash');
+    setMobileOperator('Bankily');
+    setCustomerPhone('');
+    setFormError('');
+    setProductSearch('');
+    setBoutiqueCart([]);
+    setEditingPriceId(null);
+    setShowNewProductForm(false);
+    setNewProductName('');
+    setNewProductPrice('');
+    setNewProductQty('1');
+  };
+
+  const handleOpenEdit = (c: LaveurCommission) => {
+    setEditingCommission(c);
+    setLaveurName(c.laveurName);
+    setClientType(c.clientType);
+    setBonus(c.bonus);
+    setPayment(c.payment);
+    setMobileOperator(c.payment === 'mobile' ? c.paymentDetail || 'Bankily' : 'Bankily');
+    setCustomerPhone(c.customerPhone || '');
+    setFormError('');
+    setBoutiqueCart([]);
+    setShowAddModal(true);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
@@ -112,31 +153,28 @@ export const CommissionsLaveursView: React.FC = () => {
       return;
     }
 
-    addLaveurCommission({
-      laveurName: laveurName.trim(),
-      clientType,
-      bonus,
-      payment,
-      paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
-      customerPhone: payment === 'mobile' ? customerPhone.trim() : undefined,
-      products: boutiqueCart.map(item => ({ productId: item.productId, qty: item.qty, price: item.price })),
-    });
+    if (editingCommission) {
+      updateLaveurCommission(editingCommission.id, {
+        laveurName: laveurName.trim(),
+        clientType,
+        bonus,
+        payment,
+        paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
+        customerPhone: payment === 'mobile' ? customerPhone.trim() : undefined,
+      });
+    } else {
+      addLaveurCommission({
+        laveurName: laveurName.trim(),
+        clientType,
+        bonus,
+        payment,
+        paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
+        customerPhone: payment === 'mobile' ? customerPhone.trim() : undefined,
+        products: boutiqueCart.map(item => ({ productId: item.productId, qty: item.qty, price: item.price })),
+      });
+    }
 
-    setShowAddModal(false);
-    setLaveurName('');
-    setClientType('simple');
-    setBonus(0);
-    setPayment('cash');
-    setMobileOperator('Bankily');
-    setCustomerPhone('');
-    setFormError('');
-    setProductSearch('');
-    setBoutiqueCart([]);
-    setEditingPriceId(null);
-    setShowNewProductForm(false);
-    setNewProductName('');
-    setNewProductPrice('');
-    setNewProductQty('1');
+    resetForm();
   };
 
   const productMatches = useMemo(() => {
@@ -412,14 +450,24 @@ export const CommissionsLaveursView: React.FC = () => {
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap text-[#6B7873]">{c.recordedBy}</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(c)}
-                        title="Supprimer"
-                        className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(c)}
+                          title="Modifier"
+                          className="p-1.5 rounded-lg bg-[#F7F3EC] hover:bg-[#E4E9E1] text-[#0A3735] transition cursor-pointer"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(c)}
+                          title="Supprimer"
+                          className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -439,19 +487,15 @@ export const CommissionsLaveursView: React.FC = () => {
                   <Users className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base text-[#1C2321] font-display">Nouveau Service</h3>
+                  <h3 className="font-bold text-base text-[#1C2321] font-display">
+                    {editingCommission ? 'Modifier le Service' : 'Nouveau Service'}
+                  </h3>
                   <p className="text-[11px] text-[#6B7873]">Commission calculée automatiquement</p>
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => {
-                  setShowAddModal(false);
-                  setProductSearch('');
-                  setBoutiqueCart([]);
-                  setShowNewProductForm(false);
-                  setEditingPriceId(null);
-                }}
+                onClick={resetForm}
                 className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#1C2321] hover:bg-[#F7F3EC]"
               >
                 <X className="w-5 h-5" />
@@ -582,7 +626,16 @@ export const CommissionsLaveursView: React.FC = () => {
                 />
               </div>
 
-              {/* Boutique products (optional) */}
+              {/* Boutique products (optional) — uniquement à la création : ne
+                  rouvre pas la vente/le stock déjà validés d'un service existant */}
+              {editingCommission ? (
+                <div className="p-3 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[11px] text-[#6B7873] flex items-start gap-2">
+                  <ShoppingBag className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>
+                    Les articles boutique éventuellement achetés avec ce service ne sont pas modifiables ici — ils ont déjà été enregistrés dans les ventes/inventaire. Seuls les champs du service hammam ci-dessous peuvent être corrigés.
+                  </span>
+                </div>
+              ) : (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs font-bold text-[#1C2321] flex items-center gap-1.5">
@@ -764,6 +817,7 @@ export const CommissionsLaveursView: React.FC = () => {
                   </div>
                 )}
               </div>
+              )}
 
               {/* Summary */}
               <div className="bg-[#E4E9E1]/60 p-3.5 rounded-xl border border-[#0F4C4A]/20 space-y-1.5 text-xs">
@@ -801,13 +855,7 @@ export const CommissionsLaveursView: React.FC = () => {
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setProductSearch('');
-                    setBoutiqueCart([]);
-                    setShowNewProductForm(false);
-                    setEditingPriceId(null);
-                  }}
+                  onClick={resetForm}
                   className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4E9E1] transition cursor-pointer"
                 >
                   Annuler
@@ -817,7 +865,7 @@ export const CommissionsLaveursView: React.FC = () => {
                   className="flex-1 py-2.5 bg-[#0F4C4A] text-white rounded-xl text-xs font-bold hover:bg-[#0A3735] transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Enregistrer le Service</span>
+                  <span>{editingCommission ? 'Enregistrer les modifications' : 'Enregistrer le Service'}</span>
                 </button>
               </div>
             </form>

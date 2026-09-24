@@ -57,6 +57,7 @@ import {
   saveHammamUsageToSupabase,
   getLaveurCommissionsFromSupabase,
   saveLaveurCommissionToSupabase,
+  updateLaveurCommissionInSupabase,
   deleteLaveurCommissionFromSupabase,
   getShopSettingsFromSupabase,
   saveShopSettingsToSupabase,
@@ -228,6 +229,17 @@ interface AppContextType {
     customerPhone?: string;
     products?: { productId: number; qty: number; price?: number }[];
   }) => LaveurCommission;
+  updateLaveurCommission: (
+    id: number,
+    updates: {
+      laveurName?: string;
+      clientType?: ClientType;
+      bonus?: number;
+      payment?: 'cash' | 'mobile';
+      paymentDetail?: string;
+      customerPhone?: string;
+    }
+  ) => void;
   deleteLaveurCommission: (id: number) => void;
 
   // Settings
@@ -1405,6 +1417,44 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return newCommission;
   };
 
+  const updateLaveurCommission = (
+    id: number,
+    updates: {
+      laveurName?: string;
+      clientType?: ClientType;
+      bonus?: number;
+      payment?: 'cash' | 'mobile';
+      paymentDetail?: string;
+      customerPhone?: string;
+    }
+  ) => {
+    setLaveurCommissions(prev =>
+      prev.map(c => {
+        if (c.id !== id) return c;
+
+        const clientType = updates.clientType ?? c.clientType;
+        const grid = CLIENT_TYPE_GRID[clientType];
+        const bonus = updates.bonus != null ? Math.max(0, updates.bonus) : c.bonus;
+        const payment = updates.payment ?? c.payment;
+
+        const updated: LaveurCommission = {
+          ...c,
+          laveurName: updates.laveurName?.trim() || c.laveurName,
+          clientType,
+          price: grid.price,
+          commission: grid.commission,
+          bonus,
+          total: grid.commission + bonus,
+          payment,
+          paymentDetail: payment === 'mobile' ? updates.paymentDetail?.trim() || c.paymentDetail : undefined,
+          customerPhone: payment === 'mobile' ? updates.customerPhone?.trim() || c.customerPhone : undefined,
+        };
+        updateLaveurCommissionInSupabase(id, updated);
+        return updated;
+      })
+    );
+  };
+
   const deleteLaveurCommission = (id: number) => {
     setLaveurCommissions(prev => prev.filter(c => c.id !== id));
     deleteLaveurCommissionFromSupabase(id);
@@ -1481,6 +1531,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteHammamUsage,
         laveurCommissions,
         addLaveurCommission,
+        updateLaveurCommission,
         deleteLaveurCommission,
         settings,
         updateSettings,
