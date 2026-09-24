@@ -1359,6 +1359,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const timestamp = now.getTime();
     const bonus = Math.max(0, data.bonus || 0);
     const laveurName = data.laveurName.trim();
+    let boutiqueTotal: number | undefined;
 
     // Articles boutique achetés en même temps : l'argent et le stock partent
     // dans les ventes/inventaire normaux, séparés de la commission du laveur.
@@ -1397,6 +1398,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setMovements(prev => [...newMovements, ...prev]);
 
         const subtotal = cartItems.reduce((sum, c) => sum + c.price * c.cartQty, 0);
+        boutiqueTotal = subtotal;
         const newSale: Sale = {
           id: sales.length > 0 ? Math.max(...sales.map(s => s.id)) + 1 : 1,
           caissier: currentUser?.username || 'caissier',
@@ -1440,6 +1442,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       payment: data.payment,
       paymentDetail: data.payment === 'mobile' ? data.paymentDetail?.trim() || undefined : undefined,
       customerPhone: data.customerPhone?.trim() || undefined,
+      boutiqueTotal,
       date: now.toLocaleDateString('fr-FR'),
       time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
       timestamp,

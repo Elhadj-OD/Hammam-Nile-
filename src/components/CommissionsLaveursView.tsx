@@ -407,6 +407,8 @@ export const CommissionsLaveursView: React.FC = () => {
                   <th className="py-3 px-4">Laveur</th>
                   <th className="py-3 px-4">Type Client</th>
                   <th className="py-3 px-4">Paiement</th>
+                  <th className="py-3 px-4 text-right">Hammam</th>
+                  <th className="py-3 px-4 text-right">Boutique</th>
                   <th className="py-3 px-4 text-right">Commission</th>
                   <th className="py-3 px-4 text-right">Bonus</th>
                   <th className="py-3 px-4 text-right">Total</th>
@@ -438,6 +440,12 @@ export const CommissionsLaveursView: React.FC = () => {
                       ) : (
                         '💵 Espèces'
                       )}
+                    </td>
+                    <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#1C2321]">
+                      {formatPrice(c.price)}
+                    </td>
+                    <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#5F7D6D]">
+                      {c.boutiqueTotal ? formatPrice(c.boutiqueTotal) : '—'}
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap font-bold text-[#0F4C4A]">
                       {formatPrice(c.commission)}

@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.laveur_commissions (
 ALTER TABLE public.laveur_commissions ADD COLUMN IF NOT EXISTS payment TEXT NOT NULL DEFAULT 'cash';
 ALTER TABLE public.laveur_commissions ADD COLUMN IF NOT EXISTS "paymentDetail" TEXT;
 ALTER TABLE public.laveur_commissions ADD COLUMN IF NOT EXISTS "customerPhone" TEXT;
+ALTER TABLE public.laveur_commissions ADD COLUMN IF NOT EXISTS "boutiqueTotal" NUMERIC;
 
 CREATE INDEX IF NOT EXISTS idx_laveur_commissions_timestamp ON public.laveur_commissions(timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_laveur_commissions_laveur ON public.laveur_commissions("laveurName");
