@@ -93,6 +93,18 @@ export const RapportsView: React.FC = () => {
   const mobileSales = filteredSales.filter(s => s.payment === 'mobile');
   const mobileTotal = mobileSales.reduce((sum, s) => sum + s.total, 0);
 
+  // Répartition Mobile Money par opérateur (Bankily, Masrivi, Sedad, Click, BCI Pay, Amanty, Bimbank...)
+  const mobileByOperator = useMemo(() => {
+    const map: Record<string, { count: number; total: number }> = {};
+    mobileSales.forEach(s => {
+      const op = s.paymentDetail || 'Autre';
+      if (!map[op]) map[op] = { count: 0, total: 0 };
+      map[op].count += 1;
+      map[op].total += s.total;
+    });
+    return Object.entries(map).sort((a, b) => b[1].total - a[1].total);
+  }, [mobileSales]);
+
   // Cashier Breakdown
   const salesByCashier = useMemo(() => {
     const map: Record<string, { name: string; count: number; total: number; avatar?: string }> = {};
@@ -410,7 +422,7 @@ export const RapportsView: React.FC = () => {
         {/* Mobile Money */}
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between text-[#6B7873] text-xs font-bold uppercase mb-2">
-            <span>Mobile (Bankily / Masrivi)</span>
+            <span>Mobile Money</span>
             <div className="w-7 h-7 rounded-lg bg-[#F7F3EC] text-[#B8874B] flex items-center justify-center">
               <Smartphone className="w-4 h-4" />
             </div>
@@ -423,6 +435,37 @@ export const RapportsView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Répartition Mobile Money par opérateur */}
+      {mobileByOperator.length > 0 && (
+        <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
+          <h3 className="text-xs font-bold text-[#6B7873] uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Smartphone className="w-4 h-4 text-[#B8874B]" />
+            <span>Mobile Money par Opérateur</span>
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {mobileByOperator.map(([operator, data]) => (
+              <div
+                key={operator}
+                className="p-3.5 rounded-xl border border-[#E7E0D3] bg-[#F7F3EC]/70"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-[#1C2321] line-clamp-1">{operator}</span>
+                  <span className="text-[10px] text-[#6B7873]">{data.count} vente(s)</span>
+                </div>
+                <div className="mt-2 flex items-baseline justify-between">
+                  <span className="text-sm font-extrabold text-[#B8874B] font-display">
+                    {formatPrice(data.total)}
+                  </span>
+                  <span className="text-[11px] text-[#6B7873] font-semibold">
+                    {mobileTotal > 0 ? Math.round((data.total / mobileTotal) * 100) : 0}%
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main Graph & Distribution Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

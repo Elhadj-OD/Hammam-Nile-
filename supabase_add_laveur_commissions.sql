@@ -40,13 +40,14 @@ CREATE INDEX IF NOT EXISTS idx_laveur_commissions_laveur ON public.laveur_commis
 ALTER TABLE public.laveur_commissions ENABLE ROW LEVEL SECURITY;
 
 -- Lecture/écriture ouvertes à l'app (même modèle que les autres tables
--- opérationnelles) : SELECT, INSERT, DELETE (pour corriger une saisie
--- erronée) — pas d'UPDATE, une commission se corrige en supprimant et
--- ressaisissant, pas en modifiant une ligne existante.
+-- opérationnelles) : SELECT, INSERT, UPDATE (corriger un service déjà
+-- enregistré), DELETE (pour l'annuler complètement).
 DROP POLICY IF EXISTS "Public read for laveur_commissions" ON public.laveur_commissions;
 CREATE POLICY "Public read for laveur_commissions" ON public.laveur_commissions FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Public insert for laveur_commissions" ON public.laveur_commissions;
 CREATE POLICY "Public insert for laveur_commissions" ON public.laveur_commissions FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Public update for laveur_commissions" ON public.laveur_commissions;
+CREATE POLICY "Public update for laveur_commissions" ON public.laveur_commissions FOR UPDATE USING (true) WITH CHECK (true);
 DROP POLICY IF EXISTS "Public delete for laveur_commissions" ON public.laveur_commissions;
 CREATE POLICY "Public delete for laveur_commissions" ON public.laveur_commissions FOR DELETE USING (true);
 

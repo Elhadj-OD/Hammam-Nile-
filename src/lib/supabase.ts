@@ -326,6 +326,22 @@ export async function saveLaveurCommissionToSupabase(commission: LaveurCommissio
   }
 }
 
+export async function updateLaveurCommissionInSupabase(
+  id: number,
+  updates: Partial<LaveurCommission>
+): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('laveur_commissions')
+      .update(updates)
+      .eq('id', id);
+    if (error) console.warn('Supabase update laveur commission error:', error.message);
+  } catch (err) {
+    console.warn('Supabase update laveur commission error:', err);
+  }
+}
+
 export async function deleteLaveurCommissionFromSupabase(id: number): Promise<void> {
   if (!supabase) return;
   try {
