@@ -60,11 +60,12 @@ const MainLayout: React.FC = () => {
       case 'clients':
         return <ClientsView />;
       case 'inventaire':
-        return <InventaireView />;
+        // Vue de stock centralisée : réservée à la gérante
+        return currentUser.role === 'gerant' ? <InventaireView /> : <DashboardView />;
       case 'produits':
         return <ProduitsView />;
       case 'mouvements':
-        return <MouvementsView />;
+        return currentUser.role === 'gerant' ? <MouvementsView /> : <DashboardView />;
       case 'prelevements-hammam':
         return <PrelevementsHammamView />;
       case 'commissions-laveurs':

@@ -11,6 +11,8 @@ import {
   AlertCircle,
   Image as ImageIcon,
   Trash2,
+  PackagePlus,
+  PackageMinus,
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -24,6 +26,14 @@ interface ExtractedRow {
   category: ProductCategory;
   price: string;
   minQty: string;
+  include: boolean;
+}
+
+interface RemoveRow {
+  extractedName: string;
+  matchedProductId: number | null;
+  qtyToRemove: number;
+  deleteEntirely: boolean;
   include: boolean;
 }
 
@@ -55,13 +65,14 @@ const fileToBase64 = (file: File): Promise<{ data: string; mimeType: string }> =
   });
 
 export const AssistantView: React.FC = () => {
-  const { addProduct } = useApp();
+  const { products, addProduct, deleteProduct, addMovement } = useApp();
 
   const [mode, setMode] = useState<'chat' | 'photo'>('chat');
+  const [photoMode, setPhotoMode] = useState<'add' | 'remove'>('add');
 
   // Chat state
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: 'Bonjour ! Posez-moi une question, ou passez sur « Ajouter par photo » pour que je lise une note manuscrite et prépare les articles à ajouter.' },
+    { role: 'model', text: 'Bonjour ! Posez-moi une question, ou passez sur « Ajouter par photo » pour que je lise une note manuscrite et prépare les articles à ajouter ou à retirer du stock.' },
   ]);
   const [input, setInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
@@ -74,8 +85,21 @@ export const AssistantView: React.FC = () => {
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState('');
   const [rows, setRows] = useState<ExtractedRow[]>([]);
+  const [removeRows, setRemoveRows] = useState<RemoveRow[]>([]);
   const [addedCount, setAddedCount] = useState<number | null>(null);
+  const [removedCount, setRemovedCount] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Devine le produit existant correspondant à un nom lu sur la photo
+  // (correspondance approximative, insensible à la casse).
+  const findBestMatch = (name: string): number | null => {
+    const q = name.trim().toLowerCase();
+    if (!q) return null;
+    const exact = products.find(p => p.name.toLowerCase() === q);
+    if (exact) return exact.id;
+    const partial = products.find(p => p.name.toLowerCase().includes(q) || q.includes(p.name.toLowerCase()));
+    return partial ? partial.id : null;
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -126,7 +150,9 @@ export const AssistantView: React.FC = () => {
     setImageFile(file);
     setExtractError('');
     setRows([]);
+    setRemoveRows([]);
     setAddedCount(null);
+    setRemovedCount(null);
     const reader = new FileReader();
     reader.onload = () => setImagePreview(reader.result as string);
     reader.readAsDataURL(file);
@@ -137,7 +163,9 @@ export const AssistantView: React.FC = () => {
     setExtracting(true);
     setExtractError('');
     setRows([]);
+    setRemoveRows([]);
     setAddedCount(null);
+    setRemovedCount(null);
     try {
       const { data, mimeType } = await fileToBase64(imageFile);
       const res = await fetch('/api/gemini-chat', {
@@ -148,19 +176,35 @@ export const AssistantView: React.FC = () => {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Erreur inconnue.');
 
-      const extracted: ExtractedRow[] = (result.products || []).map((p: { name: string; qty: number }) => ({
-        name: p.name,
-        qty: Number.isFinite(p.qty) ? p.qty : 0,
-        category: 'autres',
-        price: '0',
-        minQty: '5',
-        include: true,
-      }));
+      const extractedList: { name: string; qty: number }[] = result.products || [];
 
-      if (extracted.length === 0) {
+      if (extractedList.length === 0) {
         setExtractError("Aucun article reconnu sur cette photo. Essayez une photo plus nette, bien cadrée sur le texte.");
+        return;
       }
-      setRows(extracted);
+
+      if (photoMode === 'add') {
+        setRows(
+          extractedList.map(p => ({
+            name: p.name,
+            qty: Number.isFinite(p.qty) ? p.qty : 0,
+            category: 'autres',
+            price: '0',
+            minQty: '5',
+            include: true,
+          }))
+        );
+      } else {
+        setRemoveRows(
+          extractedList.map(p => ({
+            extractedName: p.name,
+            matchedProductId: findBestMatch(p.name),
+            qtyToRemove: Number.isFinite(p.qty) && p.qty > 0 ? p.qty : 1,
+            deleteEntirely: false,
+            include: true,
+          }))
+        );
+      }
     } catch (err) {
       setExtractError(err instanceof Error ? err.message : "Impossible d'analyser cette photo.");
     } finally {
@@ -195,12 +239,43 @@ export const AssistantView: React.FC = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const updateRemoveRow = (index: number, updates: Partial<RemoveRow>) => {
+    setRemoveRows(prev => prev.map((r, i) => (i === index ? { ...r, ...updates } : r)));
+  };
+
+  const removeRemoveRow = (index: number) => {
+    setRemoveRows(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleConfirmRemove = () => {
+    const toProcess = removeRows.filter(r => r.include && r.matchedProductId !== null);
+    toProcess.forEach(r => {
+      if (r.deleteEntirely) {
+        deleteProduct(r.matchedProductId as number);
+      } else {
+        addMovement({
+          productId: r.matchedProductId as number,
+          type: 'out',
+          qty: Math.max(1, r.qtyToRemove || 1),
+          reason: 'Retrait via Assistant IA (photo/liste)',
+        });
+      }
+    });
+    setRemovedCount(toProcess.length);
+    setRemoveRows([]);
+    setImagePreview('');
+    setImageFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const resetPhoto = () => {
     setImagePreview('');
     setImageFile(null);
     setRows([]);
+    setRemoveRows([]);
     setExtractError('');
     setAddedCount(null);
+    setRemovedCount(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -216,7 +291,7 @@ export const AssistantView: React.FC = () => {
           Assistant Hammam Nile
         </h1>
         <p className="text-sm text-[#6B7873] mt-1">
-          Posez une question, ou envoyez la photo d'une note manuscrite pour préparer automatiquement l'ajout des articles à la boutique.
+          Posez une question, ou envoyez la photo d'une note manuscrite/liste pour ajouter ou retirer automatiquement des articles du stock.
         </p>
 
         {/* Mode Tabs */}
@@ -243,9 +318,44 @@ export const AssistantView: React.FC = () => {
             }`}
           >
             <Camera className="w-3.5 h-3.5" />
-            Ajouter par photo
+            Gérer le stock par photo
           </button>
         </div>
+
+        {mode === 'photo' && (
+          <div className="flex gap-2 mt-2.5">
+            <button
+              type="button"
+              onClick={() => {
+                setPhotoMode('add');
+                resetPhoto();
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
+                photoMode === 'add'
+                  ? 'bg-[#0F4C4A] text-white border-[#0F4C4A]'
+                  : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4E9E1]'
+              }`}
+            >
+              <PackagePlus className="w-3 h-3" />
+              Ajouter des articles
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setPhotoMode('remove');
+                resetPhoto();
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
+                photoMode === 'remove'
+                  ? 'bg-[#0F4C4A] text-white border-[#0F4C4A]'
+                  : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4E9E1]'
+              }`}
+            >
+              <PackageMinus className="w-3 h-3" />
+              Retirer des articles
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── CHAT MODE ── */}
@@ -326,7 +436,11 @@ export const AssistantView: React.FC = () => {
                   <ImageIcon className="w-6 h-6" />
                 </div>
                 <p className="font-bold text-sm text-[#1C2321]">Prendre ou choisir une photo</p>
-                <p className="text-xs text-[#6B7873]">Photo de la note manuscrite des articles à ajouter</p>
+                <p className="text-xs text-[#6B7873]">
+                  {photoMode === 'add'
+                    ? 'Photo de la note manuscrite des articles à ajouter'
+                    : 'Photo de la liste des articles à retirer du stock'}
+                </p>
               </label>
             ) : (
               <div className="space-y-4">
@@ -462,6 +576,118 @@ export const AssistantView: React.FC = () => {
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Ajouter à la boutique
+                </button>
+              </div>
+            </div>
+          )}
+
+          {removedCount !== null && (
+            <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-sm flex items-center gap-2 font-bold">
+              <CheckCircle2 className="w-5 h-5 shrink-0" />
+              {removedCount} article{removedCount > 1 ? 's traités' : ' traité'} — stock mis à jour.
+            </div>
+          )}
+
+          {removeRows.length > 0 && (
+            <div className="bg-white rounded-2xl border border-[#E7E0D3] shadow-xs overflow-hidden">
+              <div className="p-4 border-b border-[#E7E0D3] bg-[#F7F3EC]/50 flex items-center justify-between">
+                <h3 className="text-xs font-bold text-[#1C2321] uppercase tracking-wider">
+                  {removeRows.length} article{removeRows.length > 1 ? 's' : ''} reconnu{removeRows.length > 1 ? 's' : ''} — vérifiez la correspondance avant de retirer
+                </h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-[#F7F3EC]/80 border-b border-[#E7E0D3] text-[#6B7873] font-bold uppercase tracking-wider text-[10px]">
+                      <th className="py-2.5 px-3 w-8"></th>
+                      <th className="py-2.5 px-3">Lu sur la photo</th>
+                      <th className="py-2.5 px-3">Produit correspondant</th>
+                      <th className="py-2.5 px-3 w-28">Qté à retirer</th>
+                      <th className="py-2.5 px-3 w-32">Supprimer tout</th>
+                      <th className="py-2.5 px-3 w-8"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E7E0D3]">
+                    {removeRows.map((row, i) => {
+                      const matched = products.find(p => p.id === row.matchedProductId);
+                      return (
+                        <tr key={i} className={row.include ? '' : 'opacity-40'}>
+                          <td className="py-2 px-3">
+                            <input
+                              type="checkbox"
+                              checked={row.include}
+                              onChange={e => updateRemoveRow(i, { include: e.target.checked })}
+                              className="w-4 h-4 accent-[#0F4C4A] cursor-pointer"
+                            />
+                          </td>
+                          <td className="py-2 px-3 text-[#6B7873]">{row.extractedName}</td>
+                          <td className="py-2 px-3">
+                            <select
+                              value={row.matchedProductId ?? ''}
+                              onChange={e =>
+                                updateRemoveRow(i, {
+                                  matchedProductId: e.target.value ? Number(e.target.value) : null,
+                                })
+                              }
+                              className={`w-full text-xs p-1.5 border rounded-lg focus:outline-none focus:border-[#0F4C4A] ${
+                                matched ? 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321]' : 'bg-rose-50 border-rose-200 text-rose-700'
+                              }`}
+                            >
+                              <option value="">— Aucune correspondance —</option>
+                              {products.map(p => (
+                                <option key={p.id} value={p.id}>
+                                  {p.name} (stock : {p.qty})
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="py-2 px-3">
+                            <input
+                              type="number"
+                              min="1"
+                              value={row.qtyToRemove}
+                              disabled={row.deleteEntirely}
+                              onChange={e => updateRemoveRow(i, { qtyToRemove: parseInt(e.target.value) || 1 })}
+                              className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A] disabled:opacity-40"
+                            />
+                          </td>
+                          <td className="py-2 px-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={row.deleteEntirely}
+                              onChange={e => updateRemoveRow(i, { deleteEntirely: e.target.checked })}
+                              className="w-4 h-4 accent-rose-600 cursor-pointer"
+                              title="Supprimer entièrement ce produit du catalogue"
+                            />
+                          </td>
+                          <td className="py-2 px-3 text-right">
+                            <button
+                              type="button"
+                              onClick={() => removeRemoveRow(i)}
+                              className="p-1 text-[#6B7873] hover:text-rose-600 cursor-pointer"
+                              title="Retirer cette ligne"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="p-4 border-t border-[#E7E0D3] bg-[#F7F3EC]/40 flex items-center justify-between">
+                <p className="text-[11px] text-[#6B7873]">
+                  Vérifiez bien le produit correspondant avant de confirmer — l'action est immédiate.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleConfirmRemove}
+                  disabled={!removeRows.some(r => r.include && r.matchedProductId !== null)}
+                  className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                >
+                  <PackageMinus className="w-4 h-4" />
+                  Retirer du stock
                 </button>
               </div>
             </div>
