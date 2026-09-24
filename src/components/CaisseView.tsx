@@ -83,6 +83,12 @@ export const CaisseView: React.FC = () => {
   // Une caissière avec un département assigné n'a accès qu'à sa propre caisse
   const myDept = currentUser?.department ? DEPARTMENTS[currentUser.department] : null;
 
+  // Le hammam des femmes se vend dans la même caisse que la Boutique Femme
+  // (même logique que le hammam des garçons, géré dans leur propre caisse) —
+  // pas une caisse séparée. Chaque profil = une seule caisse.
+  const myDeptCategories =
+    myDept?.category === 'femmes' ? ['femmes', 'hammam_bains'] : myDept ? [myDept.category] : null;
+
   // La Boutique Femme est réservée aux caissières (genre "femme" ou non renseigné)
   const canAccessBoutiqueFemme = currentUser?.gender !== 'homme';
   // La Boutique Homme est réservée aux caissiers marqués "homme"
@@ -99,8 +105,8 @@ export const CaisseView: React.FC = () => {
       search.trim() === '' ||
       p.name.toLowerCase().includes(search.toLowerCase());
 
-    if (myDept) {
-      return p.category === myDept.category && matchesSearch;
+    if (myDeptCategories) {
+      return myDeptCategories.includes(p.category) && matchesSearch;
     }
 
     if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
@@ -131,7 +137,7 @@ export const CaisseView: React.FC = () => {
       if (code.length > 2) {
         const found = products.find(p => {
           if (p.barcode !== code) return false;
-          if (myDept) return p.category === myDept.category;
+          if (myDeptCategories) return myDeptCategories.includes(p.category);
           if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
           if (p.category === 'hommes' && !canAccessBoutiqueHomme) return false;
           return true;

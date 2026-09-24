@@ -29,10 +29,14 @@ export const ProduitsView: React.FC = () => {
   // Homme) — exactement les mêmes règles que sur l'écran Caisse.
   const isGerant = currentUser?.role === 'gerant';
   const myDept = !isGerant && currentUser?.department ? DEPARTMENTS[currentUser.department] : null;
+  // Le hammam des femmes vit dans le même rayon que la Boutique Femme
+  // (même logique que le hammam des garçons dans leur propre caisse).
+  const myDeptCategories =
+    myDept?.category === 'femmes' ? ['femmes', 'hammam_bains'] : myDept ? [myDept.category] : null;
   const canAccessBoutiqueFemme = isGerant || currentUser?.gender !== 'homme';
   const canAccessBoutiqueHomme = isGerant || currentUser?.gender === 'homme';
   const accessibleProducts = products.filter(p => {
-    if (myDept) return p.category === myDept.category;
+    if (myDeptCategories) return myDeptCategories.includes(p.category);
     if (p.category === 'femmes' && !canAccessBoutiqueFemme) return false;
     if (p.category === 'hommes' && !canAccessBoutiqueHomme) return false;
     return true;
@@ -737,7 +741,34 @@ export const ProduitsView: React.FC = () => {
                   <label className="block text-xs font-bold text-[#1C2321] mb-1">
                     Catégorie
                   </label>
-                  {myDept ? (
+                  {myDept && myDeptCategories && myDeptCategories.length > 1 ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCategory('femmes')}
+                        className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                          category === 'femmes'
+                            ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
+                            : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                        }`}
+                      >
+                        <span>💄</span>
+                        <span>Boutique Femme</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCategory('hammam_bains')}
+                        className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                          category === 'hammam_bains'
+                            ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
+                            : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                        }`}
+                      >
+                        <span>♨️</span>
+                        <span>Hammam Femme</span>
+                      </button>
+                    </div>
+                  ) : myDept ? (
                     <div className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans flex items-center gap-1.5">
                       <span>{myDept.icon}</span>
                       <span>{myDept.label}</span>
