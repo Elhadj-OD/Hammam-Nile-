@@ -287,6 +287,25 @@ export const INITIAL_PRODUCTS: Product[] = [
   { id: 255, name: 'Vernis permanent', category: 'spa_massage', price: 500, qty: 999, minQty: 0, emoji: '💅' },
   { id: 256, name: 'French manicure permanent', category: 'spa_massage', price: 700, qty: 999, minQty: 0, emoji: '💅' },
   { id: 257, name: 'Pose gel', category: 'spa_massage', price: 1500, qty: 999, minQty: 0, emoji: '💅' },
+
+  // Coiffure & Salon — tarifs au choix du client selon la prestation
+  { id: 258, name: 'Tress (300 MRU)', category: 'coiffure_salon', price: 300, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 259, name: 'Tress (400 MRU)', category: 'coiffure_salon', price: 400, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 260, name: 'Tress (500 MRU)', category: 'coiffure_salon', price: 500, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 261, name: 'Tress avec mèche (800 MRU)', category: 'coiffure_salon', price: 800, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 262, name: 'Tress avec mèche (1000 MRU)', category: 'coiffure_salon', price: 1000, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 263, name: 'Tenture (200 MRU)', category: 'coiffure_salon', price: 200, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 264, name: 'Tenture (300 MRU)', category: 'coiffure_salon', price: 300, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 265, name: 'Afrois (250 MRU)', category: 'coiffure_salon', price: 250, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 266, name: 'Afrois (300 MRU)', category: 'coiffure_salon', price: 300, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 267, name: 'Greffache', category: 'coiffure_salon', price: 400, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 268, name: 'Broching (400 MRU)', category: 'coiffure_salon', price: 400, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 269, name: 'Broching (500 MRU)', category: 'coiffure_salon', price: 500, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 270, name: 'Broching (600 MRU)', category: 'coiffure_salon', price: 600, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 271, name: 'Bruching (700 MRU)', category: 'coiffure_salon', price: 700, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 272, name: 'Bruching (800 MRU)', category: 'coiffure_salon', price: 800, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 273, name: 'Coupe (100 MRU)', category: 'coiffure_salon', price: 100, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 274, name: 'Coupe (200 MRU)', category: 'coiffure_salon', price: 200, qty: 999, minQty: 0, emoji: '💇' },
 ];
 
 export const INITIAL_CLIENTS: Client[] = [
