@@ -475,7 +475,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         ]);
 
         if (sbProducts && sbProducts.length > 0) {
-          setProducts(sbProducts);
+          // Complète le catalogue cloud avec les articles ajoutés au code
+          // depuis (ex: prestations Esthétique) sans toucher aux produits déjà en ligne
+          const existingIds = new Set(sbProducts.map(p => p.id));
+          const missingFromCatalog = INITIAL_PRODUCTS.filter(p => !existingIds.has(p.id));
+          if (missingFromCatalog.length > 0) {
+            missingFromCatalog.forEach(p => saveProductToSupabase(p));
+            setProducts([...sbProducts, ...missingFromCatalog]);
+          } else {
+            setProducts(sbProducts);
+          }
         } else if (products.length > 0) {
           // Push local catalog to Supabase if empty on cloud
           sbProducts?.length === 0 && products.forEach(p => saveProductToSupabase(p));
