@@ -253,6 +253,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             </li>
           )}
 
+          {/* Décharge (Clôture Journalière) - Admin only */}
+          {isGerant && (
+            <li
+              onClick={() => handleNavClick('decharge')}
+              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+                activeSection === 'decharge'
+                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
+              }`}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="w-[17px] h-[17px] shrink-0"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="M9 12l2 2 4-4" />
+              </svg>
+              <span>Décharge</span>
+            </li>
+          )}
+
           {/* Produits & Pièces - Toutes les caissières (limité à leur rayon) + Admin */}
           <li
             onClick={() => handleNavClick('produits')}

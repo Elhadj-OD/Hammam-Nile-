@@ -20,6 +20,7 @@ import {
   PresenceRow,
   LaveurCommission,
   ClientType,
+  Decharge,
 } from '../types';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
 import {
@@ -59,6 +60,8 @@ import {
   saveLaveurCommissionToSupabase,
   updateLaveurCommissionInSupabase,
   deleteLaveurCommissionFromSupabase,
+  getDechargesFromSupabase,
+  saveDechargeToSupabase,
   getShopSettingsFromSupabase,
   saveShopSettingsToSupabase,
   getPresenceFromSupabase,
@@ -242,6 +245,17 @@ interface AppContextType {
   ) => void;
   deleteLaveurCommission: (id: number) => void;
 
+  // Décharge (clôture journalière) — accès gérante uniquement (RLS)
+  decharges: Decharge[];
+  addOrUpdateDecharge: (data: {
+    dateDecharge: string;
+    totalEspeceCalcule: number;
+    totalMobileMoneyCalcule: number;
+    nombreTransactions: number;
+    montantEspeceReel: number;
+    montantMobileMoneyReel: number;
+  }) => Promise<{ success: boolean; error?: string }>;
+
   // Settings
   settings: ShopSettings;
   updateSettings: (newSettings: Partial<ShopSettings>) => void;
@@ -331,6 +345,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const saved = localStorage.getItem(`${STORAGE_KEY}-laveur-commissions`);
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Pas de cache localStorage : réservé à la gérante (RLS), rechargé depuis
+  // Supabase à chaque session pour ne jamais garder de décharge périmée.
+  const [decharges, setDecharges] = useState<Decharge[]>([]);
 
   const [settings, setSettings] = useState<ShopSettings>(() => {
     const saved = localStorage.getItem(`${STORAGE_KEY}-settings`);
@@ -511,6 +529,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           return prev.some(c => c.id === (row as LaveurCommission).id) ? prev : upsertById(prev, row as LaveurCommission);
         });
       }),
+      // La RLS ne livre ces événements qu'à la gérante — sans effet pour les autres comptes.
+      subscribeToTable<Decharge>('decharges', ({ eventType, new: row, old }) => {
+        setDecharges(prev => {
+          if (eventType === 'DELETE') return removeById(prev, (old as Decharge).id);
+          return upsertById(prev, row as Decharge).sort((a, b) => b.timestamp - a.timestamp);
+        });
+      }),
       subscribeToTable<{ id: number; settings: ShopSettings }>('shop_settings', ({ new: row }) => {
         if (row?.settings) setSettings(row.settings);
       }),
@@ -606,6 +631,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     fetchPresence();
     const interval = setInterval(fetchPresence, 15000);
     return () => clearInterval(interval);
+  }, [currentUser?.role]);
+
+  // Décharges : réservées à la gérante, la RLS refuse toute lecture aux autres comptes
+  useEffect(() => {
+    if (currentUser?.role !== 'gerant') return;
+    getDechargesFromSupabase().then(rows => {
+      if (rows) setDecharges(rows);
+    });
   }, [currentUser?.role]);
 
   // Auth & Team Management — toute écriture passe par api/admin-users.ts
@@ -1460,6 +1493,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     deleteLaveurCommissionFromSupabase(id);
   };
 
+  // Décharge (clôture journalière) — une seule par jour : refaire la
+  // décharge du même jour corrige l'existante (upsert sur dateDecharge).
+  const addOrUpdateDecharge = async (data: {
+    dateDecharge: string;
+    totalEspeceCalcule: number;
+    totalMobileMoneyCalcule: number;
+    nombreTransactions: number;
+    montantEspeceReel: number;
+    montantMobileMoneyReel: number;
+  }): Promise<{ success: boolean; error?: string }> => {
+    const payload: Omit<Decharge, 'id'> = {
+      dateDecharge: data.dateDecharge,
+      totalEspeceCalcule: data.totalEspeceCalcule,
+      totalMobileMoneyCalcule: data.totalMobileMoneyCalcule,
+      nombreTransactions: data.nombreTransactions,
+      montantEspeceReel: data.montantEspeceReel,
+      montantMobileMoneyReel: data.montantMobileMoneyReel,
+      ecartEspece: data.montantEspeceReel - data.totalEspeceCalcule,
+      ecartMobileMoney: data.montantMobileMoneyReel - data.totalMobileMoneyCalcule,
+      faitPar: currentUser?.name || currentUser?.username || 'admin',
+      timestamp: Date.now(),
+    };
+
+    const saved = await saveDechargeToSupabase(payload);
+    if (!saved) {
+      return { success: false, error: "Impossible d'enregistrer la décharge. Vérifiez votre connexion." };
+    }
+
+    setDecharges(prev => {
+      const withoutSameDate = prev.filter(d => d.dateDecharge !== saved.dateDecharge);
+      return [saved, ...withoutSameDate].sort((a, b) => b.timestamp - a.timestamp);
+    });
+
+    return { success: true };
+  };
+
   // Settings
   const updateSettings = (newSettings: Partial<ShopSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
@@ -1533,6 +1602,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addLaveurCommission,
         updateLaveurCommission,
         deleteLaveurCommission,
+        decharges,
+        addOrUpdateDecharge,
         settings,
         updateSettings,
         resetDemoData,

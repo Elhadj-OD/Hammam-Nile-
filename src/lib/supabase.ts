@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow, LaveurCommission } from '../types';
+import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow, LaveurCommission, Decharge } from '../types';
 
 // Read credentials from environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -356,7 +356,67 @@ export async function deleteLaveurCommissionFromSupabase(id: number): Promise<vo
 }
 
 // ============================================================================
-// 9. SYNCHRONISATION TEMPS RÉEL (Realtime)
+// 9. DÉCHARGES (Clôture journalière — accès gérante uniquement, cf. RLS)
+// ============================================================================
+export async function getDechargesFromSupabase(): Promise<Decharge[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('decharges')
+      .select('*')
+      .order('timestamp', { ascending: false });
+
+    if (error) {
+      // RLS refuse l'accès (caissière) : pas une erreur, juste une liste vide.
+      console.warn('Supabase fetch decharges error:', error.message);
+      return null;
+    }
+    return data as Decharge[];
+  } catch (err) {
+    console.warn('Supabase error:', err);
+    return null;
+  }
+}
+
+// Une seule décharge par jour : upsert sur "dateDecharge" (refaire une
+// décharge le même jour corrige l'existante au lieu d'en créer une autre).
+// L'id étant généré côté serveur (BIGSERIAL), on ne l'envoie jamais dans le
+// payload — on relit la ligne réelle après écriture pour rester synchronisé.
+export async function saveDechargeToSupabase(decharge: Omit<Decharge, 'id'>): Promise<Decharge | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('decharges')
+      .upsert(
+        {
+          dateDecharge: decharge.dateDecharge,
+          totalEspeceCalcule: decharge.totalEspeceCalcule,
+          totalMobileMoneyCalcule: decharge.totalMobileMoneyCalcule,
+          nombreTransactions: decharge.nombreTransactions,
+          montantEspeceReel: decharge.montantEspeceReel,
+          montantMobileMoneyReel: decharge.montantMobileMoneyReel,
+          ecartEspece: decharge.ecartEspece,
+          ecartMobileMoney: decharge.ecartMobileMoney,
+          faitPar: decharge.faitPar,
+          timestamp: decharge.timestamp,
+        },
+        { onConflict: 'dateDecharge' }
+      )
+      .select()
+      .single();
+    if (error) {
+      console.warn('Supabase save decharge error:', error.message);
+      return null;
+    }
+    return data as Decharge;
+  } catch (err) {
+    console.warn('Supabase save decharge error:', err);
+    return null;
+  }
+}
+
+// ============================================================================
+// 10. SYNCHRONISATION TEMPS RÉEL (Realtime)
 // ============================================================================
 // La réplication logique Postgres est activée sur ces tables
 // (ALTER PUBLICATION supabase_realtime ADD TABLE ..., voir les scripts

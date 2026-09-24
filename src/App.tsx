@@ -18,6 +18,7 @@ import { ParametresView } from './components/ParametresView';
 import { CaissieresView } from './components/CaissieresView';
 import { PrelevementsHammamView } from './components/PrelevementsHammamView';
 import { CommissionsLaveursView } from './components/CommissionsLaveursView';
+import { DechargeView } from './components/DechargeView';
 import { AssistantView } from './components/AssistantView';
 import { ReceiptModal } from './components/ReceiptModal';
 import { AuthSwitchModal } from './components/AuthSwitchModal';
@@ -69,6 +70,9 @@ const MainLayout: React.FC = () => {
         return <CommissionsLaveursView />;
       case 'rapports':
         return <RapportsView />;
+      case 'decharge':
+        // Clôture journalière : réservée à la gérante (RLS + accès UI)
+        return currentUser.role === 'gerant' ? <DechargeView /> : <DashboardView />;
       case 'utilisateurs':
         return <CaissieresView />;
       case 'parametres':
