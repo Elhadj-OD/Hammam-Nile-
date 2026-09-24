@@ -26,6 +26,15 @@ export const InventaireView: React.FC = () => {
   const lowStockCount = products.filter(p => p.qty <= p.minQty).length;
   const outOfStockCount = products.filter(p => p.qty === 0).length;
 
+  // Ce que chaque boutique (homme/femme) a pris sur le stock — séparé, pour
+  // que la gérante voie clairement la valorisation de chaque rayon.
+  const boutiqueFemmeProducts = products.filter(p => p.category === 'femmes');
+  const boutiqueHommeProducts = products.filter(p => p.category === 'hommes');
+  const boutiqueFemmeValuation = boutiqueFemmeProducts.reduce((sum, p) => sum + p.price * p.qty, 0);
+  const boutiqueHommeValuation = boutiqueHommeProducts.reduce((sum, p) => sum + p.price * p.qty, 0);
+  const boutiqueFemmeUnits = boutiqueFemmeProducts.reduce((sum, p) => sum + p.qty, 0);
+  const boutiqueHommeUnits = boutiqueHommeProducts.reduce((sum, p) => sum + p.qty, 0);
+
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
     const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
@@ -133,6 +142,39 @@ export const InventaireView: React.FC = () => {
         </div>
       </div>
 
+      {/* Boutique Femme / Boutique Homme — valorisation séparée */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div
+          onClick={() => setSelectedCategory(selectedCategory === 'femmes' ? 'all' : 'femmes')}
+          className={`p-4 rounded-xl border shadow-xs cursor-pointer transition ${
+            selectedCategory === 'femmes' ? 'bg-[#E4E9E1] border-[#0F4C4A]' : 'bg-white border-slate-200 hover:border-[#0F4C4A]/40'
+          }`}
+        >
+          <div className="text-xs text-[#0F4C4A] font-bold flex items-center gap-1.5">💄 Boutique Femme</div>
+          <div className="text-xl font-bold text-slate-900 mt-1">
+            {boutiqueFemmeValuation.toLocaleString()} {settings.currency}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-1">
+            {boutiqueFemmeUnits.toLocaleString()} unités — {boutiqueFemmeProducts.length} référence(s)
+          </div>
+        </div>
+
+        <div
+          onClick={() => setSelectedCategory(selectedCategory === 'hommes' ? 'all' : 'hommes')}
+          className={`p-4 rounded-xl border shadow-xs cursor-pointer transition ${
+            selectedCategory === 'hommes' ? 'bg-[#E4E9E1] border-[#0F4C4A]' : 'bg-white border-slate-200 hover:border-[#0F4C4A]/40'
+          }`}
+        >
+          <div className="text-xs text-[#0F4C4A] font-bold flex items-center gap-1.5">🧔 Boutique Homme</div>
+          <div className="text-xl font-bold text-slate-900 mt-1">
+            {boutiqueHommeValuation.toLocaleString()} {settings.currency}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-1">
+            {boutiqueHommeUnits.toLocaleString()} unités — {boutiqueHommeProducts.length} référence(s)
+          </div>
+        </div>
+      </div>
+
       {/* Table Container */}
       <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
         {/* Controls */}
@@ -156,11 +198,17 @@ export const InventaireView: React.FC = () => {
             >
               <option value="all">Toutes catégories</option>
               <option value="savons">Savons & Gommages</option>
-              <option value="parfums">Huiles & Parfums</option>
-              <option value="accessoires">Accessoires</option>
-              <option value="boissons">Boissons</option>
-              <option value="snacks">Snacks</option>
-              <option value="autres">Autres</option>
+              <option value="huiles">Huiles & Parfums</option>
+              <option value="accessoires">Accessoires & Foutas</option>
+              <option value="linge">Linge & Bains</option>
+              <option value="femmes">Boutique Femme</option>
+              <option value="hommes">Boutique Homme</option>
+              <option value="hammam_bains">Hammam & Bains</option>
+              <option value="spa_massage">Esthétique</option>
+              <option value="coiffure_salon">Coiffure & Salon</option>
+              <option value="epilation_traditionnelle">Épilation Traditionnelle</option>
+              <option value="fitness_gym">Fitness Gym</option>
+              <option value="autres">Autres / Coffrets</option>
             </select>
 
             <div className="relative w-full sm:w-56">

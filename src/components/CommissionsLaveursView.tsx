@@ -42,6 +42,7 @@ export const CommissionsLaveursView: React.FC = () => {
     settings,
     products,
     addProduct,
+    users,
   } = useApp();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -49,6 +50,17 @@ export const CommissionsLaveursView: React.FC = () => {
   const [search, setSearch] = useState('');
   const [filterLaveur, setFilterLaveur] = useState('all');
   const [filterPeriod, setFilterPeriod] = useState<'today' | 'week' | 'month' | 'all'>('today');
+  const [filterGender, setFilterGender] = useState<'all' | 'homme' | 'femme'>('all');
+
+  // Pour séparer "Hammam Homme" / "Hammam Femme" : le genre de la
+  // caissière qui a enregistré le service (users[].gender), pas celui du client.
+  const genderByUsername = useMemo(() => {
+    const map: Record<string, 'homme' | 'femme' | undefined> = {};
+    users.forEach(u => {
+      map[u.username.toLowerCase()] = u.gender;
+    });
+    return map;
+  }, [users]);
 
   // Form state
   const [laveurName, setLaveurName] = useState('');
@@ -82,15 +94,18 @@ export const CommissionsLaveursView: React.FC = () => {
 
       const matchesLaveur = filterLaveur === 'all' || c.laveurName === filterLaveur;
 
+      const recordedGender = genderByUsername[c.recordedBy.toLowerCase()];
+      const matchesGender = filterGender === 'all' || recordedGender === filterGender;
+
       let matchesPeriod = true;
       const now = Date.now();
       if (filterPeriod === 'today') matchesPeriod = now - c.timestamp < 86400000;
       else if (filterPeriod === 'week') matchesPeriod = now - c.timestamp < 86400000 * 7;
       else if (filterPeriod === 'month') matchesPeriod = now - c.timestamp < 86400000 * 30;
 
-      return matchesSearch && matchesLaveur && matchesPeriod;
+      return matchesSearch && matchesLaveur && matchesGender && matchesPeriod;
     });
-  }, [laveurCommissions, search, filterLaveur, filterPeriod]);
+  }, [laveurCommissions, search, filterLaveur, filterGender, filterPeriod, genderByUsername]);
 
   const totalCommissions = filteredCommissions.reduce((sum, c) => sum + c.commission, 0);
   const totalBonus = filteredCommissions.reduce((sum, c) => sum + c.bonus, 0);
@@ -420,6 +435,21 @@ export const CommissionsLaveursView: React.FC = () => {
               ))}
             </select>
           )}
+
+          <div className="flex items-center bg-[#F7F3EC] p-1 rounded-xl border border-[#E7E0D3] text-xs">
+            {(['all', 'homme', 'femme'] as const).map(g => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => setFilterGender(g)}
+                className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                  filterGender === g ? 'bg-[#0F4C4A] text-white shadow-xs' : 'text-[#6B7873] hover:text-[#1C2321]'
+                }`}
+              >
+                {g === 'all' ? 'Hommes + Femmes' : g === 'homme' ? '🧔 Hommes' : '💄 Femmes'}
+              </button>
+            ))}
+          </div>
 
           <div className="flex items-center bg-[#F7F3EC] p-1 rounded-xl border border-[#E7E0D3] text-xs">
             {(['today', 'week', 'month', 'all'] as const).map(p => (
