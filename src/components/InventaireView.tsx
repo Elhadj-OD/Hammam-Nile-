@@ -208,6 +208,8 @@ export const InventaireView: React.FC = () => {
               <option value="coiffure_salon">Coiffure & Salon</option>
               <option value="epilation_traditionnelle">Épilation Traditionnelle</option>
               <option value="fitness_gym">Fitness Gym</option>
+              <option value="boissons">Boissons</option>
+              <option value="snacks">Snacks</option>
               <option value="autres">Autres / Coffrets</option>
             </select>
 

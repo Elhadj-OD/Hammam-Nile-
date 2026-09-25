@@ -7,7 +7,8 @@ export type CaisseDepartment =
   | 'spa_massage'
   | 'coiffure_salon'
   | 'epilation_traditionnelle'
-  | 'fitness_gym';
+  | 'fitness_gym'
+  | 'buvette';
 
 export interface User {
   id?: string; // Supabase Auth user id (uuid) — absent tant que le profil n'a pas été migré
