@@ -87,7 +87,13 @@ export const CaisseView: React.FC = () => {
   // (même logique que le hammam des garçons, géré dans leur propre caisse) —
   // pas une caisse séparée. Chaque profil = une seule caisse.
   const myDeptCategories =
-    myDept?.category === 'femmes' ? ['femmes', 'hammam_bains'] : myDept ? [myDept.category] : null;
+    myDept?.category === 'femmes'
+      ? ['femmes', 'hammam_bains']
+      : myDept?.category === 'boissons'
+        ? ['boissons', 'snacks']
+        : myDept
+          ? [myDept.category]
+          : null;
 
   // La Boutique Femme est réservée aux caissières (genre "femme" ou non renseigné)
   const canAccessBoutiqueFemme = currentUser?.gender !== 'homme';

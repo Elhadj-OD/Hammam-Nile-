@@ -20,6 +20,13 @@ import {
   Layers,
 } from 'lucide-react';
 
+const CATEGORY_META: Partial<Record<ProductCategory, { icon: string; label: string }>> = {
+  femmes: { icon: '💄', label: 'Boutique Femme' },
+  hammam_bains: { icon: '♨️', label: 'Hammam Femme' },
+  boissons: { icon: '🥤', label: 'Boissons' },
+  snacks: { icon: '🍪', label: 'Snacks' },
+};
+
 export const ProduitsView: React.FC = () => {
   const { products, addProduct, updateProduct, deleteProduct, settings, currentUser } = useApp();
 
@@ -32,7 +39,13 @@ export const ProduitsView: React.FC = () => {
   // Le hammam des femmes vit dans le même rayon que la Boutique Femme
   // (même logique que le hammam des garçons dans leur propre caisse).
   const myDeptCategories =
-    myDept?.category === 'femmes' ? ['femmes', 'hammam_bains'] : myDept ? [myDept.category] : null;
+    myDept?.category === 'femmes'
+      ? ['femmes', 'hammam_bains']
+      : myDept?.category === 'boissons'
+        ? ['boissons', 'snacks']
+        : myDept
+          ? [myDept.category]
+          : null;
   const canAccessBoutiqueFemme = isGerant || currentUser?.gender !== 'homme';
   const canAccessBoutiqueHomme = isGerant || currentUser?.gender === 'homme';
   const accessibleProducts = products.filter(p => {
@@ -743,30 +756,24 @@ export const ProduitsView: React.FC = () => {
                   </label>
                   {myDept && myDeptCategories && myDeptCategories.length > 1 ? (
                     <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setCategory('femmes')}
-                        className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ${
-                          category === 'femmes'
-                            ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
-                            : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
-                        }`}
-                      >
-                        <span>💄</span>
-                        <span>Boutique Femme</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCategory('hammam_bains')}
-                        className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ${
-                          category === 'hammam_bains'
-                            ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
-                            : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
-                        }`}
-                      >
-                        <span>♨️</span>
-                        <span>Hammam Femme</span>
-                      </button>
+                      {myDeptCategories.map(cat => {
+                        const meta = CATEGORY_META[cat] ?? { icon: myDept.icon, label: cat };
+                        return (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => setCategory(cat as ProductCategory)}
+                            className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                              category === cat
+                                ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
+                                : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                            }`}
+                          >
+                            <span>{meta.icon}</span>
+                            <span>{meta.label}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   ) : myDept ? (
                     <div className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans flex items-center gap-1.5">
@@ -791,6 +798,8 @@ export const ProduitsView: React.FC = () => {
                       <option value="coiffure_salon">Coiffure & Salon</option>
                       <option value="epilation_traditionnelle">Épilation Traditionnelle</option>
                       <option value="fitness_gym">Fitness Gym</option>
+                      <option value="boissons">Boissons</option>
+                      <option value="snacks">Snacks</option>
                       <option value="autres">Autres / Coffrets</option>
                     </select>
                   )}
