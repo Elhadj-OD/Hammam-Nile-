@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { ProductCategory } from '../types';
+import { DEPARTMENTS } from '../lib/departments';
 import {
   Sparkles,
   Send,
@@ -13,6 +14,8 @@ import {
   Trash2,
   PackagePlus,
   PackageMinus,
+  Type as TypeIcon,
+  ImagePlus,
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -65,14 +68,28 @@ const fileToBase64 = (file: File): Promise<{ data: string; mimeType: string }> =
   });
 
 export const AssistantView: React.FC = () => {
-  const { products, addProduct, deleteProduct, addMovement } = useApp();
+  const { products, addProduct, deleteProduct, addMovement, currentUser, settings } = useApp();
+
+  // Une caissière avec un département assigné ajoute directement dans son
+  // propre rayon (catégorie verrouillée), comme sur l'écran Produits — la
+  // gérante seule choisit librement la catégorie.
+  const isGerant = currentUser?.role === 'gerant';
+  const myDept = !isGerant && currentUser?.department ? DEPARTMENTS[currentUser.department] : null;
+  const isServiceDept =
+    currentUser?.department === 'coiffure_salon' || currentUser?.department === 'epilation_traditionnelle';
+  const itemWord = isServiceDept ? 'service' : 'article';
 
   const [mode, setMode] = useState<'chat' | 'photo'>('chat');
   const [photoMode, setPhotoMode] = useState<'add' | 'remove'>('add');
+  const [inputMethod, setInputMethod] = useState<'photo' | 'text'>('photo');
+  const [menuText, setMenuText] = useState('');
 
   // Chat state
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: 'Bonjour ! Posez-moi une question, ou passez sur « Ajouter par photo » pour que je lise une note manuscrite et prépare les articles à ajouter ou à retirer du stock.' },
+    {
+      role: 'model',
+      text: `Bonjour ! Posez-moi une question, ou passez sur « Ajouter des ${itemWord}s » pour taper une liste ou envoyer la photo d'un menu/liste de prix — je prépare les ${itemWord}s avec leur prix, prêts à ajouter.`,
+    },
   ]);
   const [input, setInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
@@ -90,14 +107,26 @@ export const AssistantView: React.FC = () => {
   const [removedCount, setRemovedCount] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Une caissière ne doit voir/retirer que les articles de son propre
+  // rayon — même logique de regroupement que sur l'écran Produits.
+  const myDeptCategories =
+    myDept?.category === 'femmes'
+      ? ['femmes', 'hammam_bains']
+      : myDept?.category === 'boissons'
+        ? ['boissons', 'snacks']
+        : myDept
+          ? [myDept.category]
+          : null;
+  const myProducts = myDeptCategories ? products.filter(p => myDeptCategories.includes(p.category)) : products;
+
   // Devine le produit existant correspondant à un nom lu sur la photo
   // (correspondance approximative, insensible à la casse).
   const findBestMatch = (name: string): number | null => {
     const q = name.trim().toLowerCase();
     if (!q) return null;
-    const exact = products.find(p => p.name.toLowerCase() === q);
+    const exact = myProducts.find(p => p.name.toLowerCase() === q);
     if (exact) return exact.id;
-    const partial = products.find(p => p.name.toLowerCase().includes(q) || q.includes(p.name.toLowerCase()));
+    const partial = myProducts.find(p => p.name.toLowerCase().includes(q) || q.includes(p.name.toLowerCase()));
     return partial ? partial.id : null;
   };
 
@@ -159,7 +188,10 @@ export const AssistantView: React.FC = () => {
   };
 
   const handleAnalyze = async () => {
-    if (!imageFile) return;
+    const hasImage = !!imageFile;
+    const hasText = inputMethod === 'text' && menuText.trim().length > 0;
+    if (!hasImage && !hasText) return;
+
     setExtracting(true);
     setExtractError('');
     setRows([]);
@@ -167,19 +199,31 @@ export const AssistantView: React.FC = () => {
     setAddedCount(null);
     setRemovedCount(null);
     try {
-      const { data, mimeType } = await fileToBase64(imageFile);
+      const payload: Record<string, unknown> = { mode: 'extract-products' };
+      if (hasImage) {
+        const { data, mimeType } = await fileToBase64(imageFile as File);
+        payload.imageBase64 = data;
+        payload.mimeType = mimeType;
+      } else {
+        payload.text = menuText.trim();
+      }
+
       const res = await fetch('/api/gemini-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'extract-products', imageBase64: data, mimeType }),
+        body: JSON.stringify(payload),
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Erreur inconnue.');
 
-      const extractedList: { name: string; qty: number }[] = result.products || [];
+      const extractedList: { name: string; qty: number; price: number }[] = result.products || [];
 
       if (extractedList.length === 0) {
-        setExtractError("Aucun article reconnu sur cette photo. Essayez une photo plus nette, bien cadrée sur le texte.");
+        setExtractError(
+          hasImage
+            ? "Aucun article reconnu sur cette photo. Essayez une photo plus nette, bien cadrée sur le texte."
+            : "Aucun article reconnu dans ce texte. Essayez avec un nom et un prix par ligne."
+        );
         return;
       }
 
@@ -187,10 +231,10 @@ export const AssistantView: React.FC = () => {
         setRows(
           extractedList.map(p => ({
             name: p.name,
-            qty: Number.isFinite(p.qty) ? p.qty : 0,
-            category: 'autres',
-            price: '0',
-            minQty: '5',
+            qty: isServiceDept ? 999 : Number.isFinite(p.qty) ? p.qty : 0,
+            category: myDept ? myDept.category : 'autres',
+            price: Number.isFinite(p.price) && p.price > 0 ? String(p.price) : '0',
+            minQty: isServiceDept ? '0' : '5',
             include: true,
           }))
         );
@@ -206,7 +250,7 @@ export const AssistantView: React.FC = () => {
         );
       }
     } catch (err) {
-      setExtractError(err instanceof Error ? err.message : "Impossible d'analyser cette photo.");
+      setExtractError(err instanceof Error ? err.message : "Impossible d'analyser cette photo/ce texte.");
     } finally {
       setExtracting(false);
     }
@@ -227,15 +271,18 @@ export const AssistantView: React.FC = () => {
         name: r.name.trim(),
         category: r.category,
         price: Math.max(0, parseFloat(r.price) || 0),
-        qty: Math.max(0, r.qty || 0),
-        minQty: Math.max(1, parseInt(r.minQty) || 5),
-        emoji: '🧴',
+        // Un service n'a pas de stock physique : on garde le repère 999
+        // utilisé partout ailleurs dans l'app (jamais décompté à la vente).
+        qty: isServiceDept ? 999 : Math.max(0, r.qty || 0),
+        minQty: isServiceDept ? 0 : Math.max(1, parseInt(r.minQty) || 5),
+        emoji: isServiceDept ? '✨' : '🧴',
       });
     });
     setAddedCount(toAdd.length);
     setRows([]);
     setImagePreview('');
     setImageFile(null);
+    setMenuText('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -271,6 +318,7 @@ export const AssistantView: React.FC = () => {
   const resetPhoto = () => {
     setImagePreview('');
     setImageFile(null);
+    setMenuText('');
     setRows([]);
     setRemoveRows([]);
     setExtractError('');
@@ -291,7 +339,7 @@ export const AssistantView: React.FC = () => {
           Assistant Hammam Nile
         </h1>
         <p className="text-sm text-[#6B7873] mt-1">
-          Posez une question, ou envoyez la photo d'une note manuscrite/liste pour ajouter ou retirer automatiquement des articles du stock.
+          Posez une question, ou tapez/envoyez la photo d'un menu, d'une liste de prix ou d'une note manuscrite pour ajouter automatiquement des {itemWord}s avec leur prix.
         </p>
 
         {/* Mode Tabs */}
@@ -318,12 +366,12 @@ export const AssistantView: React.FC = () => {
             }`}
           >
             <Camera className="w-3.5 h-3.5" />
-            Gérer le stock par photo
+            Ajouter des {itemWord}s / prix
           </button>
         </div>
 
         {mode === 'photo' && (
-          <div className="flex gap-2 mt-2.5">
+          <div className="relative flex gap-2 mt-2.5">
             <button
               type="button"
               onClick={() => {
@@ -337,23 +385,25 @@ export const AssistantView: React.FC = () => {
               }`}
             >
               <PackagePlus className="w-3 h-3" />
-              Ajouter des articles
+              Ajouter des {itemWord}s
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setPhotoMode('remove');
-                resetPhoto();
-              }}
-              className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
-                photoMode === 'remove'
-                  ? 'bg-[#004CB7] text-white border-[#004CB7]'
-                  : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
-              }`}
-            >
-              <PackageMinus className="w-3 h-3" />
-              Retirer des articles
-            </button>
+            {!isServiceDept && (
+              <button
+                type="button"
+                onClick={() => {
+                  setPhotoMode('remove');
+                  resetPhoto();
+                }}
+                className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
+                  photoMode === 'remove'
+                    ? 'bg-[#004CB7] text-white border-[#004CB7]'
+                    : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
+                }`}
+              >
+                <PackageMinus className="w-3 h-3" />
+                Retirer des articles
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -417,6 +467,70 @@ export const AssistantView: React.FC = () => {
       {mode === 'photo' && (
         <div className="space-y-5">
           <div className="bg-white rounded-2xl border border-[#E7E0D3] shadow-xs p-5">
+            {photoMode === 'add' && (
+              <div className="flex gap-2 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setInputMethod('photo');
+                    resetPhoto();
+                  }}
+                  className={`flex-1 px-3.5 py-2 rounded-full text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border ${
+                    inputMethod === 'photo'
+                      ? 'bg-[#004CB7] text-white border-[#004CB7]'
+                      : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
+                  }`}
+                >
+                  <ImagePlus className="w-3.5 h-3.5" />
+                  Photo du menu
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setInputMethod('text');
+                    resetPhoto();
+                  }}
+                  className={`flex-1 px-3.5 py-2 rounded-full text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border ${
+                    inputMethod === 'text'
+                      ? 'bg-[#004CB7] text-white border-[#004CB7]'
+                      : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
+                  }`}
+                >
+                  <TypeIcon className="w-3.5 h-3.5" />
+                  Taper une liste
+                </button>
+              </div>
+            )}
+
+            {photoMode === 'add' && inputMethod === 'text' ? (
+              <div className="space-y-3">
+                <textarea
+                  value={menuText}
+                  onChange={e => setMenuText(e.target.value)}
+                  placeholder={`Un ${itemWord} par ligne, avec son prix. Ex :\nCoupe homme 200\nBrushing 300\nHenné noir main 500`}
+                  rows={6}
+                  className="w-full text-sm p-3 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7] resize-none"
+                />
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleAnalyze}
+                    disabled={extracting || !menuText.trim()}
+                    className="px-4 py-2 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-50 text-white rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                  >
+                    {extracting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    {extracting ? 'Analyse en cours…' : 'Analyser le texte'}
+                  </button>
+                </div>
+                {extractError && (
+                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{extractError}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+            <>
             <input
               ref={fileInputRef}
               type="file"
@@ -438,7 +552,7 @@ export const AssistantView: React.FC = () => {
                 <p className="font-bold text-sm text-[#1C2321]">Prendre ou choisir une photo</p>
                 <p className="text-xs text-[#6B7873]">
                   {photoMode === 'add'
-                    ? 'Photo de la note manuscrite des articles à ajouter'
+                    ? `Photo d'un menu, d'une liste de prix ou d'une note manuscrite des ${itemWord}s à ajouter`
                     : 'Photo de la liste des articles à retirer du stock'}
                 </p>
               </label>
@@ -452,7 +566,7 @@ export const AssistantView: React.FC = () => {
                   />
                   <div className="flex-1 space-y-2">
                     <p className="text-xs text-[#6B7873]">
-                      Photo prête. Cliquez sur « Analyser » pour que l'assistant lise les articles et leurs quantités.
+                      Photo prête. Cliquez sur « Analyser » pour que l'assistant lise les {itemWord}s et leurs prix.
                     </p>
                     <div className="flex gap-2">
                       <button
@@ -483,12 +597,14 @@ export const AssistantView: React.FC = () => {
                 )}
               </div>
             )}
+            </>
+            )}
           </div>
 
           {addedCount !== null && (
             <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-sm flex items-center gap-2 font-bold">
               <CheckCircle2 className="w-5 h-5 shrink-0" />
-              {addedCount} article{addedCount > 1 ? 's ajoutés' : ' ajouté'} à la boutique. Complétez les prix dans l'écran Produits.
+              {addedCount} {itemWord}{addedCount > 1 ? 's ajoutés' : ' ajouté'} avec leur prix.
             </div>
           )}
 
@@ -496,7 +612,7 @@ export const AssistantView: React.FC = () => {
             <div className="bg-white rounded-2xl border border-[#E7E0D3] shadow-xs overflow-hidden">
               <div className="p-4 border-b border-[#E7E0D3] bg-[#F7F3EC]/50 flex items-center justify-between">
                 <h3 className="text-xs font-bold text-[#1C2321] uppercase tracking-wider">
-                  {rows.length} article{rows.length > 1 ? 's' : ''} reconnu{rows.length > 1 ? 's' : ''} — vérifiez avant d'ajouter
+                  {rows.length} {itemWord}{rows.length > 1 ? 's' : ''} reconnu{rows.length > 1 ? 's' : ''} — vérifiez avant d'ajouter
                 </h3>
               </div>
               <div className="overflow-x-auto">
@@ -504,9 +620,10 @@ export const AssistantView: React.FC = () => {
                   <thead>
                     <tr className="bg-[#F7F3EC]/80 border-b border-[#E7E0D3] text-[#6B7873] font-bold uppercase tracking-wider text-[10px]">
                       <th className="py-2.5 px-3 w-8"></th>
-                      <th className="py-2.5 px-3">Nom de l'article</th>
-                      <th className="py-2.5 px-3 w-24">Qté</th>
-                      <th className="py-2.5 px-3 w-52">Catégorie</th>
+                      <th className="py-2.5 px-3">Nom</th>
+                      <th className="py-2.5 px-3 w-28">Prix ({settings.currency})</th>
+                      {!isServiceDept && <th className="py-2.5 px-3 w-20">Qté</th>}
+                      {!myDept && <th className="py-2.5 px-3 w-52">Catégorie</th>}
                       <th className="py-2.5 px-3 w-8"></th>
                     </tr>
                   </thead>
@@ -533,22 +650,35 @@ export const AssistantView: React.FC = () => {
                           <input
                             type="number"
                             min="0"
-                            value={row.qty}
-                            onChange={e => updateRow(i, { qty: parseInt(e.target.value) || 0 })}
-                            className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
+                            value={row.price}
+                            onChange={e => updateRow(i, { price: e.target.value })}
+                            className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7] font-bold"
                           />
                         </td>
-                        <td className="py-2 px-3">
-                          <select
-                            value={row.category}
-                            onChange={e => updateRow(i, { category: e.target.value as ProductCategory })}
-                            className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
-                          >
-                            {CATEGORY_OPTIONS.map(c => (
-                              <option key={c.value} value={c.value}>{c.label}</option>
-                            ))}
-                          </select>
-                        </td>
+                        {!isServiceDept && (
+                          <td className="py-2 px-3">
+                            <input
+                              type="number"
+                              min="0"
+                              value={row.qty}
+                              onChange={e => updateRow(i, { qty: parseInt(e.target.value) || 0 })}
+                              className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
+                            />
+                          </td>
+                        )}
+                        {!myDept && (
+                          <td className="py-2 px-3">
+                            <select
+                              value={row.category}
+                              onChange={e => updateRow(i, { category: e.target.value as ProductCategory })}
+                              className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
+                            >
+                              {CATEGORY_OPTIONS.map(c => (
+                                <option key={c.value} value={c.value}>{c.label}</option>
+                              ))}
+                            </select>
+                          </td>
+                        )}
                         <td className="py-2 px-3 text-right">
                           <button
                             type="button"
@@ -566,7 +696,7 @@ export const AssistantView: React.FC = () => {
               </div>
               <div className="p-4 border-t border-[#E7E0D3] bg-[#F7F3EC]/40 flex items-center justify-between">
                 <p className="text-[11px] text-[#6B7873]">
-                  Prix mis à 0 par défaut — à compléter ensuite dans l'écran Produits.
+                  Vérifiez bien les prix et les noms avant de confirmer.
                 </p>
                 <button
                   type="button"
@@ -575,7 +705,7 @@ export const AssistantView: React.FC = () => {
                   className="px-4 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-40 text-white rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  Ajouter à la boutique
+                  Ajouter au catalogue
                 </button>
               </div>
             </div>
@@ -609,7 +739,7 @@ export const AssistantView: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-[#E7E0D3]">
                     {removeRows.map((row, i) => {
-                      const matched = products.find(p => p.id === row.matchedProductId);
+                      const matched = myProducts.find(p => p.id === row.matchedProductId);
                       return (
                         <tr key={i} className={row.include ? '' : 'opacity-40'}>
                           <td className="py-2 px-3">
@@ -634,7 +764,7 @@ export const AssistantView: React.FC = () => {
                               }`}
                             >
                               <option value="">— Aucune correspondance —</option>
-                              {products.map(p => (
+                              {myProducts.map(p => (
                                 <option key={p.id} value={p.id}>
                                   {p.name} (stock : {p.qty})
                                 </option>
