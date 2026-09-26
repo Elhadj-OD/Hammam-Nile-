@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { KeyRound, ShieldAlert, ArrowRight, LogOut, Eye, EyeOff } from 'lucide-react';
-import { HammamNileLogo } from './HammamNileLogo';
+import { HammamNileLogo, HammamNileEmblem } from './HammamNileLogo';
 
 export const ForcePasswordChangeView: React.FC = () => {
   const { currentUser, completePasswordChange, logout } = useApp();
@@ -34,12 +34,14 @@ export const ForcePasswordChangeView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#051B33] p-4 sm:p-6 relative overflow-hidden">
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#004CB7]/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#B8874B]/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center bg-[#051B33] nile-waves p-4 sm:p-6 relative overflow-hidden">
+      {/* Emblème géant en filigrane — visible en transparence derrière la carte */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true">
+        <HammamNileEmblem className="w-[130vw] h-[130vw] sm:w-[900px] sm:h-[900px] opacity-[0.07]" color="#FFFFFF" />
+      </div>
 
       <div className="max-w-md w-full relative z-10">
-        <div className="bg-white rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-[#E7E0D3] p-6 sm:p-8">
+        <div className="bg-white/90 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
           <div className="text-center mb-6 pt-1">
             <div className="inline-block p-4 rounded-3xl bg-slate-50/80 border border-slate-100 shadow-xs mb-3">
               <HammamNileLogo variant="full" size="lg" color="#004CB7" textColor="#004CB7" />
