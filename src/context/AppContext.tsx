@@ -151,6 +151,7 @@ interface AppContextType {
   cart: CartItem[];
   addToCart: (product: Product) => void;
   updateCartQty: (productId: number, delta: number) => void;
+  updateCartPrice: (productId: number, newPrice: number) => void;
   removeFromCart: (productId: number) => void;
   clearCart: () => void;
   cartTotal: number;
@@ -165,6 +166,12 @@ interface AppContextType {
       customerPhone?: string;
     }
   ) => Sale | null;
+  completeServiceSale: (
+    product: Product,
+    price: number,
+    paymentMethod: PaymentMethod,
+    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string }
+  ) => Sale;
 
   // Sales
   sales: Sale[];
@@ -949,6 +956,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCart([]);
   };
 
+  // Corrige le prix d'un article du panier au moment de la vente — utile
+  // pour les prestations "prix à définir" (ex: Helwa) dont le tarif se fixe
+  // avec la cliente plutôt qu'en catalogue.
+  const updateCartPrice = (productId: number, newPrice: number) => {
+    if (newPrice < 0) return;
+    setCart(prev => prev.map(item => (item.id === productId ? { ...item, price: newPrice } : item)));
+  };
+
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.cartQty, 0);
 
   const completeSale = (
@@ -1083,6 +1098,92 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           saveClientToSupabase(newClient);
           return [newClient, ...prev];
         }
+      });
+    }
+
+    return newSale;
+  };
+
+  // Vente rapide d'une seule prestation (ex: Épilation Helwa/Henné), sans
+  // passer par le panier — utile pour un flux "sélectionner un service puis
+  // encaisser" plutôt qu'un panier boutique. Ne touche pas au stock (ce
+  // sont des prestations, pas des produits physiques).
+  const completeServiceSale = (
+    product: Product,
+    price: number,
+    paymentMethod: PaymentMethod,
+    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string }
+  ): Sale => {
+    const timestamp = Date.now();
+    const now = new Date();
+    const total = Math.max(0, price);
+
+    const newSale: Sale = {
+      id: sales.length > 0 ? Math.max(...sales.map(s => s.id)) + 1 : 1,
+      caissier: currentUser?.username || 'caissier',
+      caissierName: currentUser?.name || 'Caissier',
+      date: now.toLocaleDateString('fr-FR'),
+      time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+      subtotal: total,
+      discount: 0,
+      total,
+      payment: paymentMethod,
+      paymentDetail: details?.paymentDetail || (paymentMethod === 'cash' ? 'Espèces' : 'Mobile Money'),
+      items: [
+        {
+          id: product.id,
+          name: product.name,
+          price: total,
+          qty: 1,
+          category: product.category,
+          emoji: product.emoji,
+          image: product.image,
+        },
+      ],
+      timestamp,
+      customerName: details?.customerName || 'Client Comptoir',
+      customerPhone: details?.customerPhone,
+    };
+
+    setSales(prev => [newSale, ...prev]);
+    setLastSale(newSale);
+    syncSaleToFirestore(newSale).catch(console.error);
+    saveSaleToSupabase(newSale);
+
+    const cleanCustomerPhone = (details?.customerPhone || '').trim();
+    if (cleanCustomerPhone) {
+      setClients(prev => {
+        const matchIdx = prev.findIndex(c => c.phone && c.phone.replace(/\s+/g, '') === cleanCustomerPhone.replace(/\s+/g, ''));
+        if (matchIdx >= 0) {
+          const existing = prev[matchIdx];
+          const updated: Client = {
+            ...existing,
+            purchaseCount: (existing.purchaseCount || 0) + 1,
+            totalSpent: (existing.totalSpent || 0) + total,
+            lastPurchaseDate: now.toLocaleDateString('fr-FR'),
+          };
+          const updatedList = [...prev];
+          updatedList[matchIdx] = updated;
+          syncClientToFirestore(updated).catch(console.error);
+          saveClientToSupabase(updated);
+          return updatedList;
+        }
+        const newId = prev.length > 0 ? Math.max(...prev.map(c => c.id)) + 1 : 1;
+        const newClient: Client = {
+          id: newId,
+          name: details?.customerName || 'Client',
+          phone: cleanCustomerPhone,
+          email: '',
+          address: '',
+          notes: 'Enregistré automatiquement lors d\'une prestation',
+          purchaseCount: 1,
+          totalSpent: total,
+          lastPurchaseDate: now.toLocaleDateString('fr-FR'),
+          createdAt: now.toISOString().split('T')[0],
+        };
+        syncClientToFirestore(newClient).catch(console.error);
+        saveClientToSupabase(newClient);
+        return [newClient, ...prev];
       });
     }
 
@@ -1642,10 +1743,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         cart,
         addToCart,
         updateCartQty,
+        updateCartPrice,
         removeFromCart,
         clearCart,
         cartTotal,
         completeSale,
+        completeServiceSale,
         sales,
         clients,
         addClient,
