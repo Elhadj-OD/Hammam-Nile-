@@ -187,7 +187,7 @@ export const AbonnementsGymView: React.FC = () => {
               key={s}
               type="button"
               onClick={() => setStatusFilter(s)}
-              className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+              className={`px-2.5 py-1.5 rounded-full font-bold transition cursor-pointer ${
                 statusFilter === s ? 'bg-[#004CB7] text-white shadow-xs' : 'text-[#6B7873] hover:text-[#1C2321]'
               }`}
             >

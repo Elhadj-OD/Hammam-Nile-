@@ -136,7 +136,7 @@ export const LoginView: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-px transition flex items-center justify-center gap-2 cursor-pointer text-white bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-60 disabled:translate-y-0"
+              className="w-full mt-2 py-3.5 px-4 font-bold rounded-full shadow-md hover:shadow-lg hover:-translate-y-px transition flex items-center justify-center gap-2 cursor-pointer text-white bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-60 disabled:translate-y-0"
             >
               <Lock className="w-4 h-4" />
               <span>{loading ? 'Connexion…' : 'Se connecter'}</span>

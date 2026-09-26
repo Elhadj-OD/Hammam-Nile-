@@ -84,7 +84,7 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+              className="py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Imprimer</span>
@@ -93,7 +93,7 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
             {isQuote && quote && quote.status !== 'accepted' && onConvertQuote && (
               <button
                 onClick={() => onConvertQuote(quote.id)}
-                className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
               >
                 <ArrowRight className="w-3.5 h-3.5" />
                 <span>Convertir en Facture</span>
@@ -103,7 +103,7 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
             {!isQuote && invoice && invoice.status !== 'paid' && onMarkPaid && (
               <button
                 onClick={() => onMarkPaid(invoice.id)}
-                className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>Marquer Payée</span>
@@ -112,7 +112,7 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition ml-2"
+              className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition ml-2"
             >
               <X className="w-5 h-5" />
             </button>

@@ -171,7 +171,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition cursor-pointer ${
                 (activeTab || tabs[0].key) === tab.key
                   ? 'bg-[#004CB7] text-white shadow-xs'
                   : 'text-[#6B7873] hover:text-[#1C2321]'
@@ -190,7 +190,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
             key={p.id}
             type="button"
             onClick={() => openModal(p)}
-            className="text-left p-4 rounded-2xl bg-white border border-[#E7E0D3] hover:border-[#004CB7]/50 hover:shadow-xs transition cursor-pointer"
+            className="text-left p-4 rounded-full bg-white border border-[#E7E0D3] hover:border-[#004CB7]/50 hover:shadow-xs transition cursor-pointer"
           >
             <div className="flex items-start justify-between gap-2">
               <span className="font-bold text-sm text-[#1C2321]">{p.name}</span>
@@ -228,7 +228,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                 key={p}
                 type="button"
                 onClick={() => setFilterPeriod(p)}
-                className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-full font-bold transition cursor-pointer ${
                   filterPeriod === p ? 'bg-[#004CB7] text-white shadow-xs' : 'text-[#6B7873] hover:text-[#1C2321]'
                 }`}
               >
@@ -307,7 +307,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
               <button
                 type="button"
                 onClick={closeModal}
-                className="p-1.5 rounded-lg text-[#6B7873] hover:bg-[#F7F3EC] cursor-pointer"
+                className="p-1.5 rounded-full text-[#6B7873] hover:bg-[#F7F3EC] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -366,7 +366,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setPayment('cash')}
-                    className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                    className={`p-2.5 rounded-full border text-xs font-bold transition cursor-pointer ${
                       payment === 'cash'
                         ? 'bg-[#004CB7] border-[#004CB7] text-white'
                         : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
@@ -377,7 +377,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setPayment('mobile')}
-                    className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                    className={`p-2.5 rounded-full border text-xs font-bold transition cursor-pointer ${
                       payment === 'mobile'
                         ? 'bg-[#004CB7] border-[#004CB7] text-white'
                         : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
@@ -432,7 +432,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+                className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer"
               >
                 Enregistrer le service
               </button>

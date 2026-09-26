@@ -80,7 +80,7 @@ export const InventaireView: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveSection('prelevements-hammam')}
-            className="px-4 py-2.5 bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+            className="px-4 py-2.5 bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 rounded-full text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <span>Prélèvements Hammam</span>
             <ArrowUpRight className="w-4 h-4" />
@@ -89,7 +89,7 @@ export const InventaireView: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveSection('mouvements')}
-            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <span>Mouvements de Stock</span>
             <ArrowUpRight className="w-4 h-4" />
@@ -298,14 +298,14 @@ export const InventaireView: React.FC = () => {
                         <div className="inline-flex items-center gap-1 bg-white border border-slate-200 rounded-lg p-0.5 shadow-2xs">
                           <button
                             onClick={() => handleQuickAdjust(product.id, -1)}
-                            className="w-5 h-5 flex items-center justify-center text-slate-600 hover:text-rose-600 hover:bg-slate-100 rounded transition cursor-pointer"
+                            className="w-5 h-5 flex items-center justify-center text-slate-600 hover:text-rose-600 hover:bg-slate-100 rounded-full transition cursor-pointer"
                             title="Sortie de stock -1"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <button
                             onClick={() => handleQuickAdjust(product.id, 1)}
-                            className="w-5 h-5 flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:bg-slate-100 rounded transition cursor-pointer"
+                            className="w-5 h-5 flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:bg-slate-100 rounded-full transition cursor-pointer"
                             title="Entrée de stock +1"
                           >
                             <Plus className="w-3 h-3" />

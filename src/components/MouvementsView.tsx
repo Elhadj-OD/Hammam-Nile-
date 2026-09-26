@@ -86,7 +86,7 @@ export const MouvementsView: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveSection('prelevements-hammam')}
-          className="px-4 py-2.5 bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+          className="px-4 py-2.5 bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 rounded-full text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
         >
           <span>✨ Prélèvements Hammam</span>
           <ArrowUpRight className="w-4 h-4" />
@@ -132,7 +132,7 @@ export const MouvementsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setType('in')}
-                className={`py-1.5 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer ${
+                className={`py-1.5 px-2 rounded-full text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer ${
                   type === 'in'
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -145,7 +145,7 @@ export const MouvementsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setType('out')}
-                className={`py-1.5 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer ${
+                className={`py-1.5 px-2 rounded-full text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer ${
                   type === 'out'
                     ? 'bg-rose-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -211,7 +211,7 @@ export const MouvementsView: React.FC = () => {
         <div className="flex justify-end pt-2">
           <button
             type="submit"
-            className="py-2.5 px-6 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+            className="py-2.5 px-6 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>Valider le Mouvement</span>

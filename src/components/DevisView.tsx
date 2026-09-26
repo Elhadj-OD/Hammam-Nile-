@@ -170,7 +170,7 @@ export const DevisView: React.FC = () => {
 
         <button
           onClick={() => setIsCreating(!isCreating)}
-          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{isCreating ? 'Fermer le formulaire' : 'Créer un Devis'}</span>
@@ -412,13 +412,13 @@ export const DevisView: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsCreating(false)}
-              className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
+              className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold cursor-pointer"
             >
               Annuler
             </button>
             <button
               type="submit"
-              className="py-2.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+              className="py-2.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>Enregistrer le Devis</span>
@@ -503,7 +503,7 @@ export const DevisView: React.FC = () => {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setSelectedQuote(quote)}
-                          className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg font-semibold flex items-center gap-1 transition cursor-pointer"
+                          className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full font-semibold flex items-center gap-1 transition cursor-pointer"
                           title="Aperçu et impression"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -516,7 +516,7 @@ export const DevisView: React.FC = () => {
                               const inv = convertQuoteToInvoice(quote.id);
                               if (inv) alert(`Devis converti avec succès en Facture ${inv.number} !`);
                             }}
-                            className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg font-semibold flex items-center gap-1 transition cursor-pointer"
+                            className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-full font-semibold flex items-center gap-1 transition cursor-pointer"
                             title="Convertir en facture"
                           >
                             <ArrowRight className="w-3.5 h-3.5" />
@@ -530,7 +530,7 @@ export const DevisView: React.FC = () => {
                               deleteQuote(quote.id);
                             }
                           }}
-                          className="p-1 text-slate-400 hover:text-rose-600 rounded transition cursor-pointer"
+                          className="p-1 text-slate-400 hover:text-rose-600 rounded-full transition cursor-pointer"
                           title="Supprimer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

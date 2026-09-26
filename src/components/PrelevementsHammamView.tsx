@@ -219,7 +219,7 @@ export const PrelevementsHammamView: React.FC = () => {
           <button
             type="button"
             onClick={handleExportCSV}
-            className="flex-1 md:flex-initial px-3.5 py-2.5 bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#002E6E] border border-[#E7E0D3] rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+            className="flex-1 md:flex-initial px-3.5 py-2.5 bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#002E6E] border border-[#E7E0D3] rounded-full text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
           >
             <Download className="w-4 h-4" />
             <span>Exporter CSV</span>
@@ -228,7 +228,7 @@ export const PrelevementsHammamView: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="flex-1 md:flex-initial px-4 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+            className="flex-1 md:flex-initial px-4 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
           >
             <Plus className="w-4 h-4" />
             <span>Nouveau Prélèvement</span>
@@ -367,7 +367,7 @@ export const PrelevementsHammamView: React.FC = () => {
                 key={p}
                 type="button"
                 onClick={() => setFilterPeriod(p)}
-                className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer capitalize ${
+                className={`px-2.5 py-1.5 rounded-full font-bold transition cursor-pointer capitalize ${
                   filterPeriod === p
                     ? 'bg-[#004CB7] text-white shadow-xs'
                     : 'text-[#6B7873] hover:text-[#1C2321]'
@@ -404,7 +404,7 @@ export const PrelevementsHammamView: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
-              className="mt-4 px-4 py-2 bg-[#004CB7] text-white rounded-xl text-xs font-bold transition hover:bg-[#002E6E] cursor-pointer"
+              className="mt-4 px-4 py-2 bg-[#004CB7] text-white rounded-full text-xs font-bold transition hover:bg-[#002E6E] cursor-pointer"
             >
               Enregistrer un premier prélèvement
             </button>
@@ -460,7 +460,7 @@ export const PrelevementsHammamView: React.FC = () => {
                           type="button"
                           onClick={() => setSelectedTicket(u)}
                           title="Imprimer / Voir le Bon de Décharge"
-                          className="p-1.5 rounded-lg bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#002E6E] transition cursor-pointer"
+                          className="p-1.5 rounded-full bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#002E6E] transition cursor-pointer"
                         >
                           <FileText className="w-3.5 h-3.5" />
                         </button>
@@ -476,7 +476,7 @@ export const PrelevementsHammamView: React.FC = () => {
                             }
                           }}
                           title="Annuler et réintégrer au stock"
-                          className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
+                          className="p-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -511,7 +511,7 @@ export const PrelevementsHammamView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#1C2321] hover:bg-[#F7F3EC]"
+                className="p-1.5 rounded-full text-[#6B7873] hover:text-[#1C2321] hover:bg-[#F7F3EC]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -578,7 +578,7 @@ export const PrelevementsHammamView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                    className="w-9 h-9 rounded-xl bg-[#F7F3EC] border border-[#E7E0D3] font-bold text-base text-[#1C2321] hover:bg-[#E4EAF7] transition"
+                    className="w-9 h-9 rounded-full bg-[#F7F3EC] border border-[#E7E0D3] font-bold text-base text-[#1C2321] hover:bg-[#E4EAF7] transition"
                   >
                     -
                   </button>
@@ -596,7 +596,7 @@ export const PrelevementsHammamView: React.FC = () => {
                     onClick={() =>
                       setQuantity(prev => (selectedProduct ? Math.min(selectedProduct.qty, prev + 1) : prev + 1))
                     }
-                    className="w-9 h-9 rounded-xl bg-[#F7F3EC] border border-[#E7E0D3] font-bold text-base text-[#1C2321] hover:bg-[#E4EAF7] transition"
+                    className="w-9 h-9 rounded-full bg-[#F7F3EC] border border-[#E7E0D3] font-bold text-base text-[#1C2321] hover:bg-[#E4EAF7] transition"
                   >
                     +
                   </button>
@@ -681,13 +681,13 @@ export const PrelevementsHammamView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4EAF7] transition"
+                  className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-full text-xs font-bold hover:bg-[#E4EAF7] transition"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-[#004CB7] text-white rounded-xl text-xs font-bold hover:bg-[#002E6E] transition shadow-xs"
+                  className="flex-1 py-2.5 bg-[#004CB7] text-white rounded-full text-xs font-bold hover:bg-[#002E6E] transition shadow-xs"
                 >
                   Valider la Sortie Hammam
                 </button>
@@ -716,7 +716,7 @@ export const PrelevementsHammamView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedTicket(null)}
-                className="p-1 rounded-lg text-[#6B7873] hover:text-[#1C2321]"
+                className="p-1 rounded-full text-[#6B7873] hover:text-[#1C2321]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -774,7 +774,7 @@ export const PrelevementsHammamView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="flex-1 py-2.5 bg-[#004CB7] text-white rounded-xl text-xs font-bold hover:bg-[#002E6E] transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                className="flex-1 py-2.5 bg-[#004CB7] text-white rounded-full text-xs font-bold hover:bg-[#002E6E] transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>Imprimer le Bon</span>
@@ -782,7 +782,7 @@ export const PrelevementsHammamView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedTicket(null)}
-                className="px-4 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4EAF7] transition"
+                className="px-4 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-full text-xs font-bold hover:bg-[#E4EAF7] transition"
               >
                 Fermer
               </button>

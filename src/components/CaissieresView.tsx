@@ -398,7 +398,7 @@ export const CaissieresView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleToggleLock(u)}
-                        className={`p-1.5 rounded-lg transition cursor-pointer ${
+                        className={`p-1.5 rounded-full transition cursor-pointer ${
                           u.locked
                             ? 'text-rose-600 hover:bg-rose-50'
                             : 'text-[#6B7873] hover:text-[#004CB7] hover:bg-[#F7F3EC]'
@@ -411,7 +411,7 @@ export const CaissieresView: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleOpenResetPassword(u)}
-                      className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#B8874B] hover:bg-[#F7F3EC] transition cursor-pointer"
+                      className="p-1.5 rounded-full text-[#6B7873] hover:text-[#B8874B] hover:bg-[#F7F3EC] transition cursor-pointer"
                       title="Réinitialiser le mot de passe (générer un code, ou en choisir un)"
                     >
                       <Key className="w-4 h-4" />
@@ -419,7 +419,7 @@ export const CaissieresView: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(u)}
-                      className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#004CB7] hover:bg-[#F7F3EC] transition cursor-pointer"
+                      className="p-1.5 rounded-full text-[#6B7873] hover:text-[#004CB7] hover:bg-[#F7F3EC] transition cursor-pointer"
                       title="Modifier le profil"
                     >
                       <Edit2 className="w-4 h-4" />
@@ -428,7 +428,7 @@ export const CaissieresView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleDelete(u)}
-                        className="p-1.5 rounded-lg text-[#6B7873] hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                        className="p-1.5 rounded-full text-[#6B7873] hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
                         title="Supprimer la caissière"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -500,7 +500,7 @@ export const CaissieresView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleSwitchToUser(u)}
-                    className="w-full py-2 text-xs font-bold text-[#1C2321] bg-[#F7F3EC] hover:bg-[#E4EAF7] hover:text-[#004CB7] rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
+                    className="w-full py-2 text-xs font-bold text-[#1C2321] bg-[#F7F3EC] hover:bg-[#E4EAF7] hover:text-[#004CB7] rounded-full transition cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <LogIn className="w-3.5 h-3.5" />
                     <span>Ouvrir la caisse avec ce profil</span>
@@ -534,7 +534,7 @@ export const CaissieresView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-[#6B7873] hover:text-[#1C2321] p-1.5 rounded-lg"
+                className="text-[#6B7873] hover:text-[#1C2321] p-1.5 rounded-full"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -577,7 +577,7 @@ export const CaissieresView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="text-xs font-bold bg-white text-[#004CB7] border border-[#004CB7] hover:bg-[#E4EAF7] px-3 py-1.5 rounded-lg cursor-pointer transition"
+                        className="text-xs font-bold bg-white text-[#004CB7] border border-[#004CB7] hover:bg-[#E4EAF7] px-3 py-1.5 rounded-full cursor-pointer transition"
                       >
                         Téléverser une photo
                       </button>
@@ -606,7 +606,7 @@ export const CaissieresView: React.FC = () => {
                         key={preset.label}
                         type="button"
                         onClick={() => setAvatarPreview(preset.label)}
-                        className={`w-6 h-6 rounded-md text-[10px] font-bold cursor-pointer transition ${preset.color}`}
+                        className={`w-6 h-6 rounded-full text-[10px] font-bold cursor-pointer transition ${preset.color}`}
                       >
                         {preset.label}
                       </button>
@@ -799,14 +799,14 @@ export const CaissieresView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="py-2.5 px-4 bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] rounded-xl text-xs font-bold cursor-pointer transition"
+                  className="py-2.5 px-4 bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] rounded-full text-xs font-bold cursor-pointer transition"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="py-2.5 px-6 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-60"
+                  className="py-2.5 px-6 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-60"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>
@@ -859,7 +859,7 @@ export const CaissieresView: React.FC = () => {
                 type="button"
                 onClick={() => setResetPasswordTarget(null)}
                 disabled={resettingPassword}
-                className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4EAF7] transition cursor-pointer disabled:opacity-60"
+                className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-full text-xs font-bold hover:bg-[#E4EAF7] transition cursor-pointer disabled:opacity-60"
               >
                 Annuler
               </button>
@@ -867,7 +867,7 @@ export const CaissieresView: React.FC = () => {
                 type="button"
                 onClick={handleConfirmResetPassword}
                 disabled={resettingPassword}
-                className="flex-1 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition cursor-pointer disabled:opacity-60"
+                className="flex-1 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold transition cursor-pointer disabled:opacity-60"
               >
                 {resettingPassword ? 'En cours...' : 'Confirmer'}
               </button>
@@ -895,7 +895,7 @@ export const CaissieresView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigator.clipboard?.writeText(tempPasswordInfo.tempPassword)}
-                className="p-2 rounded-lg text-[#6B7873] hover:text-[#004CB7] hover:bg-white transition cursor-pointer"
+                className="p-2 rounded-full text-[#6B7873] hover:text-[#004CB7] hover:bg-white transition cursor-pointer"
                 title="Copier"
               >
                 <Copy className="w-4 h-4" />
@@ -904,7 +904,7 @@ export const CaissieresView: React.FC = () => {
             <button
               type="button"
               onClick={() => setTempPasswordInfo(null)}
-              className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold transition cursor-pointer"
             >
               J'ai noté le mot de passe
             </button>

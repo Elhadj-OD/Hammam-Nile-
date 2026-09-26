@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {setMobileOpen && (
             <button
               onClick={() => setMobileOpen(false)}
-              className="xl:hidden p-1 text-[#EFE8D8]/70 hover:text-white rounded-lg"
+              className="xl:hidden p-1 text-[#EFE8D8]/70 hover:text-white rounded-full"
             >
               <X className="w-5 h-5" />
             </button>
@@ -126,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {!isGerant && (
             <li
               onClick={() => handleNavClick('caisse')}
-              className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center justify-between p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'caisse'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -162,7 +162,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {isGerant && (
             <li
               onClick={() => handleNavClick('mes-ventes')}
-              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'mes-ventes' || activeSection === 'devis' || activeSection === 'factures'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -186,7 +186,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {isGerant && (
             <li
               onClick={() => handleNavClick('clients')}
-              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'clients'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -210,7 +210,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {isGerant && (
             <li
               onClick={() => handleNavClick('rapports')}
-              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'rapports'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -234,7 +234,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {!isGerant && currentUser.department && (
             <li
               onClick={() => handleNavClick('decharge')}
-              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'decharge'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -257,7 +257,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {/* Produits & Pièces - Toutes les caissières (limité à leur rayon) + Admin */}
           <li
             onClick={() => handleNavClick('produits')}
-            className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+            className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
               activeSection === 'produits'
                 ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                 : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -281,7 +281,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {isGerant && (
             <li
               onClick={() => handleNavClick('utilisateurs')}
-              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'utilisateurs'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -307,7 +307,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {canSeeHammamSections && (
             <li
               onClick={() => handleNavClick('prelevements-hammam')}
-              className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center justify-between p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'prelevements-hammam'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -343,7 +343,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {canSeeHammamSections && (
             <li
               onClick={() => handleNavClick('commissions-laveurs')}
-              className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center justify-between p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'commissions-laveurs'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -380,7 +380,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {!isGerant && canSeeHammamSections && (
             <li
               onClick={() => handleNavClick('laveurs')}
-              className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center justify-between p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'laveurs'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -417,7 +417,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {(isGerant || currentUser.department === 'fitness_gym') && (
             <li
               onClick={() => handleNavClick('abonnements-gym')}
-              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'abonnements-gym'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -432,7 +432,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {isGerant && (
             <li
               onClick={() => handleNavClick('inventaire')}
-              className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center justify-between p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'inventaire' || activeSection === 'mouvements'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -461,7 +461,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {isGerant && (
             <li
               onClick={() => handleNavClick('journal-caisses')}
-              className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center justify-between p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'journal-caisses'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -487,7 +487,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {isGerant && (
             <li
               onClick={() => handleNavClick('assistant')}
-              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'assistant'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -511,7 +511,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           {isGerant && (
             <li
               onClick={() => handleNavClick('parametres')}
-              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'parametres'
                   ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
@@ -537,7 +537,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           <div className="mt-2 mb-2">
             <button
               onClick={() => handleNavClick('inventaire')}
-              className="w-full text-left p-2 rounded-xl bg-rose-900/30 border border-rose-500/20 text-rose-200 hover:bg-rose-900/50 transition cursor-pointer text-[11px]"
+              className="w-full text-left p-2 rounded-full bg-rose-900/30 border border-rose-500/20 text-rose-200 hover:bg-rose-900/50 transition cursor-pointer text-[11px]"
             >
               <div className="flex items-center gap-1.5 font-semibold">
                 <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
@@ -570,7 +570,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           type="button"
           onClick={handleRefreshApp}
           disabled={refreshing}
-          className="flex items-center gap-3 p-[10px_12px] text-[13px] font-semibold text-[#EFE8D8]/60 hover:text-[#EFE8D8] hover:bg-white/5 rounded-xl transition-all cursor-pointer w-full text-left border-0 bg-transparent disabled:opacity-60"
+          className="flex items-center gap-3 p-[10px_12px] text-[13px] font-semibold text-[#EFE8D8]/60 hover:text-[#EFE8D8] hover:bg-white/5 rounded-full transition-all cursor-pointer w-full text-left border-0 bg-transparent disabled:opacity-60"
           title="Recharger l'application avec la dernière version publiée"
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
@@ -582,7 +582,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
         <button
           type="button"
           onClick={logout}
-          className="flex items-center gap-3 p-[10px_12px] text-[13px] font-semibold text-[#EFE8D8]/60 hover:text-rose-300 hover:bg-white/5 rounded-xl transition-all cursor-pointer w-full text-left border-0 bg-transparent"
+          className="flex items-center gap-3 p-[10px_12px] text-[13px] font-semibold text-[#EFE8D8]/60 hover:text-rose-300 hover:bg-white/5 rounded-full transition-all cursor-pointer w-full text-left border-0 bg-transparent"
           title="Se déconnecter et revenir à l'écran de connexion"
         >
           <svg

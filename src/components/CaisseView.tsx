@@ -208,7 +208,7 @@ export const CaisseView: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveSection('prelevements-hammam')}
-              className="px-3 py-2 rounded-xl bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 transition font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap"
+              className="px-3 py-2 rounded-full bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 transition font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap"
               title="Enregistrer un produit pris par le Hammam"
             >
               <span>✨</span>
@@ -220,7 +220,7 @@ export const CaisseView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => canSwitchProfile && setShowCashierSwitch(prev => !prev)}
-                className={`flex items-center gap-2.5 p-1 rounded-xl transition text-left border-0 bg-transparent ${
+                className={`flex items-center gap-2.5 p-1 rounded-full transition text-left border-0 bg-transparent ${
                   canSwitchProfile ? 'hover:bg-[#F7F3EC] cursor-pointer' : 'cursor-default'
                 }`}
                 title={canSwitchProfile ? "Changer d'utilisateur / caissière" : 'Profil verrouillé par l\'admin — déconnectez-vous pour changer de compte'}
@@ -262,7 +262,7 @@ export const CaisseView: React.FC = () => {
                           switchUser(u.username);
                           setShowCashierSwitch(false);
                         }}
-                        className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-left cursor-pointer transition ${
+                        className={`w-full flex items-center gap-2.5 p-2 rounded-full text-left cursor-pointer transition ${
                           isSelected ? 'bg-[#E4EAF7] font-bold' : 'hover:bg-[#F7F3EC]'
                         }`}
                       >
@@ -627,7 +627,7 @@ export const CaisseView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setPaymentMethod('cash')}
-                className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-2.5 rounded-full text-xs font-bold border transition cursor-pointer flex items-center justify-center gap-1.5 ${
                   paymentMethod === 'cash'
                     ? 'bg-[#004CB7] text-white border-[#004CB7] shadow-xs'
                     : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
@@ -639,7 +639,7 @@ export const CaisseView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setPaymentMethod('mobile')}
-                className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2 px-2.5 rounded-full text-xs font-bold border transition cursor-pointer flex items-center justify-center gap-1.5 ${
                   paymentMethod === 'mobile'
                     ? 'bg-[#004CB7] text-white border-[#004CB7] shadow-xs'
                     : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
@@ -658,7 +658,7 @@ export const CaisseView: React.FC = () => {
                     key={op}
                     type="button"
                     onClick={() => setMobileOperator(op)}
-                    className={`flex-1 min-w-[65px] py-1 px-2 rounded-lg text-[11px] font-bold transition cursor-pointer border ${
+                    className={`flex-1 min-w-[65px] py-1 px-2 rounded-full text-[11px] font-bold transition cursor-pointer border ${
                       mobileOperator === op
                         ? 'bg-[#004CB7] text-white border-[#004CB7]'
                         : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
@@ -695,7 +695,7 @@ export const CaisseView: React.FC = () => {
               type="button"
               onClick={clearCart}
               disabled={cart.length === 0}
-              className="flex-1 bg-[#F7F3EC] text-[#1C2321] hover:bg-[#E7E0D3] disabled:opacity-40 disabled:cursor-not-allowed rounded-xl py-3 px-3 font-bold text-[13px] transition cursor-pointer font-sans"
+              className="flex-1 bg-[#F7F3EC] text-[#1C2321] hover:bg-[#E7E0D3] disabled:opacity-40 disabled:cursor-not-allowed rounded-full py-3 px-3 font-bold text-[13px] transition cursor-pointer font-sans"
             >
               Mettre en attente
             </button>
@@ -703,7 +703,7 @@ export const CaisseView: React.FC = () => {
               type="button"
               onClick={handleCheckout}
               disabled={cart.length === 0}
-              className="flex-[1.4] bg-[#004CB7] hover:bg-[#002E6E] text-white disabled:opacity-40 disabled:cursor-not-allowed rounded-xl py-3 px-4 font-bold text-[13px] transition cursor-pointer flex items-center justify-between font-sans shadow-md"
+              className="flex-[1.4] bg-[#004CB7] hover:bg-[#002E6E] text-white disabled:opacity-40 disabled:cursor-not-allowed rounded-full py-3 px-4 font-bold text-[13px] transition cursor-pointer flex items-center justify-between font-sans shadow-md"
             >
               <span>Encaisser</span>
               <span className="font-extrabold">{fmt(total)}</span>

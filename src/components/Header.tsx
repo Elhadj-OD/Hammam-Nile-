@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuToggle}
-          className="xl:hidden p-2 rounded-xl text-[#004CB7] hover:bg-[#F0F5FD] transition cursor-pointer"
+          className="xl:hidden p-2 rounded-full text-[#004CB7] hover:bg-[#F0F5FD] transition cursor-pointer"
           aria-label="Ouvrir le menu"
         >
           <Menu className="w-5 h-5" />

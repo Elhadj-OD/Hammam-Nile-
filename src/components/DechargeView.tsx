@@ -260,7 +260,7 @@ export const DechargeView: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60"
+                  className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   <span>{submitting ? 'Enregistrement...' : 'Faire la décharge'}</span>

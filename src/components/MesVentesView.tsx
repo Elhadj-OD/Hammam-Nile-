@@ -257,7 +257,7 @@ export const MesVentesView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setLastSale(sale)}
-                          className="p-1.5 text-[#004CB7] hover:bg-[#E4EAF7] rounded-lg transition cursor-pointer"
+                          className="p-1.5 text-[#004CB7] hover:bg-[#E4EAF7] rounded-full transition cursor-pointer"
                           title="Imprimer / Voir le ticket"
                         >
                           <Printer className="w-4 h-4" />
@@ -275,7 +275,7 @@ export const MesVentesView: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => openEditModal(sale)}
-                              className="p-1.5 text-[#6B7873] hover:text-[#002E6E] hover:bg-[#F7F3EC] rounded-lg transition cursor-pointer"
+                              className="p-1.5 text-[#6B7873] hover:text-[#002E6E] hover:bg-[#F7F3EC] rounded-full transition cursor-pointer"
                               title="Modifier cette vente"
                             >
                               <Pencil className="w-4 h-4" />
@@ -300,7 +300,7 @@ export const MesVentesView: React.FC = () => {
               <button
                 type="button"
                 onClick={closeEditModal}
-                className="p-1.5 rounded-lg text-[#6B7873] hover:bg-[#F7F3EC] cursor-pointer"
+                className="p-1.5 rounded-full text-[#6B7873] hover:bg-[#F7F3EC] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -347,7 +347,7 @@ export const MesVentesView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setEditPayment('cash')}
-                    className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                    className={`p-2.5 rounded-full border text-xs font-bold transition cursor-pointer ${
                       editPayment === 'cash'
                         ? 'bg-[#004CB7] border-[#004CB7] text-white'
                         : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
@@ -358,7 +358,7 @@ export const MesVentesView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setEditPayment('mobile')}
-                    className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                    className={`p-2.5 rounded-full border text-xs font-bold transition cursor-pointer ${
                       editPayment === 'mobile'
                         ? 'bg-[#004CB7] border-[#004CB7] text-white'
                         : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
@@ -401,7 +401,7 @@ export const MesVentesView: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+                className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer"
               >
                 Enregistrer les modifications
               </button>

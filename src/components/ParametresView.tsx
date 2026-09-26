@@ -226,7 +226,7 @@ export const ParametresView: React.FC = () => {
         <div className="flex justify-end pt-2">
           <button
             type="submit"
-            className="py-2.5 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+            className="py-2.5 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>Enregistrer les Modifications</span>
@@ -247,7 +247,7 @@ export const ParametresView: React.FC = () => {
         <button
           type="button"
           onClick={handleReset}
-          className="py-2 px-4 bg-white border border-rose-300 text-rose-700 hover:bg-rose-100 rounded-xl text-xs font-semibold flex items-center gap-2 transition cursor-pointer"
+          className="py-2 px-4 bg-white border border-rose-300 text-rose-700 hover:bg-rose-100 rounded-full text-xs font-semibold flex items-center gap-2 transition cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Réinitialiser les données de démo</span>

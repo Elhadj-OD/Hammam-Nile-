@@ -181,7 +181,7 @@ export const JournalCaissesView: React.FC = () => {
           <button
             type="button"
             onClick={handleExportCSV}
-            className="px-4 py-2.5 bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+            className="px-4 py-2.5 bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 rounded-full text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Enregistrer (CSV)</span>
@@ -189,7 +189,7 @@ export const JournalCaissesView: React.FC = () => {
           <button
             type="button"
             onClick={handlePrint}
-            className="px-4 py-2.5 bg-[#002E6E] hover:bg-[#004CB7] text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+            className="px-4 py-2.5 bg-[#002E6E] hover:bg-[#004CB7] text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span>Imprimer</span>

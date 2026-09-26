@@ -299,7 +299,7 @@ export const AssistantView: React.FC = () => {
           <button
             type="button"
             onClick={() => setMode('chat')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+            className={`px-4 py-2 rounded-full text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
               mode === 'chat'
                 ? 'bg-[#004CB7] text-white shadow-xs'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
@@ -311,7 +311,7 @@ export const AssistantView: React.FC = () => {
           <button
             type="button"
             onClick={() => setMode('photo')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+            className={`px-4 py-2 rounded-full text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
               mode === 'photo'
                 ? 'bg-[#004CB7] text-white shadow-xs'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
@@ -330,7 +330,7 @@ export const AssistantView: React.FC = () => {
                 setPhotoMode('add');
                 resetPhoto();
               }}
-              className={`px-3.5 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
+              className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
                 photoMode === 'add'
                   ? 'bg-[#004CB7] text-white border-[#004CB7]'
                   : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
@@ -345,7 +345,7 @@ export const AssistantView: React.FC = () => {
                 setPhotoMode('remove');
                 resetPhoto();
               }}
-              className={`px-3.5 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
+              className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
                 photoMode === 'remove'
                   ? 'bg-[#004CB7] text-white border-[#004CB7]'
                   : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
@@ -405,7 +405,7 @@ export const AssistantView: React.FC = () => {
             <button
               type="submit"
               disabled={chatLoading || !input.trim()}
-              className="p-2.5 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-40 text-white rounded-xl transition cursor-pointer"
+              className="p-2.5 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-40 text-white rounded-full transition cursor-pointer"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -459,7 +459,7 @@ export const AssistantView: React.FC = () => {
                         type="button"
                         onClick={handleAnalyze}
                         disabled={extracting}
-                        className="px-4 py-2 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-50 text-white rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                        className="px-4 py-2 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-50 text-white rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                       >
                         {extracting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                         {extracting ? 'Analyse en cours…' : 'Analyser la photo'}
@@ -467,7 +467,7 @@ export const AssistantView: React.FC = () => {
                       <button
                         type="button"
                         onClick={resetPhoto}
-                        className="px-3 py-2 bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] rounded-xl text-xs font-bold transition cursor-pointer"
+                        className="px-3 py-2 bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] rounded-full text-xs font-bold transition cursor-pointer"
                       >
                         Changer de photo
                       </button>
@@ -572,7 +572,7 @@ export const AssistantView: React.FC = () => {
                   type="button"
                   onClick={handleConfirmAdd}
                   disabled={!rows.some(r => r.include && r.name.trim())}
-                  className="px-4 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-40 text-white rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-40 text-white rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Ajouter à la boutique
@@ -684,7 +684,7 @@ export const AssistantView: React.FC = () => {
                   type="button"
                   onClick={handleConfirmRemove}
                   disabled={!removeRows.some(r => r.include && r.matchedProductId !== null)}
-                  className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                 >
                   <PackageMinus className="w-4 h-4" />
                   Retirer du stock
