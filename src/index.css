@@ -42,11 +42,15 @@
   height: 8px;
 }
 
+.print-only {
+  display: none;
+}
+
 @media print {
   @page {
     margin: 3mm 0mm;
   }
-  
+
   html, body {
     background: white !important;
     color: black !important;
@@ -75,6 +79,21 @@
     padding: 2mm !important;
     box-shadow: none !important;
     border: none !important;
+  }
+
+  /* N'imprime que le ticket (reçu), jamais le reste de l'app derrière */
+  body *{
+    visibility: hidden;
+  }
+  .receipt-print-area,
+  .receipt-print-area * {
+    visibility: visible;
+  }
+  .receipt-print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
   }
 }
 

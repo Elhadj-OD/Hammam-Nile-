@@ -7,6 +7,7 @@ import { Header } from './components/Header';
 import { DashboardView } from './components/DashboardView';
 import { CaisseView } from './components/CaisseView';
 import { EpilationServicesView } from './components/EpilationServicesView';
+import { CoiffureServicesView } from './components/CoiffureServicesView';
 import { MesVentesView } from './components/MesVentesView';
 import { DevisView } from './components/DevisView';
 import { FacturesView } from './components/FacturesView';
@@ -52,10 +53,13 @@ const MainLayout: React.FC = () => {
         return <DashboardView />;
       case 'caisse':
         // L'admin n'a pas de partie caisse : elle vérifie, elle ne vend pas.
-        // Épilation (Helwa & Henné) : prestations, pas un panier boutique —
-        // vue dédiée façon "Nouveau Service" (comme le Hammam), sans commission.
+        // Épilation (Helwa & Henné) et Coiffure & Salon : prestations, pas
+        // un panier boutique — vue dédiée façon "Nouveau Service" (comme
+        // le Hammam), sans commission, sans scanner.
         if (currentUser.role === 'gerant') return <DashboardView />;
-        return currentUser.department === 'epilation_traditionnelle' ? <EpilationServicesView /> : <CaisseView />;
+        if (currentUser.department === 'epilation_traditionnelle') return <EpilationServicesView />;
+        if (currentUser.department === 'coiffure_salon') return <CoiffureServicesView />;
+        return <CaisseView />;
       case 'mes-ventes':
         return <MesVentesView />;
       case 'devis':
