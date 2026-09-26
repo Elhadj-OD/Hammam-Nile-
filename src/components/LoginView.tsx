@@ -9,7 +9,7 @@ import {
   EyeOff,
   ShieldCheck,
 } from 'lucide-react';
-import { HammamNileLogo } from './HammamNileLogo';
+import { HammamNileLogo, HammamNileEmblem } from './HammamNileLogo';
 
 export const LoginView: React.FC = () => {
   const { login, settings, firebaseConnected } = useApp();
@@ -41,9 +41,14 @@ export const LoginView: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#051B33] nile-waves p-4 sm:p-6 relative overflow-hidden">
+      {/* Emblème géant en filigrane — visible en transparence derrière la carte */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true">
+        <HammamNileEmblem className="w-[130vw] h-[130vw] sm:w-[900px] sm:h-[900px] opacity-[0.07]" color="#FFFFFF" />
+      </div>
+
       <div className="max-w-md w-full relative z-10">
         {/* Card */}
-        <div className="bg-white rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-[#E7E0D3] p-6 sm:p-8">
+        <div className="bg-white/90 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
           {/* Official Logo & Header */}
           <div className="text-center mb-6 pt-1">
             <div className="inline-block p-4 rounded-3xl bg-slate-50/80 border border-slate-100 shadow-xs mb-2">
