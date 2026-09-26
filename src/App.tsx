@@ -3,6 +3,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { LoginView } from './components/LoginView';
 import { ForcePasswordChangeView } from './components/ForcePasswordChangeView';
 import { Sidebar } from './components/Sidebar';
+import { HammamNileEmblem } from './components/HammamNileLogo';
 import { Header } from './components/Header';
 import { DashboardView } from './components/DashboardView';
 import { CaisseView } from './components/CaisseView';
@@ -124,10 +125,15 @@ const MainLayout: React.FC = () => {
       <Sidebar mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="relative flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Emblème géant en filigrane — même esprit que l'écran de connexion */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0" aria-hidden="true">
+          <HammamNileEmblem className="w-[1100px] h-[1100px] opacity-[0.05]" color="#004CB7" />
+        </div>
+
         <Header onMenuToggle={() => setMobileMenuOpen(prev => !prev)} />
 
-        <main className="flex-1 p-3 sm:p-5 lg:p-6 overflow-y-auto">
+        <main className="relative z-10 flex-1 p-3 sm:p-5 lg:p-6 overflow-y-auto">
           {renderActiveSection()}
         </main>
       </div>
