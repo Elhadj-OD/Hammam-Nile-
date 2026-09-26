@@ -90,10 +90,10 @@ const MainLayout: React.FC = () => {
         return activeSection === 'prelevements-hammam' ? <PrelevementsHammamView /> : <CommissionsLaveursView />;
       }
       case 'laveurs': {
+        // Boutique Homme (Elhadj) + Boutique Femme/Hammam (@hammam) uniquement — pas l'admin.
         const canSeeLaveurs =
-          currentUser.role === 'gerant' ||
-          currentUser.department === 'boutique_homme' ||
-          currentUser.department === 'boutique_femme';
+          currentUser.role !== 'gerant' &&
+          (currentUser.department === 'boutique_homme' || currentUser.department === 'boutique_femme');
         return canSeeLaveurs ? <LaveursView /> : <DashboardView />;
       }
       case 'rapports':

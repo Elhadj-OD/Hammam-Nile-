@@ -375,8 +375,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             </li>
           )}
 
-          {/* Laveurs (Profils) - Boutique Homme (Elhadj) + Boutique Femme/Hammam (@hammam) + Admin */}
-          {canSeeHammamSections && (
+          {/* Laveurs (Profils) - Boutique Homme (Elhadj) + Boutique Femme/Hammam (@hammam) uniquement, pas l'admin */}
+          {!isGerant && canSeeHammamSections && (
             <li
               onClick={() => handleNavClick('laveurs')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
