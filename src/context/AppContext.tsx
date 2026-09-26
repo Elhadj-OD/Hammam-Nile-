@@ -170,7 +170,7 @@ interface AppContextType {
     product: Product,
     price: number,
     paymentMethod: PaymentMethod,
-    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string }
+    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string; cashierName?: string }
   ) => Sale;
 
   // Sales
@@ -1112,7 +1112,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     product: Product,
     price: number,
     paymentMethod: PaymentMethod,
-    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string }
+    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string; cashierName?: string }
   ): Sale => {
     const timestamp = Date.now();
     const now = new Date();
@@ -1121,7 +1121,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const newSale: Sale = {
       id: sales.length > 0 ? Math.max(...sales.map(s => s.id)) + 1 : 1,
       caissier: currentUser?.username || 'caissier',
-      caissierName: currentUser?.name || 'Caissier',
+      caissierName: details?.cashierName?.trim() || currentUser?.name || 'Caissier',
       date: now.toLocaleDateString('fr-FR'),
       time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
       subtotal: total,
