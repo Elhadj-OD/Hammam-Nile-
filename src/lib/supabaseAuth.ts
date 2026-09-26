@@ -145,6 +145,7 @@ export async function createStaffUser(data: {
 export async function updateStaffUser(
   username: string,
   updates: Partial<{
+    username: string;
     name: string;
     email: string;
     role: UserRole;

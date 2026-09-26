@@ -159,6 +159,7 @@ export const CaissieresView: React.FC = () => {
     setSubmitting(true);
     if (editingUser) {
       const res = await updateUser(editingUser.username, {
+        username: cleanUsername,
         name: name.trim(),
         email: cleanEmail,
         phone: phone.trim(),
@@ -645,9 +646,13 @@ export const CaissieresView: React.FC = () => {
                   onChange={e => setUsername(e.target.value)}
                   placeholder="ex: fatou"
                   required
-                  disabled={!!editingUser}
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A] disabled:opacity-60"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
                 />
+                {editingUser && (
+                  <p className="text-[11px] text-[#6B7873] mt-1">
+                    En le changeant, la caissière devra se connecter avec ce nouvel identifiant.
+                  </p>
+                )}
               </div>
 
               {/* Mot de passe (facultatif : sinon généré automatiquement) */}
