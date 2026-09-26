@@ -254,10 +254,12 @@ interface AppContextType {
   addLaveur: (name: string) => { success: boolean; error?: string };
   deleteLaveur: (id: number) => void;
 
-  // Décharge (clôture journalière) — accès gérante uniquement (RLS)
+  // Décharge (clôture journalière) — chaque caissière clôture sa propre
+  // caisse ; une fois faite, définitive (pas de correction possible)
   decharges: Decharge[];
   addOrUpdateDecharge: (data: {
     dateDecharge: string;
+    department: CaisseDepartment;
     totalEspeceCalcule: number;
     totalMobileMoneyCalcule: number;
     nombreTransactions: number;
@@ -1553,10 +1555,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     deleteLaveurFromSupabase(id);
   };
 
-  // Décharge (clôture journalière) — une seule par jour : refaire la
-  // décharge du même jour corrige l'existante (upsert sur dateDecharge).
+  // Décharge (clôture journalière) — une seule par jour ET par caisse.
+  // Définitive une fois faite : aucune policy RLS d'UPDATE n'est accordée
+  // aux caissières, donc un second essai pour le même (date, caisse)
+  // échoue côté serveur plutôt que d'écraser la précédente.
   const addOrUpdateDecharge = async (data: {
     dateDecharge: string;
+    department: CaisseDepartment;
     totalEspeceCalcule: number;
     totalMobileMoneyCalcule: number;
     nombreTransactions: number;
@@ -1565,6 +1570,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }): Promise<{ success: boolean; error?: string }> => {
     const payload: Omit<Decharge, 'id'> = {
       dateDecharge: data.dateDecharge,
+      department: data.department,
       totalEspeceCalcule: data.totalEspeceCalcule,
       totalMobileMoneyCalcule: data.totalMobileMoneyCalcule,
       nombreTransactions: data.nombreTransactions,
@@ -1578,12 +1584,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const saved = await saveDechargeToSupabase(payload);
     if (!saved) {
-      return { success: false, error: "Impossible d'enregistrer la décharge. Vérifiez votre connexion." };
+      return { success: false, error: 'Cette caisse a déjà été clôturée aujourd\'hui, ou la connexion a échoué.' };
     }
 
     setDecharges(prev => {
-      const withoutSameDate = prev.filter(d => d.dateDecharge !== saved.dateDecharge);
-      return [saved, ...withoutSameDate].sort((a, b) => b.timestamp - a.timestamp);
+      const withoutSame = prev.filter(d => !(d.dateDecharge === saved.dateDecharge && d.department === saved.department));
+      return [saved, ...withoutSame].sort((a, b) => b.timestamp - a.timestamp);
     });
 
     return { success: true };

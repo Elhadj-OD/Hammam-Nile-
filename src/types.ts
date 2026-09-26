@@ -243,6 +243,7 @@ export interface Laveur {
 export interface Decharge {
   id: number;
   dateDecharge: string; // "JJ/MM/AAAA"
+  department: CaisseDepartment;
   totalEspeceCalcule: number;
   totalMobileMoneyCalcule: number;
   nombreTransactions: number;

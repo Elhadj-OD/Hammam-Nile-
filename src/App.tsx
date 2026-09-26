@@ -79,8 +79,9 @@ const MainLayout: React.FC = () => {
       case 'rapports':
         return <RapportsView />;
       case 'decharge':
-        // Clôture journalière : réservée à la gérante (RLS + accès UI)
-        return currentUser.role === 'gerant' ? <DechargeView /> : <DashboardView />;
+        // Clôture journalière : chaque caissière clôture sa propre caisse.
+        // Réservée aux caissières (RLS + accès UI) — la gérante n'y a plus accès.
+        return currentUser.role === 'caissier' ? <DechargeView /> : <DashboardView />;
       case 'utilisateurs':
         return <CaissieresView />;
       case 'parametres':
