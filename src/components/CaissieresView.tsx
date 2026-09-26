@@ -304,7 +304,7 @@ export const CaissieresView: React.FC = () => {
       </div>
 
       {/* Users Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
         {users.map(u => {
           const stats = getUserStats(u.username);
           const isCurrent = currentUser?.username === u.username;
@@ -322,10 +322,10 @@ export const CaissieresView: React.FC = () => {
             >
               <div>
                 {/* Header card */}
-                <div className="flex items-start justify-between gap-3 mb-4">
-                  <div className="flex items-center gap-3.5">
+                <div className="flex items-start justify-between gap-2 mb-4 flex-wrap">
+                  <div className="flex items-center gap-3.5 min-w-0">
                     {/* Avatar Photo */}
-                    <div className="relative">
+                    <div className="relative shrink-0">
                       {isPhoto ? (
                         <img
                           src={u.avatar}
@@ -345,14 +345,14 @@ export const CaissieresView: React.FC = () => {
                       )}
                     </div>
 
-                    <div>
-                      <h3 className="font-bold font-display text-[16px] text-[#1C2321] leading-tight">
+                    <div className="min-w-0">
+                      <h3 className="font-bold font-display text-[16px] text-[#1C2321] leading-tight break-words">
                         {u.name}
                       </h3>
-                      <div className="text-xs text-[#6B7873] font-mono mt-0.5">
+                      <div className="text-xs text-[#6B7873] font-mono mt-0.5 truncate">
                         @{u.username}
                       </div>
-                      <div className="mt-1">
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1">
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                             u.role === 'gerant'
@@ -364,7 +364,7 @@ export const CaissieresView: React.FC = () => {
                         </span>
                         {u.gender === 'homme' && (
                           <span
-                            className="ml-1 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-[#F7F3EC] text-[#6B7873] border border-[#E7E0D3]"
+                            className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-[#F7F3EC] text-[#6B7873] border border-[#E7E0D3]"
                             title="Boutique Femme masquée pour ce compte"
                           >
                             Homme
@@ -372,7 +372,7 @@ export const CaissieresView: React.FC = () => {
                         )}
                         {u.department && (
                           <span
-                            className="ml-1 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-[#0F4C4A]/10 text-[#0F4C4A] border border-[#0F4C4A]/20"
+                            className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-[#0F4C4A]/10 text-[#0F4C4A] border border-[#0F4C4A]/20"
                             title="Caisse dédiée : voit uniquement cette partie"
                           >
                             {DEPARTMENTS[u.department].icon} {DEPARTMENTS[u.department].label}
@@ -380,7 +380,7 @@ export const CaissieresView: React.FC = () => {
                         )}
                         {u.locked && (
                           <span
-                            className="ml-1 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200"
+                            className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200"
                             title="Ne peut pas changer d'espace depuis cet appareil"
                           >
                             <Lock className="w-2.5 h-2.5" />
@@ -392,7 +392,7 @@ export const CaissieresView: React.FC = () => {
                   </div>
 
                   {/* Actions (Edit / Lock / Delete) */}
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 shrink-0">
                     {u.role !== 'gerant' && (
                       <button
                         type="button"
