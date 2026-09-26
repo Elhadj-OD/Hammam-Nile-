@@ -14,69 +14,21 @@ export const HammamNileEmblem: React.FC<{
 }> = ({ className = 'w-10 h-10', color = '#004CB7' }) => {
   return (
     <svg
-      viewBox="0 0 160 110"
+      viewBox="0 0 160 105.3"
       className={className}
       fill={color}
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid meet"
     >
-      {/* 
-        Official Hammam Nile Emblem:
-        Royal Blue silhouette of a woman's head, her flowing hair
-        forming the streaked strands on the left
+      {/*
+        Emblème officiel Hammam Nile — contour tracé directement depuis la
+        photo du logo réel (silhouette d'oiseau : tête + bec bien visibles
+        à droite, plumes/traînées effilées à gauche), pour que les traits
+        du visage/bec restent nets au lieu d'un contour approximatif.
       */}
       <path
-        d="M 22 40 
-           L 100 45 
-           C 114 43 124 45 130 52 
-           C 123 57 116 63 118 72 
-           C 120 80 126 83 130 85 
-           C 126 91 116 94 104 94 
-           C 88 93 72 82 66 75 
-           L 96 73 
-           L 46 66 
-           L 88 64 
-           L 32 55 
-           L 84 53 
-           L 22 40 Z"
-        display="none"
+        d="M 154.3,91.3 L 155.6,83.0 L 153.4,79.6 L 145.6,75.7 L 134.7,74.8 L 131.2,70.4 L 127.3,55.2 L 127.8,48.3 L 137.8,35.7 L 142.5,21.8 L 149.9,14.4 L 155.1,11.8 L 153.8,9.2 L 141.2,4.4 L 125.6,4.0 L 113.9,7.5 L 86.5,20.1 L 67.4,21.4 L 4.0,8.8 L 4.0,10.5 L 47.0,27.5 L 47.0,30.9 L 43.1,31.4 L 15.3,25.7 L 17.0,28.3 L 59.2,46.6 L 59.2,50.0 L 55.2,50.5 L 25.7,43.1 L 25.7,44.8 L 70.9,65.7 L 70.9,70.0 L 53.5,67.0 L 53.5,68.7 L 68.7,77.0 L 69.1,83.0 L 93.0,94.3 L 116.5,100.4 L 131.2,100.4 L 140.4,98.7 L 149.5,95.2 Z"
       />
-      {/* Detailed layered paths reproducing the exact shape from the photo */}
-      <g fill={color}>
-        {/* Head silhouette and flowing hair strands */}
-        <path
-          d="M 24 43 
-             C 45 46 72 50 96 50
-             C 110 47 122 47 131 52
-             C 122 56 116 64 117 72
-             C 118 80 125 84 130 87
-             C 124 93 114 96 102 95
-             C 86 94 74 85 64 78
-             C 74 79 86 78 96 76
-             C 78 73 62 69 50 67
-             C 65 67 78 66 90 64
-             C 70 61 52 57 36 54
-             C 52 54 68 53 82 52
-             C 60 48 40 45 24 43 Z"
-        />
-        {/* Crisp speed-line cutouts & dynamic feathers */}
-        <path
-          d="M 20 42
-             Q 60 48 98 48
-             C 114 45 125 45 132 52
-             C 123 58 116 65 118 74
-             C 120 81 126 85 130 87
-             C 122 93 112 96 98 95
-             C 82 94 70 85 60 78
-             L 88 77
-             L 48 68
-             L 82 66
-             L 34 56
-             L 76 54
-             Z"
-          opacity="0.95"
-        />
-      </g>
     </svg>
   );
 };
