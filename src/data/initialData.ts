@@ -227,6 +227,16 @@ export const INITIAL_PRODUCTS: Product[] = [
   { id: 209, name: 'Helwa - Combo Bas du corps', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Demi-jambes + maillot — prix à définir' },
   { id: 210, name: 'Helwa - Combo Complet', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Jambes complètes + maillot + aisselles — prix à définir' },
 
+  // Henné (caisse Épilation "Helwa et Henné") — tarifs au choix du client selon la prestation
+  { id: 275, name: 'Henné noir main (500 MRU)', category: 'epilation_traditionnelle', price: 500, qty: 999, minQty: 0, emoji: '🎨' },
+  { id: 276, name: 'Henné noir main (600 MRU)', category: 'epilation_traditionnelle', price: 600, qty: 999, minQty: 0, emoji: '🎨' },
+  { id: 277, name: 'Henné noir main (800 MRU)', category: 'epilation_traditionnelle', price: 800, qty: 999, minQty: 0, emoji: '🎨' },
+  { id: 278, name: 'Henné noir main et pied (1000 MRU)', category: 'epilation_traditionnelle', price: 1000, qty: 999, minQty: 0, emoji: '🎨' },
+  { id: 279, name: 'Henné noir main et pied (1500 MRU)', category: 'epilation_traditionnelle', price: 1500, qty: 999, minQty: 0, emoji: '🎨' },
+  { id: 280, name: 'Henné noir tatouage (200 MRU)', category: 'epilation_traditionnelle', price: 200, qty: 999, minQty: 0, emoji: '🎨' },
+  { id: 281, name: 'Henné noir tatouage (300 MRU)', category: 'epilation_traditionnelle', price: 300, qty: 999, minQty: 0, emoji: '🎨' },
+  { id: 282, name: 'Henné noir tatouage (800 MRU)', category: 'epilation_traditionnelle', price: 800, qty: 999, minQty: 0, emoji: '🎨' },
+
   // Fitness Gym
   { id: 211, name: 'Gym - Accès à la journée', category: 'fitness_gym', price: 200, qty: 999, minQty: 0, emoji: '🏋️', description: 'Une seule entrée, valable toute la journée' },
   { id: 212, name: 'Gym - Abonnement Mensuel', category: 'fitness_gym', price: 1500, qty: 999, minQty: 0, emoji: '🏋️', description: 'Accès salle + cours collectifs + suivi coachs, par mois' },
