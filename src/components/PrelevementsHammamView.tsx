@@ -44,13 +44,13 @@ export const PrelevementsHammamView: React.FC = () => {
   const isHommeCashier = currentUser?.role !== 'gerant' && currentUser?.gender === 'homme';
   const HOMME_DESTINATION = 'Hammam Homme';
 
-  // Form state
+  // Form state — identifiant, destination et demandeur se tapent librement
+  // (suggestions données à titre indicatif via une datalist, pas imposées).
   const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const [productSearch, setProductSearch] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
-  const [cabin, setCabin] = useState<string>(isHommeCashier ? HOMME_DESTINATION : 'Cabine de Gommage');
-  const [customCabin, setCustomCabin] = useState<string>('');
-  const [requestedBy, setRequestedBy] = useState<string>('Khadija (Gommeuse)');
-  const [customRequestedBy, setCustomRequestedBy] = useState<string>('');
+  const [cabin, setCabin] = useState<string>(isHommeCashier ? HOMME_DESTINATION : '');
+  const [requestedBy, setRequestedBy] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [formError, setFormError] = useState<string>('');
 
@@ -61,7 +61,6 @@ export const PrelevementsHammamView: React.FC = () => {
     'Soins du Visage & Esthétique',
     'Vestiaires & Service Linge',
     'Accueil & Espace Détente',
-    'Autre espace',
   ];
 
   const staffSuggestions = [
@@ -70,7 +69,6 @@ export const PrelevementsHammamView: React.FC = () => {
     'Amina (Masseuse)',
     'Fatouma (Lingerie Hammam)',
     'Zeinabou (Esthéticienne)',
-    'Autre praticienne',
   ];
 
   // Selected product object
@@ -137,14 +135,9 @@ export const PrelevementsHammamView: React.FC = () => {
     e.preventDefault();
     setFormError('');
 
-    if (!selectedProductId) {
-      setFormError('Veuillez choisir un produit de la boutique.');
-      return;
-    }
-
     const prod = products.find(p => p.id === Number(selectedProductId));
     if (!prod) {
-      setFormError('Produit introuvable.');
+      setFormError("Tapez le nom de l'article et choisissez-le dans les suggestions.");
       return;
     }
 
@@ -158,17 +151,21 @@ export const PrelevementsHammamView: React.FC = () => {
       return;
     }
 
-    const effectiveCabin = cabin === 'Autre espace' ? customCabin.trim() || 'Espace Hammam' : cabin;
-    const effectiveRequestedBy =
-      requestedBy === 'Autre praticienne'
-        ? customRequestedBy.trim() || 'Personnel Hammam'
-        : requestedBy;
+    if (!cabin.trim()) {
+      setFormError('Veuillez indiquer la destination / cabine.');
+      return;
+    }
+
+    if (!requestedBy.trim()) {
+      setFormError('Veuillez indiquer qui a demandé ce prélèvement.');
+      return;
+    }
 
     const ok = addHammamUsage({
       productId: prod.id,
       qty: quantity,
-      serviceOrCabin: effectiveCabin,
-      requestedBy: effectiveRequestedBy,
+      serviceOrCabin: cabin.trim(),
+      requestedBy: requestedBy.trim(),
       notes: notes.trim() || undefined,
     });
 
@@ -176,11 +173,10 @@ export const PrelevementsHammamView: React.FC = () => {
       setShowAddModal(false);
       // Reset form
       setSelectedProductId('');
+      setProductSearch('');
       setQuantity(1);
-      setCabin(isHommeCashier ? HOMME_DESTINATION : 'Cabine de Gommage');
-      setCustomCabin('');
-      setRequestedBy('Khadija (Gommeuse)');
-      setCustomRequestedBy('');
+      setCabin(isHommeCashier ? HOMME_DESTINATION : '');
+      setRequestedBy('');
       setNotes('');
       setFormError('');
     } else {
@@ -529,34 +525,47 @@ export const PrelevementsHammamView: React.FC = () => {
             )}
 
             <form onSubmit={handleCreateUsage} className="mt-4 space-y-4">
-              {/* Product Selection */}
+              {/* Product Selection — champ texte, tapez le nom puis choisissez dans les suggestions */}
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">
                   Article prélevé dans la boutique *
                 </label>
-                <select
-                  value={selectedProductId}
+                <input
+                  type="text"
+                  list="prelevement-articles"
+                  value={productSearch}
                   onChange={e => {
-                    setSelectedProductId(e.target.value);
+                    const val = e.target.value;
+                    setProductSearch(val);
                     setFormError('');
+                    const match = accessibleProducts.find(p => p.name.toLowerCase() === val.trim().toLowerCase());
+                    setSelectedProductId(match ? String(match.id) : '');
                   }}
+                  placeholder="Tapez le nom de l'article..."
+                  autoComplete="off"
                   required
                   className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
-                >
-                  <option value="">-- Sélectionner un produit en rayon --</option>
-                  {accessibleProducts.map(p => (
-                    <option key={p.id} value={p.id} disabled={p.qty <= 0}>
-                      {p.name} — (Dispo : {p.qty} unité{p.qty > 1 ? 's' : ''})
-                    </option>
-                  ))}
-                </select>
-                {selectedProduct && (
-                  <div className="mt-1.5 text-[11px] text-[#6B7873] bg-[#F7F3EC] p-2 rounded-lg">
-                    Stock actuel disponible :{' '}
-                    <strong className={selectedProduct.qty < 5 ? 'text-amber-700' : 'text-[#0F4C4A]'}>
-                      {selectedProduct.qty} unités
-                    </strong>
+                />
+                <datalist id="prelevement-articles">
+                  {accessibleProducts
+                    .filter(p => p.qty > 0)
+                    .map(p => (
+                      <option key={p.id} value={p.name} />
+                    ))}
+                </datalist>
+                {productSearch && !selectedProduct ? (
+                  <div className="mt-1.5 text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                    Aucun article de la boutique ne correspond exactement — choisissez-le dans les suggestions.
                   </div>
+                ) : (
+                  selectedProduct && (
+                    <div className="mt-1.5 text-[11px] text-[#6B7873] bg-[#F7F3EC] p-2 rounded-lg">
+                      Stock actuel disponible :{' '}
+                      <strong className={selectedProduct.qty < 5 ? 'text-amber-700' : 'text-[#0F4C4A]'}>
+                        {selectedProduct.qty} unités
+                      </strong>
+                    </div>
+                  )
                 )}
               </div>
 
@@ -594,7 +603,7 @@ export const PrelevementsHammamView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Cabin / Space */}
+              {/* Cabin / Space — champ texte libre, suggestions à titre indicatif */}
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">
                   Destination / Cabine Hammam *
@@ -604,58 +613,44 @@ export const PrelevementsHammamView: React.FC = () => {
                     {HOMME_DESTINATION}
                   </div>
                 ) : (
-                  <>
-                    <select
-                      value={cabin}
-                      onChange={e => setCabin(e.target.value)}
-                      className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
-                    >
-                      {defaultCabins.map(c => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
-                      ))}
-                    </select>
-                    {cabin === 'Autre espace' && (
-                      <input
-                        type="text"
-                        value={customCabin}
-                        onChange={e => setCustomCabin(e.target.value)}
-                        placeholder="Préciser l'espace (ex: Cabine VIP, Réserve étage...)"
-                        required
-                        className="mt-2 w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
-                      />
-                    )}
-                  </>
+                  <input
+                    type="text"
+                    list="prelevement-cabines"
+                    value={cabin}
+                    onChange={e => setCabin(e.target.value)}
+                    placeholder="ex: Cabine de Gommage, Vestiaires..."
+                    autoComplete="off"
+                    required
+                    className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
+                  />
                 )}
+                <datalist id="prelevement-cabines">
+                  {defaultCabins.map(c => (
+                    <option key={c} value={c} />
+                  ))}
+                </datalist>
               </div>
 
-              {/* Requested by */}
+              {/* Requested by — champ texte libre, suggestions à titre indicatif */}
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">
                   Demandé par (Praticienne / Responsable Hammam) *
                 </label>
-                <select
+                <input
+                  type="text"
+                  list="prelevement-demandeurs"
                   value={requestedBy}
                   onChange={e => setRequestedBy(e.target.value)}
+                  placeholder="ex: Khadija (Gommeuse)..."
+                  autoComplete="off"
+                  required
                   className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
-                >
+                />
+                <datalist id="prelevement-demandeurs">
                   {staffSuggestions.map(s => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
+                    <option key={s} value={s} />
                   ))}
-                </select>
-                {requestedBy === 'Autre praticienne' && (
-                  <input
-                    type="text"
-                    value={customRequestedBy}
-                    onChange={e => setCustomRequestedBy(e.target.value)}
-                    placeholder="Nom de la praticienne ou intervenante..."
-                    required
-                    className="mt-2 w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
-                  />
-                )}
+                </datalist>
               </div>
 
               {/* Notes */}
