@@ -25,6 +25,8 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
       case 'clients':
         return { title: 'Clientes du Hammam', desc: 'Fichier clientes, fidélité et coordonnées' };
       case 'inventaire':
+        return { title: 'Inventaire des Produits', desc: 'État des stocks, alertes et valorisation' };
+      case 'journal-caisses':
         return { title: 'Journal des Caisses', desc: 'Détail des ventes encaissées, caisse par caisse, pour vérification' };
       case 'produits':
         return { title: 'Gestion du Catalogue', desc: 'Ajout et modification des articles' };
