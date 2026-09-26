@@ -22,6 +22,7 @@ import { CaissieresView } from './components/CaissieresView';
 import { PrelevementsHammamView } from './components/PrelevementsHammamView';
 import { CommissionsLaveursView } from './components/CommissionsLaveursView';
 import { LaveursView } from './components/LaveursView';
+import { AbonnementsGymView } from './components/AbonnementsGymView';
 import { DechargeView } from './components/DechargeView';
 import { AssistantView } from './components/AssistantView';
 import { ReceiptModal } from './components/ReceiptModal';
@@ -95,6 +96,10 @@ const MainLayout: React.FC = () => {
           currentUser.role !== 'gerant' &&
           (currentUser.department === 'boutique_homme' || currentUser.department === 'boutique_femme');
         return canSeeLaveurs ? <LaveursView /> : <DashboardView />;
+      }
+      case 'abonnements-gym': {
+        const canSeeGym = currentUser.role === 'gerant' || currentUser.department === 'fitness_gym';
+        return canSeeGym ? <AbonnementsGymView /> : <DashboardView />;
       }
       case 'rapports':
         return <RapportsView />;

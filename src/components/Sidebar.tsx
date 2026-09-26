@@ -6,6 +6,7 @@ import {
   X,
   AlertTriangle,
   RefreshCw,
+  Dumbbell,
 } from 'lucide-react';
 import { HammamNileEmblem } from './HammamNileLogo';
 
@@ -409,6 +410,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                   {laveurs.length}
                 </span>
               )}
+            </li>
+          )}
+
+          {/* Abonnements Gym - Fitness Gym + Admin, synchronisé avec la caisse Gym */}
+          {(isGerant || currentUser.department === 'fitness_gym') && (
+            <li
+              onClick={() => handleNavClick('abonnements-gym')}
+              className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+                activeSection === 'abonnements-gym'
+                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
+              }`}
+            >
+              <Dumbbell className="w-[17px] h-[17px] shrink-0" />
+              <span>Abonnements Gym</span>
             </li>
           )}
 
