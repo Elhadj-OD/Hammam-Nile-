@@ -6,6 +6,7 @@ import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { DashboardView } from './components/DashboardView';
 import { CaisseView } from './components/CaisseView';
+import { EpilationServicesView } from './components/EpilationServicesView';
 import { MesVentesView } from './components/MesVentesView';
 import { DevisView } from './components/DevisView';
 import { FacturesView } from './components/FacturesView';
@@ -50,8 +51,11 @@ const MainLayout: React.FC = () => {
       case 'dashboard':
         return <DashboardView />;
       case 'caisse':
-        // L'admin n'a pas de partie caisse : elle vérifie, elle ne vend pas
-        return currentUser.role === 'gerant' ? <DashboardView /> : <CaisseView />;
+        // L'admin n'a pas de partie caisse : elle vérifie, elle ne vend pas.
+        // Épilation (Helwa & Henné) : prestations, pas un panier boutique —
+        // vue dédiée façon "Nouveau Service" (comme le Hammam), sans commission.
+        if (currentUser.role === 'gerant') return <DashboardView />;
+        return currentUser.department === 'epilation_traditionnelle' ? <EpilationServicesView /> : <CaisseView />;
       case 'mes-ventes':
         return <MesVentesView />;
       case 'devis':
