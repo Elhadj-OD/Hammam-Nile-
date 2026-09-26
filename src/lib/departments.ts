@@ -6,7 +6,7 @@ export const DEPARTMENTS: Record<
   { label: string; icon: string; category: ProductCategory }
 > = {
   boutique_femme: { label: 'Boutique Femme', icon: '💄', category: 'femmes' },
-  boutique_homme: { label: 'Boutique Homme', icon: '🧔', category: 'hommes' },
+  boutique_homme: { label: 'Boutique', icon: '🧔', category: 'hommes' },
   hammam_bains: { label: 'Hammam & Bains', icon: '♨️', category: 'hammam_bains' },
   spa_massage: { label: 'Esthétique', icon: '💆', category: 'spa_massage' },
   coiffure_salon: { label: 'Coiffure & Salon', icon: '💇', category: 'coiffure_salon' },
