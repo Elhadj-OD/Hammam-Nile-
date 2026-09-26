@@ -184,14 +184,14 @@ export const AuthSwitchModal: React.FC = () => {
             <button
               type="button"
               onClick={closeAuthModal}
-              className="flex-1 py-3 px-4 rounded-xl border border-[#E7E0D3] text-xs font-bold text-[#6B7873] hover:bg-[#F7F3EC] transition cursor-pointer"
+              className="flex-1 py-3 px-4 rounded-full border border-[#E7E0D3] text-xs font-bold text-[#6B7873] hover:bg-[#F7F3EC] transition cursor-pointer"
             >
               Annuler
             </button>
             <button
               type="submit"
               disabled={loading}
-              className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold text-white transition flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-60 ${
+              className={`flex-1 py-3 px-4 rounded-full text-xs font-bold text-white transition flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-60 ${
                 isAdmin
                   ? 'bg-[#002E6E] hover:bg-[#004CB7]'
                   : 'bg-[#004CB7] hover:bg-[#003C93]'

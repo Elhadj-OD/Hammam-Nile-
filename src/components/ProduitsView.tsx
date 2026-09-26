@@ -565,7 +565,7 @@ export const ProduitsView: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => openEditForm(p)}
-                            className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#004CB7] hover:bg-[#F7F3EC] transition cursor-pointer"
+                            className="p-1.5 rounded-full text-[#6B7873] hover:text-[#004CB7] hover:bg-[#F7F3EC] transition cursor-pointer"
                             title="Modifier le produit"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -577,7 +577,7 @@ export const ProduitsView: React.FC = () => {
                                 deleteProduct(p.id);
                               }
                             }}
-                            className="p-1.5 rounded-lg text-[#6B7873] hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                            className="p-1.5 rounded-full text-[#6B7873] hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
                             title="Supprimer le produit"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -615,7 +615,7 @@ export const ProduitsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsFormOpen(false)}
-                className="text-[#6B7873] hover:text-[#1C2321] p-1.5 rounded-lg"
+                className="text-[#6B7873] hover:text-[#1C2321] p-1.5 rounded-full"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -655,7 +655,7 @@ export const ProduitsView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => openEditForm(duplicateProduct)}
-                        className="shrink-0 text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2.5 py-1.5 rounded-lg cursor-pointer transition"
+                        className="shrink-0 text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2.5 py-1.5 rounded-full cursor-pointer transition"
                       >
                         Modifier ce produit
                       </button>
@@ -719,7 +719,7 @@ export const ProduitsView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="text-xs font-bold bg-white text-[#004CB7] border border-[#004CB7] hover:bg-[#E4EAF7] px-3 py-1.5 rounded-lg cursor-pointer transition flex items-center gap-1.5"
+                        className="text-xs font-bold bg-white text-[#004CB7] border border-[#004CB7] hover:bg-[#E4EAF7] px-3 py-1.5 rounded-full cursor-pointer transition flex items-center gap-1.5"
                       >
                         <Camera className="w-3.5 h-3.5" />
                         <span>Téléverser la photo</span>
@@ -749,7 +749,7 @@ export const ProduitsView: React.FC = () => {
                         key={em}
                         type="button"
                         onClick={() => setSelectedEmoji(em)}
-                        className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center cursor-pointer transition ${
+                        className={`w-7 h-7 rounded-full text-sm flex items-center justify-center cursor-pointer transition ${
                           selectedEmoji === em && !imagePreview
                             ? 'bg-[#004CB7] text-white shadow-xs'
                             : 'bg-[#F7F3EC] hover:bg-[#E4EAF7]'
@@ -793,7 +793,7 @@ export const ProduitsView: React.FC = () => {
                             key={cat}
                             type="button"
                             onClick={() => setCategory(cat as ProductCategory)}
-                            className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                            className={`p-2.5 rounded-full border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ${
                               category === cat
                                 ? 'bg-[#004CB7] border-[#004CB7] text-white'
                                 : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
@@ -912,13 +912,13 @@ export const ProduitsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                  className="py-2.5 px-4 bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] rounded-xl text-xs font-bold cursor-pointer transition"
+                  className="py-2.5 px-4 bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] rounded-full text-xs font-bold cursor-pointer transition"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="py-2.5 px-6 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+                  className="py-2.5 px-6 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>{editingProduct ? `Mettre à jour le ${itemWord.toLowerCase()}` : 'Ajouter au catalogue'}</span>

@@ -117,7 +117,7 @@ export const ForcePasswordChangeView: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-60"
+              className="w-full mt-2 py-3.5 px-4 font-bold rounded-full shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-60"
             >
               <span>{loading ? 'Enregistrement…' : 'Définir mon mot de passe'}</span>
               {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />}

@@ -280,7 +280,7 @@ export const RapportsView: React.FC = () => {
             <button
               type="button"
               onClick={() => setPeriod('daily')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 period === 'daily'
                   ? 'bg-[#004CB7] text-white shadow-xs'
                   : 'text-[#6B7873] hover:text-[#1C2321]'
@@ -293,7 +293,7 @@ export const RapportsView: React.FC = () => {
             <button
               type="button"
               onClick={() => setPeriod('weekly')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 period === 'weekly'
                   ? 'bg-[#004CB7] text-white shadow-xs'
                   : 'text-[#6B7873] hover:text-[#1C2321]'
@@ -306,7 +306,7 @@ export const RapportsView: React.FC = () => {
             <button
               type="button"
               onClick={() => setPeriod('monthly')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 period === 'monthly'
                   ? 'bg-[#004CB7] text-white shadow-xs'
                   : 'text-[#6B7873] hover:text-[#1C2321]'
@@ -321,7 +321,7 @@ export const RapportsView: React.FC = () => {
           <button
             type="button"
             onClick={handleExportCSV}
-            className="p-2.5 bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] rounded-xl text-xs font-bold transition border border-[#E7E0D3] cursor-pointer flex items-center gap-1.5"
+            className="p-2.5 bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] rounded-full text-xs font-bold transition border border-[#E7E0D3] cursor-pointer flex items-center gap-1.5"
             title="Exporter les ventes en format CSV / Excel"
           >
             <Download className="w-4 h-4" />

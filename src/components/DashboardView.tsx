@@ -76,7 +76,7 @@ export const DashboardView: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setActiveSection('caisse')}
-              className="px-4 py-2.5 bg-white text-indigo-900 hover:bg-indigo-50 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer"
+              className="px-4 py-2.5 bg-white text-indigo-900 hover:bg-indigo-50 rounded-full text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer"
             >
               <ShoppingCart className="w-4 h-4 text-indigo-600" />
               <span>Ouvrir la Caisse</span>
@@ -84,7 +84,7 @@ export const DashboardView: React.FC = () => {
 
             <button
               onClick={() => setActiveSection('prelevements-hammam')}
-              className="px-3.5 py-2.5 bg-[#B8874B] hover:bg-[#A3743C] text-[#002E6E] font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow-md cursor-pointer"
+              className="px-3.5 py-2.5 bg-[#B8874B] hover:bg-[#A3743C] text-[#002E6E] font-bold rounded-full text-xs transition flex items-center gap-1.5 shadow-md cursor-pointer"
             >
               <Sparkles className="w-4 h-4" />
               <span>Usage Hammam</span>
@@ -93,7 +93,7 @@ export const DashboardView: React.FC = () => {
             {isGerant && (
               <button
                 onClick={() => setActiveSection('devis')}
-                className="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 border border-white/20 cursor-pointer"
+                className="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-semibold transition flex items-center gap-1.5 border border-white/20 cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>Nouveau Devis</span>
@@ -267,7 +267,7 @@ export const DashboardView: React.FC = () => {
 
           <button
             onClick={() => setActiveSection('inventaire')}
-            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold shrink-0 transition cursor-pointer"
+            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-full text-xs font-semibold shrink-0 transition cursor-pointer"
           >
             Gérer le Stock
           </button>
@@ -297,7 +297,7 @@ export const DashboardView: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveSection('prelevements-hammam')}
-          className="px-3.5 py-2 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold shrink-0 transition cursor-pointer shadow-xs flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold shrink-0 transition cursor-pointer shadow-xs flex items-center gap-1.5"
         >
           <span>Consulter les Sorties Hammam</span>
           <ArrowUpRight className="w-3.5 h-3.5" />
@@ -365,7 +365,7 @@ export const DashboardView: React.FC = () => {
 
                     <button
                       onClick={() => setLastSale(sale)}
-                      className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-md hover:bg-indigo-50 transition cursor-pointer"
+                      className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-full hover:bg-indigo-50 transition cursor-pointer"
                       title="Revoir le ticket"
                     >
                       <Receipt className="w-4 h-4" />
@@ -408,7 +408,7 @@ export const DashboardView: React.FC = () => {
           <div className="pt-4 border-t border-slate-100 mt-4">
             <button
               onClick={() => setActiveSection('caisse')}
-              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
             >
               <ShoppingCart className="w-4 h-4" />
               <span>Ouvrir la Caisse POS</span>

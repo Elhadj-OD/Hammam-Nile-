@@ -148,7 +148,7 @@ export const ClientsView: React.FC = () => {
 
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="px-4 py-2.5 bg-[#002E6E] hover:bg-[#004CB7] text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+          className="px-4 py-2.5 bg-[#002E6E] hover:bg-[#004CB7] text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
         >
           <UserPlus className="w-4 h-4" />
           <span>{isAdding ? 'Fermer le formulaire' : 'Nouveau Client Manuel'}</span>
@@ -273,13 +273,13 @@ export const ClientsView: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsAdding(false)}
-              className="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition cursor-pointer"
+              className="px-4 py-2 border border-slate-200 text-slate-600 rounded-full text-xs font-semibold hover:bg-slate-50 transition cursor-pointer"
             >
               Annuler
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-[#002E6E] hover:bg-[#004CB7] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+              className="px-5 py-2 bg-[#002E6E] hover:bg-[#004CB7] text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer"
             >
               Enregistrer le client
             </button>
@@ -408,7 +408,7 @@ export const ClientsView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedClientHistory(client)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#004CB7] font-bold rounded-xl text-[11px] transition cursor-pointer border border-[#E7E0D3]"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#004CB7] font-bold rounded-full text-[11px] transition cursor-pointer border border-[#E7E0D3]"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>Voir détails ({metrics.sales.length})</span>
@@ -423,7 +423,7 @@ export const ClientsView: React.FC = () => {
                               deleteClient(client.id);
                             }
                           }}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition cursor-pointer"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 rounded-full transition cursor-pointer"
                           title="Supprimer la fiche"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -530,7 +530,7 @@ export const ClientsView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setReceiptSaleToView(sale)}
-                          className="p-1 rounded-lg hover:bg-slate-100 text-[#004CB7] cursor-pointer"
+                          className="p-1 rounded-full hover:bg-slate-100 text-[#004CB7] cursor-pointer"
                           title="Voir / Imprimer le ticket"
                         >
                           <Receipt className="w-4 h-4" />
@@ -576,7 +576,7 @@ export const ClientsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedClientHistory(null)}
-                className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition cursor-pointer"
+                className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-full text-xs transition cursor-pointer"
               >
                 Fermer
               </button>

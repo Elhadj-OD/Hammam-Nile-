@@ -179,7 +179,7 @@ export const FacturesView: React.FC = () => {
 
         <button
           onClick={() => setIsCreating(!isCreating)}
-          className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+          className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{isCreating ? 'Fermer le formulaire' : 'Créer une Facture'}</span>
@@ -445,13 +445,13 @@ export const FacturesView: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsCreating(false)}
-              className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
+              className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold cursor-pointer"
             >
               Annuler
             </button>
             <button
               type="submit"
-              className="py-2.5 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+              className="py-2.5 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>Enregistrer la Facture</span>
@@ -474,7 +474,7 @@ export const FacturesView: React.FC = () => {
             <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 text-xs">
               <button
                 onClick={() => setFilterStatus('all')}
-                className={`px-2.5 py-1 rounded-md transition ${
+                className={`px-2.5 py-1 rounded-full transition ${
                   filterStatus === 'all' ? 'bg-purple-600 text-white font-semibold' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -482,7 +482,7 @@ export const FacturesView: React.FC = () => {
               </button>
               <button
                 onClick={() => setFilterStatus('pending')}
-                className={`px-2.5 py-1 rounded-md transition ${
+                className={`px-2.5 py-1 rounded-full transition ${
                   filterStatus === 'pending' ? 'bg-amber-500 text-white font-semibold' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -490,7 +490,7 @@ export const FacturesView: React.FC = () => {
               </button>
               <button
                 onClick={() => setFilterStatus('paid')}
-                className={`px-2.5 py-1 rounded-md transition ${
+                className={`px-2.5 py-1 rounded-full transition ${
                   filterStatus === 'paid' ? 'bg-emerald-600 text-white font-semibold' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -564,7 +564,7 @@ export const FacturesView: React.FC = () => {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setSelectedInvoice(inv)}
-                          className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg font-semibold flex items-center gap-1 transition cursor-pointer"
+                          className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full font-semibold flex items-center gap-1 transition cursor-pointer"
                           title="Aperçu et impression"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -576,7 +576,7 @@ export const FacturesView: React.FC = () => {
                             onClick={() => {
                               markInvoicePaid(inv.id);
                             }}
-                            className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg font-semibold flex items-center gap-1 transition cursor-pointer"
+                            className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-full font-semibold flex items-center gap-1 transition cursor-pointer"
                             title="Marquer comme payée"
                           >
                             <Check className="w-3.5 h-3.5" />
@@ -590,7 +590,7 @@ export const FacturesView: React.FC = () => {
                               deleteInvoice(inv.id);
                             }
                           }}
-                          className="p-1 text-slate-400 hover:text-rose-600 rounded transition cursor-pointer"
+                          className="p-1 text-slate-400 hover:text-rose-600 rounded-full transition cursor-pointer"
                           title="Supprimer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
