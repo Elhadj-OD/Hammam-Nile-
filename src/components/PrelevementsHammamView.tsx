@@ -15,7 +15,6 @@ import {
   Trash2,
   FileText,
   AlertCircle,
-  TrendingDown,
   Building2,
   CheckCircle2,
   X,
@@ -29,7 +28,6 @@ export const PrelevementsHammamView: React.FC = () => {
     hammamUsages,
     addHammamUsage,
     deleteHammamUsage,
-    settings,
     currentUser,
   } = useApp();
 
@@ -78,9 +76,6 @@ export const PrelevementsHammamView: React.FC = () => {
   // Selected product object
   const selectedProduct = products.find(p => p.id === Number(selectedProductId));
 
-  // Calculations
-  const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
-
   // L'admin vérifie les deux parties ; une caissière ne prélève que sur sa partie (genre)
   const isGerant = currentUser?.role === 'gerant';
   const canAccessBoutiqueFemme = isGerant || currentUser?.gender !== 'homme';
@@ -126,17 +121,15 @@ export const PrelevementsHammamView: React.FC = () => {
     return matchesSearch && matchesCabin && matchesPeriod;
   });
 
-  const totalValuePrise = filteredUsages.reduce((sum, u) => sum + u.totalValue, 0);
   const totalArticlesPris = filteredUsages.reduce((sum, u) => sum + u.qty, 0);
 
   // Group by cabin
-  const cabinBreakdown: Record<string, { qty: number; value: number }> = {};
+  const cabinBreakdown: Record<string, { qty: number }> = {};
   filteredUsages.forEach(u => {
     if (!cabinBreakdown[u.serviceOrCabin]) {
-      cabinBreakdown[u.serviceOrCabin] = { qty: 0, value: 0 };
+      cabinBreakdown[u.serviceOrCabin] = { qty: 0 };
     }
     cabinBreakdown[u.serviceOrCabin].qty += u.qty;
-    cabinBreakdown[u.serviceOrCabin].value += u.totalValue;
   });
 
   // Handle submit
@@ -197,9 +190,9 @@ export const PrelevementsHammamView: React.FC = () => {
 
   // CSV Export
   const handleExportCSV = () => {
-    let csv = `Réf,Date,Heure,Produit,Quantité,Prix Unitaire (${settings.currency}),Valeur Totale (${settings.currency}),Espace Hammam,Demandé par,Remis par,Notes\n`;
+    let csv = `Réf,Date,Heure,Produit,Quantité,Espace Hammam,Demandé par,Remis par,Notes\n`;
     filteredUsages.forEach(u => {
-      csv += `"#${u.id}","${u.date}","${u.time}","${u.productName}","${u.qty}","${u.unitPrice}","${u.totalValue}","${u.serviceOrCabin}","${u.requestedBy}","${u.takenByStaff}","${u.notes || ''}"\n`;
+      csv += `"#${u.id}","${u.date}","${u.time}","${u.productName}","${u.qty}","${u.serviceOrCabin}","${u.requestedBy}","${u.takenByStaff}","${u.notes || ''}"\n`;
     });
 
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -222,7 +215,7 @@ export const PrelevementsHammamView: React.FC = () => {
             Produits Prélevés par le Hammam{genderLabel && ` (${genderLabel})`}
           </h2>
           <p className="text-xs sm:text-sm text-[#6B7873] mt-0.5">
-            Registre et valorisation des produits pris sur le stock de la boutique pour le fonctionnement du hammam (gommages, bains, massages et vestiaires).
+            Registre des produits pris sur le stock de la boutique pour le fonctionnement du hammam — pour savoir ce qui manque et ce qu'il faut réapprovisionner.
           </p>
         </div>
 
@@ -248,24 +241,7 @@ export const PrelevementsHammamView: React.FC = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">
-              Valeur Totale Prise
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
-              <TrendingDown className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-[#0F4C4A] mt-2 font-display">
-            {formatPrice(totalValuePrise)}
-          </div>
-          <p className="text-[11px] text-[#6B7873] mt-1">
-            Valorisé au prix de cession boutique
-          </p>
-        </div>
-
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">
@@ -343,12 +319,9 @@ export const PrelevementsHammamView: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <div className="mt-2 flex items-baseline justify-between">
+                <div className="mt-2">
                   <span className="text-sm font-extrabold text-[#0F4C4A] font-display">
-                    {formatPrice(data.value)}
-                  </span>
-                  <span className="text-xs text-[#6B7873] font-semibold">
-                    {data.qty} article(s)
+                    {data.qty} article{data.qty > 1 ? 's' : ''}
                   </span>
                 </div>
               </div>
@@ -419,7 +392,7 @@ export const PrelevementsHammamView: React.FC = () => {
             <span>Historique des Sorties Hammam ({filteredUsages.length})</span>
           </h3>
           <span className="text-xs font-extrabold text-[#0F4C4A]">
-            Total sélection : {formatPrice(totalValuePrise)}
+            {totalArticlesPris} article{totalArticlesPris > 1 ? 's' : ''} au total
           </span>
         </div>
 
@@ -449,8 +422,6 @@ export const PrelevementsHammamView: React.FC = () => {
                   <th className="py-3 px-4">Produit Boutique</th>
                   <th className="py-3 px-4">Cabine / Espace</th>
                   <th className="py-3 px-4 text-center">Qté</th>
-                  <th className="py-3 px-4 text-right">P.U.</th>
-                  <th className="py-3 px-4 text-right">Valeur Totale</th>
                   <th className="py-3 px-4">Demandé par</th>
                   <th className="py-3 px-4">Remis par</th>
                   <th className="py-3 px-4 text-right">Actions</th>
@@ -480,12 +451,6 @@ export const PrelevementsHammamView: React.FC = () => {
                       <span className="inline-flex items-center justify-center font-bold px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">
                         - {u.qty}
                       </span>
-                    </td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap font-medium text-[#6B7873]">
-                      {formatPrice(u.unitPrice)}
-                    </td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap font-extrabold text-[#0F4C4A]">
-                      {formatPrice(u.totalValue)}
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap font-medium text-[#1C2321]">
                       {u.requestedBy}
@@ -581,21 +546,16 @@ export const PrelevementsHammamView: React.FC = () => {
                   <option value="">-- Sélectionner un produit en rayon --</option>
                   {accessibleProducts.map(p => (
                     <option key={p.id} value={p.id} disabled={p.qty <= 0}>
-                      {p.name} — (Dispo : {p.qty} unité{p.qty > 1 ? 's' : ''}) — {formatPrice(p.price)}
+                      {p.name} — (Dispo : {p.qty} unité{p.qty > 1 ? 's' : ''})
                     </option>
                   ))}
                 </select>
                 {selectedProduct && (
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-[#6B7873] bg-[#F7F3EC] p-2 rounded-lg">
-                    <span>
-                      Stock actuel disponible :{' '}
-                      <strong className={selectedProduct.qty < 5 ? 'text-amber-700' : 'text-[#0F4C4A]'}>
-                        {selectedProduct.qty} unités
-                      </strong>
-                    </span>
-                    <span>
-                      Prix unitaire : <strong>{formatPrice(selectedProduct.price)}</strong>
-                    </span>
+                  <div className="mt-1.5 text-[11px] text-[#6B7873] bg-[#F7F3EC] p-2 rounded-lg">
+                    Stock actuel disponible :{' '}
+                    <strong className={selectedProduct.qty < 5 ? 'text-amber-700' : 'text-[#0F4C4A]'}>
+                      {selectedProduct.qty} unités
+                    </strong>
                   </div>
                 )}
               </div>
@@ -632,11 +592,6 @@ export const PrelevementsHammamView: React.FC = () => {
                     +
                   </button>
                 </div>
-                {selectedProduct && (
-                  <div className="mt-1 text-right text-xs font-extrabold text-[#0F4C4A]">
-                    Valeur totale sortie : {formatPrice(quantity * selectedProduct.price)}
-                  </div>
-                )}
               </div>
 
               {/* Cabin / Space */}
@@ -796,16 +751,6 @@ export const PrelevementsHammamView: React.FC = () => {
                 <span className="font-extrabold text-rose-700">
                   {selectedTicket.qty} unité(s)
                 </span>
-              </div>
-              <div className="flex justify-between text-[#6B7873]">
-                <span>Prix unitaire boutique :</span>
-                <span className="font-medium text-[#1C2321]">
-                  {formatPrice(selectedTicket.unitPrice)}
-                </span>
-              </div>
-              <div className="border-t border-[#E7E0D3] pt-2 flex justify-between text-sm font-extrabold text-[#0F4C4A]">
-                <span>Valeur totale :</span>
-                <span>{formatPrice(selectedTicket.totalValue)}</span>
               </div>
               {selectedTicket.notes && (
                 <div className="text-[11px] text-[#6B7873] bg-white p-2 rounded-lg border border-[#E7E0D3] mt-2">
