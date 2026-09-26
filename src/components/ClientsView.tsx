@@ -128,7 +128,7 @@ export const ClientsView: React.FC = () => {
       {/* Header & Quick stats */}
       <div className="bg-white rounded-3xl border border-[#E7E0D3] p-6 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#0F4C4A] mb-1">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#004CB7] mb-1">
             <Users className="w-3.5 h-3.5" />
             <span>Fichier Clientèle & Historique des Achats</span>
             {firebaseConnected && (
@@ -148,7 +148,7 @@ export const ClientsView: React.FC = () => {
 
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="px-4 py-2.5 bg-[#0A3735] hover:bg-[#0F4C4A] text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+          className="px-4 py-2.5 bg-[#002E6E] hover:bg-[#004CB7] text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
         >
           <UserPlus className="w-4 h-4" />
           <span>{isAdding ? 'Fermer le formulaire' : 'Nouveau Client Manuel'}</span>
@@ -194,10 +194,10 @@ export const ClientsView: React.FC = () => {
       {isAdding && (
         <form
           onSubmit={handleAddClient}
-          className="bg-white rounded-2xl border border-[#0F4C4A]/30 p-6 shadow-md space-y-4 animate-in fade-in duration-200"
+          className="bg-white rounded-2xl border border-[#004CB7]/30 p-6 shadow-md space-y-4 animate-in fade-in duration-200"
         >
           <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 pb-2 border-b border-slate-100">
-            <UserPlus className="w-4 h-4 text-[#0F4C4A]" />
+            <UserPlus className="w-4 h-4 text-[#004CB7]" />
             <span>Ajouter une Fiche Client au Répertoire</span>
           </h3>
 
@@ -212,7 +212,7 @@ export const ClientsView: React.FC = () => {
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="Ex: Mohamed Ould Vall"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#0F4C4A] focus:bg-white"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#004CB7] focus:bg-white"
               />
             </div>
 
@@ -225,7 +225,7 @@ export const ClientsView: React.FC = () => {
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 placeholder="Ex: +222 45 25 10 20"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#0F4C4A] focus:bg-white"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#004CB7] focus:bg-white"
               />
             </div>
 
@@ -238,7 +238,7 @@ export const ClientsView: React.FC = () => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="client@hammam-nile.mr"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#0F4C4A] focus:bg-white"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#004CB7] focus:bg-white"
               />
             </div>
 
@@ -251,7 +251,7 @@ export const ClientsView: React.FC = () => {
                 value={address}
                 onChange={e => setAddress(e.target.value)}
                 placeholder="Ex: Tevragh Zeina, Nouakchott"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#0F4C4A] focus:bg-white"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#004CB7] focus:bg-white"
               />
             </div>
 
@@ -264,7 +264,7 @@ export const ClientsView: React.FC = () => {
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 placeholder="Préférences de soins, produits favoris, etc."
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#0F4C4A] focus:bg-white"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-[#004CB7] focus:bg-white"
               />
             </div>
           </div>
@@ -279,7 +279,7 @@ export const ClientsView: React.FC = () => {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-[#0A3735] hover:bg-[#0F4C4A] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+              className="px-5 py-2 bg-[#002E6E] hover:bg-[#004CB7] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
             >
               Enregistrer le client
             </button>
@@ -306,7 +306,7 @@ export const ClientsView: React.FC = () => {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Rechercher nom, tél, email..."
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-[#0F4C4A] focus:bg-white"
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-[#004CB7] focus:bg-white"
             />
           </div>
         </div>
@@ -344,7 +344,7 @@ export const ClientsView: React.FC = () => {
                       {/* Name */}
                       <td className="py-3 px-4 font-semibold text-slate-900">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center font-bold text-[11px]">
+                          <div className="w-7 h-7 rounded-full bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center font-bold text-[11px]">
                             {client.name.substring(0, 2).toUpperCase()}
                           </div>
                           <div>
@@ -399,7 +399,7 @@ export const ClientsView: React.FC = () => {
                       </td>
 
                       {/* Total spent */}
-                      <td className="py-3 px-4 text-right font-extrabold text-[#0F4C4A] text-[13px]">
+                      <td className="py-3 px-4 text-right font-extrabold text-[#004CB7] text-[13px]">
                         {metrics.totalSpent.toLocaleString('fr-FR')} {settings.currency}
                       </td>
 
@@ -408,7 +408,7 @@ export const ClientsView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedClientHistory(client)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F7F3EC] hover:bg-[#E4E9E1] text-[#0F4C4A] font-bold rounded-xl text-[11px] transition cursor-pointer border border-[#E7E0D3]"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#004CB7] font-bold rounded-xl text-[11px] transition cursor-pointer border border-[#E7E0D3]"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>Voir détails ({metrics.sales.length})</span>
@@ -443,9 +443,9 @@ export const ClientsView: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs overflow-y-auto animate-in fade-in">
           <div className="bg-white rounded-3xl shadow-2xl border border-[#E7E0D3] w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="p-5 bg-[#0A3735] text-white flex items-center justify-between">
+            <div className="p-5 bg-[#002E6E] text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-white text-[#0A3735] flex items-center justify-center font-bold text-base shadow-sm">
+                <div className="w-10 h-10 rounded-2xl bg-white text-[#002E6E] flex items-center justify-center font-bold text-base shadow-sm">
                   {selectedClientHistory.name.substring(0, 2).toUpperCase()}
                 </div>
                 <div>
@@ -476,14 +476,14 @@ export const ClientsView: React.FC = () => {
 
               <div>
                 <div className="text-[10px] uppercase font-bold text-slate-500">Total Achats</div>
-                <div className="font-extrabold text-sm text-[#0F4C4A] mt-0.5">
+                <div className="font-extrabold text-sm text-[#004CB7] mt-0.5">
                   {getClientMetrics(selectedClientHistory).totalPurchases} passages en caisse
                 </div>
               </div>
 
               <div>
                 <div className="text-[10px] uppercase font-bold text-slate-500">Montant Total</div>
-                <div className="font-extrabold text-sm text-[#0F4C4A] mt-0.5">
+                <div className="font-extrabold text-sm text-[#004CB7] mt-0.5">
                   {getClientMetrics(selectedClientHistory).totalSpent.toLocaleString('fr-FR')}{' '}
                   {settings.currency}
                 </div>
@@ -530,7 +530,7 @@ export const ClientsView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setReceiptSaleToView(sale)}
-                          className="p-1 rounded-lg hover:bg-slate-100 text-[#0F4C4A] cursor-pointer"
+                          className="p-1 rounded-lg hover:bg-slate-100 text-[#004CB7] cursor-pointer"
                           title="Voir / Imprimer le ticket"
                         >
                           <Receipt className="w-4 h-4" />
@@ -562,7 +562,7 @@ export const ClientsView: React.FC = () => {
                     {/* Sale Total footer */}
                     <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs">
                       <span className="text-slate-500 font-medium">Total du ticket :</span>
-                      <span className="font-extrabold text-[#0F4C4A] text-sm">
+                      <span className="font-extrabold text-[#004CB7] text-sm">
                         {sale.total.toLocaleString('fr-FR')} {settings.currency}
                       </span>
                     </div>

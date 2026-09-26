@@ -262,7 +262,7 @@ export const RapportsView: React.FC = () => {
       {/* Header & Main Toggles */}
       <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[#0F4C4A] text-xs font-bold uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
             <BarChart3 className="w-4 h-4" />
             <span>Tableau de Bord Analytique</span>
           </div>
@@ -282,7 +282,7 @@ export const RapportsView: React.FC = () => {
               onClick={() => setPeriod('daily')}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 period === 'daily'
-                  ? 'bg-[#0F4C4A] text-white shadow-xs'
+                  ? 'bg-[#004CB7] text-white shadow-xs'
                   : 'text-[#6B7873] hover:text-[#1C2321]'
               }`}
             >
@@ -295,7 +295,7 @@ export const RapportsView: React.FC = () => {
               onClick={() => setPeriod('weekly')}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 period === 'weekly'
-                  ? 'bg-[#0F4C4A] text-white shadow-xs'
+                  ? 'bg-[#004CB7] text-white shadow-xs'
                   : 'text-[#6B7873] hover:text-[#1C2321]'
               }`}
             >
@@ -308,7 +308,7 @@ export const RapportsView: React.FC = () => {
               onClick={() => setPeriod('monthly')}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 period === 'monthly'
-                  ? 'bg-[#0F4C4A] text-white shadow-xs'
+                  ? 'bg-[#004CB7] text-white shadow-xs'
                   : 'text-[#6B7873] hover:text-[#1C2321]'
               }`}
             >
@@ -333,7 +333,7 @@ export const RapportsView: React.FC = () => {
       {/* Date Filter Context Bar */}
       <div className="bg-white p-4 rounded-2xl border border-[#E7E0D3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-[#0F4C4A]" />
+          <Filter className="w-4 h-4 text-[#004CB7]" />
           <span className="font-bold text-[#1C2321]">
             {period === 'daily'
               ? 'Période analysée : Ventes du Jour'
@@ -374,11 +374,11 @@ export const RapportsView: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between text-[#6B7873] text-xs font-bold uppercase mb-2">
             <span>Chiffre d'Affaires</span>
-            <div className="w-7 h-7 rounded-lg bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-bold font-display text-[#0F4C4A]">
+          <div className="text-2xl font-bold font-display text-[#004CB7]">
             {formatPrice(totalRevenue)}
           </div>
           <div className="text-[11px] text-[#6B7873] mt-1 flex items-center gap-1">
@@ -407,7 +407,7 @@ export const RapportsView: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between text-[#6B7873] text-xs font-bold uppercase mb-2">
             <span>Règlements Espèces</span>
-            <div className="w-7 h-7 rounded-lg bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
               <Wallet className="w-4 h-4" />
             </div>
           </div>
@@ -488,7 +488,7 @@ export const RapportsView: React.FC = () => {
                   : 'Volume d’encaissement par semaine calendaire'}
               </p>
             </div>
-            <span className="text-xs font-bold bg-[#E4E9E1] text-[#0F4C4A] px-3 py-1 rounded-full">
+            <span className="text-xs font-bold bg-[#E4EAF7] text-[#004CB7] px-3 py-1 rounded-full">
               {formatPrice(totalRevenue)}
             </span>
           </div>
@@ -504,7 +504,7 @@ export const RapportsView: React.FC = () => {
                       <span className="w-12 font-mono text-[#6B7873] shrink-0">{h.hour}</span>
                       <div className="flex-1 bg-[#F7F3EC] h-6 rounded-lg overflow-hidden flex items-center px-2">
                         <div
-                          className="bg-[#0F4C4A] h-full rounded-md transition-all duration-300"
+                          className="bg-[#004CB7] h-full rounded-md transition-all duration-300"
                           style={{ width: `${Math.max(percentage > 0 ? 2 : 0, percentage)}%` }}
                         />
                       </div>
@@ -523,12 +523,12 @@ export const RapportsView: React.FC = () => {
                   const heightPercent = maxChartValue > 0 ? Math.round((d.sum / maxChartValue) * 100) : 0;
                   return (
                     <div key={d.day} className="flex flex-col items-center h-full justify-end group">
-                      <div className="text-[10px] font-bold text-[#0F4C4A] mb-1 opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+                      <div className="text-[10px] font-bold text-[#004CB7] mb-1 opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
                         {formatPrice(d.sum)}
                       </div>
                       <div className="w-full bg-[#F7F3EC] rounded-xl flex items-end h-36 overflow-hidden p-1">
                         <div
-                          className="w-full bg-[#0F4C4A] hover:bg-[#B8874B] rounded-lg transition-all duration-300"
+                          className="w-full bg-[#004CB7] hover:bg-[#B8874B] rounded-lg transition-all duration-300"
                           style={{ height: `${Math.max(heightPercent > 0 ? 8 : 4, heightPercent)}%` }}
                         />
                       </div>
@@ -550,11 +550,11 @@ export const RapportsView: React.FC = () => {
                     <div key={w.label} className="bg-[#F7F3EC] p-3.5 rounded-xl border border-[#E7E0D3]">
                       <div className="flex justify-between items-center text-xs font-bold mb-1.5">
                         <span className="text-[#1C2321]">{w.label}</span>
-                        <span className="text-[#0F4C4A]">{formatPrice(w.sum)}</span>
+                        <span className="text-[#004CB7]">{formatPrice(w.sum)}</span>
                       </div>
                       <div className="w-full bg-white h-3 rounded-full overflow-hidden border border-[#E7E0D3]/50">
                         <div
-                          className="bg-[#0F4C4A] h-full rounded-full transition-all duration-300"
+                          className="bg-[#004CB7] h-full rounded-full transition-all duration-300"
                           style={{ width: `${Math.max(percent > 0 ? 3 : 0, percent)}%` }}
                         />
                       </div>
@@ -582,7 +582,7 @@ export const RapportsView: React.FC = () => {
                   Performance de l'équipe sur la période
                 </p>
               </div>
-              <Users className="w-4 h-4 text-[#0F4C4A]" />
+              <Users className="w-4 h-4 text-[#004CB7]" />
             </div>
 
             {/* List of cashiers */}
@@ -609,7 +609,7 @@ export const RapportsView: React.FC = () => {
                             className="w-9 h-9 rounded-full object-cover border border-[#E7E0D3] shrink-0"
                           />
                         ) : (
-                          <div className="w-9 h-9 rounded-full bg-[#0F4C4A] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-[#004CB7] text-white flex items-center justify-center font-bold text-xs shrink-0">
                             {c.avatar || c.name.substring(0, 2).toUpperCase()}
                           </div>
                         )}
@@ -624,7 +624,7 @@ export const RapportsView: React.FC = () => {
                       </div>
 
                       <div className="text-right shrink-0">
-                        <div className="font-bold text-xs text-[#0F4C4A]">
+                        <div className="font-bold text-xs text-[#004CB7]">
                           {formatPrice(c.total)}
                         </div>
                       </div>
@@ -671,7 +671,7 @@ export const RapportsView: React.FC = () => {
               Articles phares ayant généré le plus de volume sur la période sélectionnée
             </p>
           </div>
-          <ShoppingBag className="w-4 h-4 text-[#0F4C4A]" />
+          <ShoppingBag className="w-4 h-4 text-[#004CB7]" />
         </div>
 
         {topProducts.length === 0 ? (
@@ -687,10 +687,10 @@ export const RapportsView: React.FC = () => {
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="w-5 h-5 rounded-full bg-[#0F4C4A] text-white text-[10px] font-bold flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-[#004CB7] text-white text-[10px] font-bold flex items-center justify-center">
                       #{idx + 1}
                     </span>
-                    <span className="text-xs font-bold text-[#0F4C4A]">
+                    <span className="text-xs font-bold text-[#004CB7]">
                       {p.qty} vendus
                     </span>
                   </div>
@@ -767,11 +767,11 @@ export const RapportsView: React.FC = () => {
                       {s.items.map(it => `${it.qty}x ${it.name}`).join(', ')}
                     </td>
                     <td className="p-3.5">
-                      <span className="px-2 py-0.5 rounded-md bg-[#F7F3EC] text-[#0F4C4A] font-semibold border border-[#E7E0D3]">
+                      <span className="px-2 py-0.5 rounded-md bg-[#F7F3EC] text-[#004CB7] font-semibold border border-[#E7E0D3]">
                         {s.payment === 'cash' ? '💵 Espèces' : '📱 Mobile Money'}
                       </span>
                     </td>
-                    <td className="p-3.5 pr-5 text-right font-bold text-[#0F4C4A]">
+                    <td className="p-3.5 pr-5 text-right font-bold text-[#004CB7]">
                       {formatPrice(s.total)}
                     </td>
                   </tr>

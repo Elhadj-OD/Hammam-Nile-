@@ -313,7 +313,7 @@ export const CommissionsLaveursView: React.FC = () => {
       {/* Top Banner */}
       <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[#0F4C4A] text-xs font-bold uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
             <Users className="w-4 h-4" />
             <span>Hammam</span>
           </div>
@@ -326,7 +326,7 @@ export const CommissionsLaveursView: React.FC = () => {
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
-          className="bg-[#0F4C4A] hover:bg-[#0A3735] text-white px-5 py-3 rounded-full font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
+          className="bg-[#004CB7] hover:bg-[#002E6E] text-white px-5 py-3 rounded-full font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Nouveau Service</span>
@@ -342,11 +342,11 @@ export const CommissionsLaveursView: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">Commissions Fixes</span>
-            <div className="w-8 h-8 rounded-xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
               <Wallet className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-[#0F4C4A] mt-2 font-display">{formatPrice(totalCommissions)}</div>
+          <div className="text-2xl font-black text-[#004CB7] mt-2 font-display">{formatPrice(totalCommissions)}</div>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
@@ -362,7 +362,7 @@ export const CommissionsLaveursView: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">Total Général</span>
-            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#004CB7] flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
@@ -385,11 +385,11 @@ export const CommissionsLaveursView: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">Total Mobile Money</span>
-            <div className="w-8 h-8 rounded-xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
               <Smartphone className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-[#0F4C4A] mt-2 font-display">{formatPrice(totalMobileMoney)}</div>
+          <div className="text-2xl font-black text-[#004CB7] mt-2 font-display">{formatPrice(totalMobileMoney)}</div>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
@@ -405,7 +405,7 @@ export const CommissionsLaveursView: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">Total Hammam</span>
-            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#004CB7] flex items-center justify-center">
               <Droplet className="w-4 h-4" />
             </div>
           </div>
@@ -415,7 +415,7 @@ export const CommissionsLaveursView: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">Total Boutique</span>
-            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#5F7D6D] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#5A6F8C] flex items-center justify-center">
               <ShoppingBag className="w-4 h-4" />
             </div>
           </div>
@@ -434,8 +434,8 @@ export const CommissionsLaveursView: React.FC = () => {
                 onClick={() => setFilterLaveur(filterLaveur === name ? 'all' : name)}
                 className={`p-3.5 rounded-xl border transition cursor-pointer ${
                   filterLaveur === name
-                    ? 'bg-[#E4E9E1] border-[#0F4C4A] shadow-xs'
-                    : 'bg-[#F7F3EC]/70 border-[#E7E0D3] hover:bg-[#E4E9E1]/50'
+                    ? 'bg-[#E4EAF7] border-[#004CB7] shadow-xs'
+                    : 'bg-[#F7F3EC]/70 border-[#E7E0D3] hover:bg-[#E4EAF7]/50'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -445,7 +445,7 @@ export const CommissionsLaveursView: React.FC = () => {
                 <div className="mt-2 space-y-0.5 text-[11px] text-[#6B7873]">
                   <div className="flex justify-between">
                     <span>Commissions</span>
-                    <span className="font-bold text-[#0F4C4A]">{formatPrice(data.commission)}</span>
+                    <span className="font-bold text-[#004CB7]">{formatPrice(data.commission)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Bonus</span>
@@ -471,7 +471,7 @@ export const CommissionsLaveursView: React.FC = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Rechercher par laveur ou enregistré par..."
-            className="w-full text-xs pl-10 pr-4 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
+            className="w-full text-xs pl-10 pr-4 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#004CB7]"
           />
         </div>
 
@@ -480,7 +480,7 @@ export const CommissionsLaveursView: React.FC = () => {
             <select
               value={filterLaveur}
               onChange={e => setFilterLaveur(e.target.value)}
-              className="text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-semibold focus:outline-none focus:border-[#0F4C4A]"
+              className="text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-semibold focus:outline-none focus:border-[#004CB7]"
             >
               <option value="all">Tous les laveurs</option>
               {knownLaveurs.map(name => (
@@ -498,7 +498,7 @@ export const CommissionsLaveursView: React.FC = () => {
                 type="button"
                 onClick={() => setFilterPeriod(p)}
                 className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
-                  filterPeriod === p ? 'bg-[#0F4C4A] text-white shadow-xs' : 'text-[#6B7873] hover:text-[#1C2321]'
+                  filterPeriod === p ? 'bg-[#004CB7] text-white shadow-xs' : 'text-[#6B7873] hover:text-[#1C2321]'
                 }`}
               >
                 {p === 'today' ? 'Jour' : p === 'week' ? 'Semaine' : p === 'month' ? 'Mois' : 'Tout'}
@@ -512,7 +512,7 @@ export const CommissionsLaveursView: React.FC = () => {
       <div className="bg-white rounded-2xl border border-[#E7E0D3] overflow-hidden shadow-xs">
         <div className="p-4 border-b border-[#E7E0D3] bg-[#F7F3EC]/50">
           <h3 className="text-xs font-bold text-[#1C2321] uppercase tracking-wider flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#0F4C4A]" />
+            <FileText className="w-4 h-4 text-[#004CB7]" />
             <span>Détail des Services ({filteredCommissions.length})</span>
           </h3>
         </div>
@@ -554,7 +554,7 @@ export const CommissionsLaveursView: React.FC = () => {
                     </td>
                     <td className="py-3 px-4 font-bold text-[#1C2321]">{c.laveurName}</td>
                     <td className="py-3 px-4">
-                      <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#E4E9E1] text-[#0F4C4A] border border-[#0F4C4A]/20">
+                      <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#E4EAF7] text-[#004CB7] border border-[#004CB7]/20">
                         {CLIENT_TYPE_GRID[c.clientType].label}
                       </span>
                     </td>
@@ -573,10 +573,10 @@ export const CommissionsLaveursView: React.FC = () => {
                     <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#1C2321]">
                       {formatPrice(c.price)}
                     </td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#5F7D6D]">
+                    <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#5A6F8C]">
                       {c.boutiqueTotal ? formatPrice(c.boutiqueTotal) : '—'}
                     </td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap font-bold text-[#0F4C4A]">
+                    <td className="py-3 px-4 text-right whitespace-nowrap font-bold text-[#004CB7]">
                       {formatPrice(c.commission)}
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#B8874B]">
@@ -601,7 +601,7 @@ export const CommissionsLaveursView: React.FC = () => {
                             type="button"
                             onClick={() => handleOpenEdit(c)}
                             title="Modifier"
-                            className="p-1.5 rounded-lg bg-[#F7F3EC] hover:bg-[#E4E9E1] text-[#0A3735] transition cursor-pointer"
+                            className="p-1.5 rounded-lg bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#002E6E] transition cursor-pointer"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
@@ -632,15 +632,15 @@ export const CommissionsLaveursView: React.FC = () => {
       <div className="bg-white rounded-2xl border border-[#E7E0D3] overflow-hidden shadow-xs">
         <div className="p-4 border-b border-[#E7E0D3] bg-[#F7F3EC]/50 flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-xs font-bold text-[#1C2321] uppercase tracking-wider flex items-center gap-2">
-            <Droplet className="w-4 h-4 text-[#0F4C4A]" />
+            <Droplet className="w-4 h-4 text-[#004CB7]" />
             <span>Hammam Femme — Détail des Entrées ({femmeHammamRows.length})</span>
           </h3>
           <div className="flex flex-wrap items-center gap-4 text-[11px] text-[#6B7873]">
             <span>
-              Hammam : <span className="font-bold text-[#0F4C4A]">{formatPrice(femmeHammamTotal)}</span>
+              Hammam : <span className="font-bold text-[#004CB7]">{formatPrice(femmeHammamTotal)}</span>
             </span>
             <span>
-              Boutique associée : <span className="font-bold text-[#5F7D6D]">{formatPrice(femmeBoutiqueTotal)}</span>
+              Boutique associée : <span className="font-bold text-[#5A6F8C]">{formatPrice(femmeBoutiqueTotal)}</span>
             </span>
             <span>
               Espèces : <span className="font-bold text-[#1C2321]">{formatPrice(femmeEspecesTotal)}</span>
@@ -699,7 +699,7 @@ export const CommissionsLaveursView: React.FC = () => {
                     <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#1C2321]">
                       {formatPrice(r.hammamAmount)}
                     </td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#5F7D6D]">
+                    <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#5A6F8C]">
                       {r.boutiqueAmount > 0 ? formatPrice(r.boutiqueAmount) : '—'}
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap font-extrabold text-[#1C2321]">
@@ -719,7 +719,7 @@ export const CommissionsLaveursView: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#E7E0D3] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-[#E7E0D3]">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#0F4C4A] text-white flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-[#004CB7] text-white flex items-center justify-center">
                   <Users className="w-4 h-4" />
                 </div>
                 <div>
@@ -756,7 +756,7 @@ export const CommissionsLaveursView: React.FC = () => {
                   onChange={e => setLaveurName(e.target.value)}
                   placeholder="ex: Mohamed"
                   required
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 />
                 <datalist id="laveur-suggestions">
                   {knownLaveurs.map(name => (
@@ -776,8 +776,8 @@ export const CommissionsLaveursView: React.FC = () => {
                       onClick={() => setClientType(ct)}
                       className={`p-3 rounded-xl border text-center transition cursor-pointer ${
                         clientType === ct
-                          ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white shadow-xs'
-                          : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                          ? 'bg-[#004CB7] border-[#004CB7] text-white shadow-xs'
+                          : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
                       }`}
                     >
                       <div className="text-xs font-bold">{CLIENT_TYPE_GRID[ct].label}</div>
@@ -798,8 +798,8 @@ export const CommissionsLaveursView: React.FC = () => {
                     onClick={() => setPayment('cash')}
                     className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
                       payment === 'cash'
-                        ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white shadow-xs'
-                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                        ? 'bg-[#004CB7] border-[#004CB7] text-white shadow-xs'
+                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
                     }`}
                   >
                     Espèces
@@ -809,8 +809,8 @@ export const CommissionsLaveursView: React.FC = () => {
                     onClick={() => setPayment('mobile')}
                     className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
                       payment === 'mobile'
-                        ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white shadow-xs'
-                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                        ? 'bg-[#004CB7] border-[#004CB7] text-white shadow-xs'
+                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
                     }`}
                   >
                     Mobile Money
@@ -826,8 +826,8 @@ export const CommissionsLaveursView: React.FC = () => {
                           onClick={() => setMobileOperator(op)}
                           className={`flex-1 min-w-[65px] py-1.5 px-2 rounded-lg text-[11px] font-bold transition cursor-pointer border ${
                             mobileOperator === op
-                              ? 'bg-[#0F4C4A] text-white border-[#0F4C4A]'
-                              : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4E9E1]'
+                              ? 'bg-[#004CB7] text-white border-[#004CB7]'
+                              : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
                           }`}
                         >
                           {op}
@@ -840,7 +840,7 @@ export const CommissionsLaveursView: React.FC = () => {
                       onChange={e => setCustomerPhone(e.target.value)}
                       placeholder="Numéro mobile money du client"
                       required
-                      className="mt-2 w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                      className="mt-2 w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                     />
                   </>
                 )}
@@ -858,7 +858,7 @@ export const CommissionsLaveursView: React.FC = () => {
                   value={bonus}
                   onChange={e => setBonus(Math.max(0, parseInt(e.target.value) || 0))}
                   placeholder="0"
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
@@ -881,7 +881,7 @@ export const CommissionsLaveursView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowNewProductForm(v => !v)}
-                    className="flex items-center gap-1 text-[10px] font-bold text-[#0F4C4A] hover:text-[#0A3735] cursor-pointer"
+                    className="flex items-center gap-1 text-[10px] font-bold text-[#004CB7] hover:text-[#002E6E] cursor-pointer"
                   >
                     <PackagePlus className="w-3.5 h-3.5" />
                     <span>Nouveau produit</span>
@@ -895,7 +895,7 @@ export const CommissionsLaveursView: React.FC = () => {
                       value={newProductName}
                       onChange={e => setNewProductName(e.target.value)}
                       placeholder="Nom du nouveau produit"
-                      className="w-full text-xs p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                      className="w-full text-xs p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                     />
                     <div className="grid grid-cols-2 gap-2">
                       <input
@@ -905,7 +905,7 @@ export const CommissionsLaveursView: React.FC = () => {
                         value={newProductPrice}
                         onChange={e => setNewProductPrice(e.target.value)}
                         placeholder={`Prix (${settings.currency})`}
-                        className="w-full text-xs p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                        className="w-full text-xs p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                       />
                       <input
                         type="number"
@@ -914,7 +914,7 @@ export const CommissionsLaveursView: React.FC = () => {
                         value={newProductQty}
                         onChange={e => setNewProductQty(e.target.value)}
                         placeholder="Quantité en stock"
-                        className="w-full text-xs p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                        className="w-full text-xs p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                       />
                     </div>
                     <button
@@ -940,7 +940,7 @@ export const CommissionsLaveursView: React.FC = () => {
                         setNewProductQty('1');
                         setShowNewProductForm(false);
                       }}
-                      className="w-full py-2 bg-[#0F4C4A] text-white rounded-lg text-xs font-bold hover:bg-[#0A3735] transition cursor-pointer"
+                      className="w-full py-2 bg-[#004CB7] text-white rounded-lg text-xs font-bold hover:bg-[#002E6E] transition cursor-pointer"
                     >
                       Créer et ajouter au panier
                     </button>
@@ -954,7 +954,7 @@ export const CommissionsLaveursView: React.FC = () => {
                     value={productSearch}
                     onChange={e => setProductSearch(e.target.value)}
                     placeholder="Rechercher un produit boutique existant..."
-                    className="w-full text-xs pl-8 pr-3 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
+                    className="w-full text-xs pl-8 pr-3 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#004CB7]"
                   />
                 </div>
                 {productMatches.length > 0 && (
@@ -1001,7 +1001,7 @@ export const CommissionsLaveursView: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => changeCartQty(item.productId, -1)}
-                              className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4E9E1] cursor-pointer"
+                              className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4EAF7] cursor-pointer"
                             >
                               <Minus className="w-3 h-3" />
                             </button>
@@ -1009,7 +1009,7 @@ export const CommissionsLaveursView: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => changeCartQty(item.productId, 1)}
-                              className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4E9E1] cursor-pointer"
+                              className="w-6 h-6 rounded-lg bg-white border border-[#E7E0D3] flex items-center justify-center hover:bg-[#E4EAF7] cursor-pointer"
                             >
                               <Plus className="w-3 h-3" />
                             </button>
@@ -1030,14 +1030,14 @@ export const CommissionsLaveursView: React.FC = () => {
                                   );
                                 }}
                                 onBlur={() => setEditingPriceId(null)}
-                                className="w-16 text-right font-bold text-[#0F4C4A] bg-white border border-[#0F4C4A]/40 rounded-lg px-1 py-0.5 font-mono focus:outline-none"
+                                className="w-16 text-right font-bold text-[#004CB7] bg-white border border-[#004CB7]/40 rounded-lg px-1 py-0.5 font-mono focus:outline-none"
                               />
                             ) : (
                               <button
                                 type="button"
                                 onClick={() => setEditingPriceId(item.productId)}
                                 title="Modifier le prix pour cette vente"
-                                className="font-bold text-[#0F4C4A] flex items-center gap-0.5 cursor-pointer hover:underline"
+                                className="font-bold text-[#004CB7] flex items-center gap-0.5 cursor-pointer hover:underline"
                               >
                                 <Pencil className="w-2.5 h-2.5 opacity-60" />
                                 {formatPrice(item.price)}
@@ -1056,30 +1056,30 @@ export const CommissionsLaveursView: React.FC = () => {
               )}
 
               {/* Summary */}
-              <div className="bg-[#E4E9E1]/60 p-3.5 rounded-xl border border-[#0F4C4A]/20 space-y-1.5 text-xs">
-                <div className="flex justify-between text-[#0A3735]">
+              <div className="bg-[#E4EAF7]/60 p-3.5 rounded-xl border border-[#004CB7]/20 space-y-1.5 text-xs">
+                <div className="flex justify-between text-[#002E6E]">
                   <span>Prix du service ({CLIENT_TYPE_GRID[clientType].label})</span>
                   <span className="font-bold">{formatPrice(grid.price)}</span>
                 </div>
-                <div className="flex justify-between text-[#0A3735]">
+                <div className="flex justify-between text-[#002E6E]">
                   <span>Commission fixe (laveur)</span>
                   <span className="font-bold">{formatPrice(grid.commission)}</span>
                 </div>
-                <div className="flex justify-between text-[#0A3735]">
+                <div className="flex justify-between text-[#002E6E]">
                   <span>Bonus (laveur)</span>
                   <span className="font-bold">{formatPrice(bonus)}</span>
                 </div>
-                <div className="flex justify-between pt-1.5 border-t border-[#0F4C4A]/20 font-extrabold text-[#0F4C4A]">
+                <div className="flex justify-between pt-1.5 border-t border-[#004CB7]/20 font-extrabold text-[#004CB7]">
                   <span>Total commission laveur</span>
                   <span>{formatPrice(grid.commission + bonus)}</span>
                 </div>
                 {boutiqueCart.length > 0 && (
                   <>
-                    <div className="flex justify-between text-[#B8874B] pt-1.5 border-t border-[#0F4C4A]/20">
+                    <div className="flex justify-between text-[#B8874B] pt-1.5 border-t border-[#004CB7]/20">
                       <span>Articles boutique (→ inventaire)</span>
                       <span className="font-bold">{formatPrice(boutiqueSubtotal)}</span>
                     </div>
-                    <div className="flex justify-between pt-1.5 border-t border-[#0F4C4A]/20 text-sm font-extrabold text-[#1C2321]">
+                    <div className="flex justify-between pt-1.5 border-t border-[#004CB7]/20 text-sm font-extrabold text-[#1C2321]">
                       <span>Total payé par le client</span>
                       <span>{formatPrice(grid.commission + bonus + boutiqueSubtotal)}</span>
                     </div>
@@ -1092,13 +1092,13 @@ export const CommissionsLaveursView: React.FC = () => {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4E9E1] transition cursor-pointer"
+                  className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4EAF7] transition cursor-pointer"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-[#0F4C4A] text-white rounded-xl text-xs font-bold hover:bg-[#0A3735] transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2.5 bg-[#004CB7] text-white rounded-xl text-xs font-bold hover:bg-[#002E6E] transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>{editingCommission ? 'Enregistrer les modifications' : 'Enregistrer le Service'}</span>

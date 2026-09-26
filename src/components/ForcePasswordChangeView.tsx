@@ -34,7 +34,7 @@ export const ForcePasswordChangeView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#072423] p-4 sm:p-6 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#051B33] p-4 sm:p-6 relative overflow-hidden">
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#004CB7]/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#B8874B]/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -117,7 +117,7 @@ export const ForcePasswordChangeView: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white bg-[#0F4C4A] hover:bg-[#0A3735] disabled:opacity-60"
+              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-60"
             >
               <span>{loading ? 'Enregistrement…' : 'Définir mon mot de passe'}</span>
               {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />}

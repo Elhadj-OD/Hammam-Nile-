@@ -73,11 +73,11 @@ export const CaissieresView: React.FC = () => {
 
   // Suggested preset avatars if no photo uploaded
   const avatarPresets = [
-    { label: 'FM', color: 'bg-[#0F4C4A] text-white' },
-    { label: 'AS', color: 'bg-[#B8874B] text-[#0A3735]' },
-    { label: 'MB', color: 'bg-[#5F7D6D] text-white' },
+    { label: 'FM', color: 'bg-[#004CB7] text-white' },
+    { label: 'AS', color: 'bg-[#B8874B] text-[#002E6E]' },
+    { label: 'MB', color: 'bg-[#5A6F8C] text-white' },
     { label: 'KD', color: 'bg-[#8F5A38] text-white' },
-    { label: 'AD', color: 'bg-[#3A5049] text-white' },
+    { label: 'AD', color: 'bg-[#002E6E] text-white' },
   ];
 
   const handleOpenAdd = () => {
@@ -282,7 +282,7 @@ export const CaissieresView: React.FC = () => {
       {/* Top Banner & Action */}
       <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[#0F4C4A] text-xs font-bold uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
             <Users className="w-4 h-4" />
             <span>Gestion du Personnel & Caisses</span>
           </div>
@@ -297,7 +297,7 @@ export const CaissieresView: React.FC = () => {
         <button
           type="button"
           onClick={handleOpenAdd}
-          className="bg-[#0F4C4A] hover:bg-[#0A3735] text-white px-5 py-3 rounded-full font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
+          className="bg-[#004CB7] hover:bg-[#002E6E] text-white px-5 py-3 rounded-full font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
         >
           <UserPlus className="w-4 h-4" />
           <span>Ajouter une Caissière</span>
@@ -334,7 +334,7 @@ export const CaissieresView: React.FC = () => {
                           className="w-14 h-14 rounded-2xl object-cover border border-[#E7E0D3] shadow-xs"
                         />
                       ) : (
-                        <div className="w-14 h-14 rounded-2xl bg-[#0F4C4A] text-[#EFE8D8] flex items-center justify-center font-bold text-lg shadow-xs">
+                        <div className="w-14 h-14 rounded-2xl bg-[#004CB7] text-[#EFE8D8] flex items-center justify-center font-bold text-lg shadow-xs">
                           {initials}
                         </div>
                       )}
@@ -358,7 +358,7 @@ export const CaissieresView: React.FC = () => {
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                             u.role === 'gerant'
                               ? 'bg-[#B8874B]/20 text-[#8B6433]'
-                              : 'bg-[#E4E9E1] text-[#0F4C4A]'
+                              : 'bg-[#E4EAF7] text-[#004CB7]'
                           }`}
                         >
                           {u.role === 'gerant' ? 'Gérante / Admin' : 'Caissière'}
@@ -373,7 +373,7 @@ export const CaissieresView: React.FC = () => {
                         )}
                         {u.department && (
                           <span
-                            className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-[#0F4C4A]/10 text-[#0F4C4A] border border-[#0F4C4A]/20"
+                            className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-[#004CB7]/10 text-[#004CB7] border border-[#004CB7]/20"
                             title="Caisse dédiée : voit uniquement cette partie"
                           >
                             {DEPARTMENTS[u.department].icon} {DEPARTMENTS[u.department].label}
@@ -401,7 +401,7 @@ export const CaissieresView: React.FC = () => {
                         className={`p-1.5 rounded-lg transition cursor-pointer ${
                           u.locked
                             ? 'text-rose-600 hover:bg-rose-50'
-                            : 'text-[#6B7873] hover:text-[#0F4C4A] hover:bg-[#F7F3EC]'
+                            : 'text-[#6B7873] hover:text-[#004CB7] hover:bg-[#F7F3EC]'
                         }`}
                         title={u.locked ? "Déverrouiller (autoriser le changement d'espace)" : 'Verrouiller sur sa caisse'}
                       >
@@ -419,7 +419,7 @@ export const CaissieresView: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(u)}
-                      className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#0F4C4A] hover:bg-[#F7F3EC] transition cursor-pointer"
+                      className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#004CB7] hover:bg-[#F7F3EC] transition cursor-pointer"
                       title="Modifier le profil"
                     >
                       <Edit2 className="w-4 h-4" />
@@ -441,17 +441,17 @@ export const CaissieresView: React.FC = () => {
                 <div className="space-y-2 py-3 border-y border-[#E7E0D3]/70 text-xs text-[#6B7873]">
                   {u.phone && (
                     <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 text-[#0F4C4A]" />
+                      <Phone className="w-3.5 h-3.5 text-[#004CB7]" />
                       <span>{u.phone}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#0F4C4A]" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#004CB7]" />
                     <span>Compte sécurisé (authentification Supabase)</span>
                   </div>
                   {u.createdAt && (
                     <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 text-[#0F4C4A]" />
+                      <Calendar className="w-3.5 h-3.5 text-[#004CB7]" />
                       <span>Inscrite le : {u.createdAt}</span>
                     </div>
                   )}
@@ -482,7 +482,7 @@ export const CaissieresView: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-[11px] text-[#6B7873]">Total encaissé</div>
-                    <div className="text-xs font-bold text-[#0F4C4A] truncate">
+                    <div className="text-xs font-bold text-[#004CB7] truncate">
                       {formatPrice(stats.totalAmount)}
                     </div>
                   </div>
@@ -492,7 +492,7 @@ export const CaissieresView: React.FC = () => {
               {/* Bottom Quick Switch */}
               <div className="mt-4 pt-2">
                 {isCurrent ? (
-                  <div className="w-full text-center py-2 text-xs font-bold text-[#0F4C4A] bg-[#E4E9E1] rounded-xl flex items-center justify-center gap-1.5">
+                  <div className="w-full text-center py-2 text-xs font-bold text-[#004CB7] bg-[#E4EAF7] rounded-xl flex items-center justify-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Session En Cours</span>
                   </div>
@@ -500,7 +500,7 @@ export const CaissieresView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleSwitchToUser(u)}
-                    className="w-full py-2 text-xs font-bold text-[#1C2321] bg-[#F7F3EC] hover:bg-[#E4E9E1] hover:text-[#0F4C4A] rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
+                    className="w-full py-2 text-xs font-bold text-[#1C2321] bg-[#F7F3EC] hover:bg-[#E4EAF7] hover:text-[#004CB7] rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <LogIn className="w-3.5 h-3.5" />
                     <span>Ouvrir la caisse avec ce profil</span>
@@ -519,7 +519,7 @@ export const CaissieresView: React.FC = () => {
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-4 border-b border-[#E7E0D3]">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
@@ -558,7 +558,7 @@ export const CaissieresView: React.FC = () => {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="font-bold text-lg text-[#0F4C4A]">{avatarPreview}</span>
+                        <span className="font-bold text-lg text-[#004CB7]">{avatarPreview}</span>
                       )
                     ) : (
                       <Camera className="w-6 h-6 text-[#6B7873]/50" />
@@ -577,7 +577,7 @@ export const CaissieresView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="text-xs font-bold bg-white text-[#0F4C4A] border border-[#0F4C4A] hover:bg-[#E4E9E1] px-3 py-1.5 rounded-lg cursor-pointer transition"
+                        className="text-xs font-bold bg-white text-[#004CB7] border border-[#004CB7] hover:bg-[#E4EAF7] px-3 py-1.5 rounded-lg cursor-pointer transition"
                       >
                         Téléverser une photo
                       </button>
@@ -631,7 +631,7 @@ export const CaissieresView: React.FC = () => {
                   }}
                   placeholder="ex: Fatou Mbaye"
                   required
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
@@ -646,7 +646,7 @@ export const CaissieresView: React.FC = () => {
                   onChange={e => setUsername(e.target.value)}
                   placeholder="ex: fatou"
                   required
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 />
                 {editingUser && (
                   <p className="text-[11px] text-[#6B7873] mt-1">
@@ -669,7 +669,7 @@ export const CaissieresView: React.FC = () => {
                     autoCapitalize="none"
                     autoCorrect="off"
                     spellCheck={false}
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                   />
                   <p className="text-[11px] text-[#6B7873] mt-1">
                     Vous pouvez choisir vous-même le mot de passe (min. 6 caractères) ou laisser vide pour qu'un mot de passe temporaire soit généré et affiché une seule fois après la création. Dans tous les cas, la caissière devra le changer à sa première connexion.
@@ -690,7 +690,7 @@ export const CaissieresView: React.FC = () => {
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 />
                 <p className="text-[11px] text-[#6B7873] mt-1">
                   Utile pour la récupération de mot de passe en cas d'oubli — la connexion se fait toujours avec l'identifiant, pas l'e-mail. Laissez vide si la caissière n'a pas d'e-mail.
@@ -708,7 +708,7 @@ export const CaissieresView: React.FC = () => {
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder="+222 46 00 00 00"
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                   />
                 </div>
 
@@ -719,7 +719,7 @@ export const CaissieresView: React.FC = () => {
                   <select
                     value={role}
                     onChange={e => setRole(e.target.value as UserRole)}
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                   >
                     <option value="caissier">Caissière de Comptoir</option>
                     <option value="gerant">Administratrice / Gérante</option>
@@ -735,7 +735,7 @@ export const CaissieresView: React.FC = () => {
                 <select
                   value={gender}
                   onChange={e => setGender(e.target.value as UserGender)}
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 >
                   <option value="femme">Femme</option>
                   <option value="homme">Homme</option>
@@ -753,7 +753,7 @@ export const CaissieresView: React.FC = () => {
                 <select
                   value={department}
                   onChange={e => setDepartment(e.target.value as CaisseDepartment | '')}
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 >
                   <option value="">Aucune (voit tout le rayon boutique général)</option>
                   {Object.entries(DEPARTMENTS)
@@ -780,11 +780,11 @@ export const CaissieresView: React.FC = () => {
                     type="checkbox"
                     checked={locked}
                     onChange={e => setLocked(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 accent-[#0F4C4A] cursor-pointer"
+                    className="mt-0.5 w-4 h-4 accent-[#004CB7] cursor-pointer"
                   />
                   <span>
                     <span className="block text-xs font-bold text-[#1C2321] flex items-center gap-1.5">
-                      <Lock className="w-3.5 h-3.5 text-[#0F4C4A]" />
+                      <Lock className="w-3.5 h-3.5 text-[#004CB7]" />
                       Verrouiller ce profil
                     </span>
                     <span className="block text-[11px] text-[#6B7873] mt-0.5">
@@ -806,7 +806,7 @@ export const CaissieresView: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="py-2.5 px-6 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-60"
+                  className="py-2.5 px-6 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-60"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>
@@ -827,7 +827,7 @@ export const CaissieresView: React.FC = () => {
       {resetPasswordTarget && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#E7E0D3]">
-            <div className="w-11 h-11 rounded-2xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center mb-3">
+            <div className="w-11 h-11 rounded-2xl bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center mb-3">
               <Key className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold font-display text-[#1C2321] mb-1">
@@ -851,7 +851,7 @@ export const CaissieresView: React.FC = () => {
               autoCapitalize="none"
               autoCorrect="off"
               spellCheck={false}
-              className="w-full text-sm p-2.5 mb-4 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+              className="w-full text-sm p-2.5 mb-4 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
             />
 
             <div className="flex gap-2">
@@ -859,7 +859,7 @@ export const CaissieresView: React.FC = () => {
                 type="button"
                 onClick={() => setResetPasswordTarget(null)}
                 disabled={resettingPassword}
-                className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4E9E1] transition cursor-pointer disabled:opacity-60"
+                className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4EAF7] transition cursor-pointer disabled:opacity-60"
               >
                 Annuler
               </button>
@@ -867,7 +867,7 @@ export const CaissieresView: React.FC = () => {
                 type="button"
                 onClick={handleConfirmResetPassword}
                 disabled={resettingPassword}
-                className="flex-1 py-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition cursor-pointer disabled:opacity-60"
+                className="flex-1 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition cursor-pointer disabled:opacity-60"
               >
                 {resettingPassword ? 'En cours...' : 'Confirmer'}
               </button>
@@ -879,7 +879,7 @@ export const CaissieresView: React.FC = () => {
       {tempPasswordInfo && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#E7E0D3]">
-            <div className="w-11 h-11 rounded-2xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center mb-3">
+            <div className="w-11 h-11 rounded-2xl bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center mb-3">
               <Key className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold font-display text-[#1C2321] mb-1">
@@ -895,7 +895,7 @@ export const CaissieresView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigator.clipboard?.writeText(tempPasswordInfo.tempPassword)}
-                className="p-2 rounded-lg text-[#6B7873] hover:text-[#0F4C4A] hover:bg-white transition cursor-pointer"
+                className="p-2 rounded-lg text-[#6B7873] hover:text-[#004CB7] hover:bg-white transition cursor-pointer"
                 title="Copier"
               >
                 <Copy className="w-4 h-4" />
@@ -904,7 +904,7 @@ export const CaissieresView: React.FC = () => {
             <button
               type="button"
               onClick={() => setTempPasswordInfo(null)}
-              className="w-full py-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition cursor-pointer"
             >
               J'ai noté le mot de passe
             </button>

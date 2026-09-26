@@ -283,7 +283,7 @@ export const AssistantView: React.FC = () => {
     <div className="space-y-6 max-w-[1000px] mx-auto pb-12">
       {/* Top Banner */}
       <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs">
-        <div className="flex items-center gap-2 text-[#0F4C4A] text-xs font-bold uppercase tracking-wider mb-1">
+        <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
           <Sparkles className="w-4 h-4 text-[#B8874B]" />
           <span>Assistant IA</span>
         </div>
@@ -301,7 +301,7 @@ export const AssistantView: React.FC = () => {
             onClick={() => setMode('chat')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
               mode === 'chat'
-                ? 'bg-[#0F4C4A] text-white shadow-xs'
+                ? 'bg-[#004CB7] text-white shadow-xs'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
           >
@@ -313,7 +313,7 @@ export const AssistantView: React.FC = () => {
             onClick={() => setMode('photo')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
               mode === 'photo'
-                ? 'bg-[#0F4C4A] text-white shadow-xs'
+                ? 'bg-[#004CB7] text-white shadow-xs'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
           >
@@ -332,8 +332,8 @@ export const AssistantView: React.FC = () => {
               }}
               className={`px-3.5 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
                 photoMode === 'add'
-                  ? 'bg-[#0F4C4A] text-white border-[#0F4C4A]'
-                  : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4E9E1]'
+                  ? 'bg-[#004CB7] text-white border-[#004CB7]'
+                  : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
               }`}
             >
               <PackagePlus className="w-3 h-3" />
@@ -347,8 +347,8 @@ export const AssistantView: React.FC = () => {
               }}
               className={`px-3.5 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer border ${
                 photoMode === 'remove'
-                  ? 'bg-[#0F4C4A] text-white border-[#0F4C4A]'
-                  : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4E9E1]'
+                  ? 'bg-[#004CB7] text-white border-[#004CB7]'
+                  : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
               }`}
             >
               <PackageMinus className="w-3 h-3" />
@@ -367,7 +367,7 @@ export const AssistantView: React.FC = () => {
                 <div
                   className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                     m.role === 'user'
-                      ? 'bg-[#0F4C4A] text-white rounded-br-sm'
+                      ? 'bg-[#004CB7] text-white rounded-br-sm'
                       : 'bg-[#F7F3EC] text-[#1C2321] rounded-bl-sm'
                   }`}
                 >
@@ -399,13 +399,13 @@ export const AssistantView: React.FC = () => {
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Écrivez votre question…"
-              className="flex-1 text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+              className="flex-1 text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
               disabled={chatLoading}
             />
             <button
               type="submit"
               disabled={chatLoading || !input.trim()}
-              className="p-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] disabled:opacity-40 text-white rounded-xl transition cursor-pointer"
+              className="p-2.5 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-40 text-white rounded-xl transition cursor-pointer"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -432,7 +432,7 @@ export const AssistantView: React.FC = () => {
                 htmlFor="assistant-photo-input"
                 className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-[#E7E0D3] rounded-2xl py-12 cursor-pointer hover:bg-[#F7F3EC]/60 transition"
               >
-                <div className="w-12 h-12 rounded-2xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+                <div className="w-12 h-12 rounded-2xl bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
                   <ImageIcon className="w-6 h-6" />
                 </div>
                 <p className="font-bold text-sm text-[#1C2321]">Prendre ou choisir une photo</p>
@@ -459,7 +459,7 @@ export const AssistantView: React.FC = () => {
                         type="button"
                         onClick={handleAnalyze}
                         disabled={extracting}
-                        className="px-4 py-2 bg-[#0F4C4A] hover:bg-[#0A3735] disabled:opacity-50 text-white rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                        className="px-4 py-2 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-50 text-white rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                       >
                         {extracting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                         {extracting ? 'Analyse en cours…' : 'Analyser la photo'}
@@ -518,7 +518,7 @@ export const AssistantView: React.FC = () => {
                             type="checkbox"
                             checked={row.include}
                             onChange={e => updateRow(i, { include: e.target.checked })}
-                            className="w-4 h-4 accent-[#0F4C4A] cursor-pointer"
+                            className="w-4 h-4 accent-[#004CB7] cursor-pointer"
                           />
                         </td>
                         <td className="py-2 px-3">
@@ -526,7 +526,7 @@ export const AssistantView: React.FC = () => {
                             type="text"
                             value={row.name}
                             onChange={e => updateRow(i, { name: e.target.value })}
-                            className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                            className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                           />
                         </td>
                         <td className="py-2 px-3">
@@ -535,14 +535,14 @@ export const AssistantView: React.FC = () => {
                             min="0"
                             value={row.qty}
                             onChange={e => updateRow(i, { qty: parseInt(e.target.value) || 0 })}
-                            className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                            className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                           />
                         </td>
                         <td className="py-2 px-3">
                           <select
                             value={row.category}
                             onChange={e => updateRow(i, { category: e.target.value as ProductCategory })}
-                            className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                            className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                           >
                             {CATEGORY_OPTIONS.map(c => (
                               <option key={c.value} value={c.value}>{c.label}</option>
@@ -572,7 +572,7 @@ export const AssistantView: React.FC = () => {
                   type="button"
                   onClick={handleConfirmAdd}
                   disabled={!rows.some(r => r.include && r.name.trim())}
-                  className="px-4 py-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] disabled:opacity-40 text-white rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-40 text-white rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Ajouter à la boutique
@@ -617,7 +617,7 @@ export const AssistantView: React.FC = () => {
                               type="checkbox"
                               checked={row.include}
                               onChange={e => updateRemoveRow(i, { include: e.target.checked })}
-                              className="w-4 h-4 accent-[#0F4C4A] cursor-pointer"
+                              className="w-4 h-4 accent-[#004CB7] cursor-pointer"
                             />
                           </td>
                           <td className="py-2 px-3 text-[#6B7873]">{row.extractedName}</td>
@@ -629,7 +629,7 @@ export const AssistantView: React.FC = () => {
                                   matchedProductId: e.target.value ? Number(e.target.value) : null,
                                 })
                               }
-                              className={`w-full text-xs p-1.5 border rounded-lg focus:outline-none focus:border-[#0F4C4A] ${
+                              className={`w-full text-xs p-1.5 border rounded-lg focus:outline-none focus:border-[#004CB7] ${
                                 matched ? 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321]' : 'bg-rose-50 border-rose-200 text-rose-700'
                               }`}
                             >
@@ -648,7 +648,7 @@ export const AssistantView: React.FC = () => {
                               value={row.qtyToRemove}
                               disabled={row.deleteEntirely}
                               onChange={e => updateRemoveRow(i, { qtyToRemove: parseInt(e.target.value) || 1 })}
-                              className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A] disabled:opacity-40"
+                              className="w-full text-xs p-1.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7] disabled:opacity-40"
                             />
                           </td>
                           <td className="py-2 px-3 text-center">

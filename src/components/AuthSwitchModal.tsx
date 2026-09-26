@@ -73,7 +73,7 @@ export const AuthSwitchModal: React.FC = () => {
         {/* Top brand header bar */}
         <div
           className={`p-5 text-white flex items-center justify-between ${
-            isAdmin ? 'bg-[#0A3735]' : 'bg-[#004CB7]'
+            isAdmin ? 'bg-[#002E6E]' : 'bg-[#004CB7]'
           }`}
         >
           <div className="flex items-center gap-3">
@@ -105,7 +105,7 @@ export const AuthSwitchModal: React.FC = () => {
             <div className="flex items-center gap-2.5">
               <div
                 className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold font-mono text-white ${
-                  isAdmin ? 'bg-[#0A3735]' : 'bg-[#004CB7]'
+                  isAdmin ? 'bg-[#002E6E]' : 'bg-[#004CB7]'
                 }`}
               >
                 {targetInitials}
@@ -124,7 +124,7 @@ export const AuthSwitchModal: React.FC = () => {
 
             <span
               className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                isAdmin ? 'bg-[#0A3735] text-white' : 'bg-[#004CB7] text-white'
+                isAdmin ? 'bg-[#002E6E] text-white' : 'bg-[#004CB7] text-white'
               }`}
             >
               {isAdmin ? 'Gérante' : 'Caissier'}
@@ -193,7 +193,7 @@ export const AuthSwitchModal: React.FC = () => {
               disabled={loading}
               className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold text-white transition flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-60 ${
                 isAdmin
-                  ? 'bg-[#0A3735] hover:bg-[#0F4C4A]'
+                  ? 'bg-[#002E6E] hover:bg-[#004CB7]'
                   : 'bg-[#004CB7] hover:bg-[#003C93]'
               }`}
             >

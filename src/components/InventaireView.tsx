@@ -80,7 +80,7 @@ export const InventaireView: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveSection('prelevements-hammam')}
-            className="px-4 py-2.5 bg-[#E4E9E1] hover:bg-[#0F4C4A] hover:text-white text-[#0F4C4A] border border-[#0F4C4A]/20 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+            className="px-4 py-2.5 bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <span>Prélèvements Hammam</span>
             <ArrowUpRight className="w-4 h-4" />
@@ -147,10 +147,10 @@ export const InventaireView: React.FC = () => {
         <div
           onClick={() => setSelectedCategory(selectedCategory === 'femmes' ? 'all' : 'femmes')}
           className={`p-4 rounded-xl border shadow-xs cursor-pointer transition ${
-            selectedCategory === 'femmes' ? 'bg-[#E4E9E1] border-[#0F4C4A]' : 'bg-white border-slate-200 hover:border-[#0F4C4A]/40'
+            selectedCategory === 'femmes' ? 'bg-[#E4EAF7] border-[#004CB7]' : 'bg-white border-slate-200 hover:border-[#004CB7]/40'
           }`}
         >
-          <div className="text-xs text-[#0F4C4A] font-bold flex items-center gap-1.5">💄 Boutique Femme</div>
+          <div className="text-xs text-[#004CB7] font-bold flex items-center gap-1.5">💄 Boutique Femme</div>
           <div className="text-xl font-bold text-slate-900 mt-1">
             {boutiqueFemmeValuation.toLocaleString()} {settings.currency}
           </div>
@@ -162,10 +162,10 @@ export const InventaireView: React.FC = () => {
         <div
           onClick={() => setSelectedCategory(selectedCategory === 'hommes' ? 'all' : 'hommes')}
           className={`p-4 rounded-xl border shadow-xs cursor-pointer transition ${
-            selectedCategory === 'hommes' ? 'bg-[#E4E9E1] border-[#0F4C4A]' : 'bg-white border-slate-200 hover:border-[#0F4C4A]/40'
+            selectedCategory === 'hommes' ? 'bg-[#E4EAF7] border-[#004CB7]' : 'bg-white border-slate-200 hover:border-[#004CB7]/40'
           }`}
         >
-          <div className="text-xs text-[#0F4C4A] font-bold flex items-center gap-1.5">🧔 Boutique Homme</div>
+          <div className="text-xs text-[#004CB7] font-bold flex items-center gap-1.5">🧔 Boutique Homme</div>
           <div className="text-xl font-bold text-slate-900 mt-1">
             {boutiqueHommeValuation.toLocaleString()} {settings.currency}
           </div>
