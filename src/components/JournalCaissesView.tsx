@@ -158,7 +158,7 @@ export const JournalCaissesView: React.FC = () => {
       {/* Header */}
       <div className="bg-white rounded-2xl border border-[#E7E0D3] p-6 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#0F4C4A] mb-1">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#004CB7] mb-1">
             <ClipboardList className="w-3.5 h-3.5" />
             <span>Vérification & Contrôle</span>
           </div>
@@ -175,13 +175,13 @@ export const JournalCaissesView: React.FC = () => {
               type="date"
               value={selectedDate}
               onChange={e => setSelectedDate(e.target.value)}
-              className="pl-9 pr-3 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-xs font-bold text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+              className="pl-9 pr-3 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-xs font-bold text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
             />
           </div>
           <button
             type="button"
             onClick={handleExportCSV}
-            className="px-4 py-2.5 bg-[#E4E9E1] hover:bg-[#0F4C4A] hover:text-white text-[#0F4C4A] border border-[#0F4C4A]/20 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+            className="px-4 py-2.5 bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Enregistrer (CSV)</span>
@@ -189,7 +189,7 @@ export const JournalCaissesView: React.FC = () => {
           <button
             type="button"
             onClick={handlePrint}
-            className="px-4 py-2.5 bg-[#0A3735] hover:bg-[#0F4C4A] text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+            className="px-4 py-2.5 bg-[#002E6E] hover:bg-[#004CB7] text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span>Imprimer</span>
@@ -201,7 +201,7 @@ export const JournalCaissesView: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-xl border border-[#E7E0D3] shadow-xs">
           <div className="text-xs text-[#6B7873] font-medium">Total Encaissé</div>
-          <div className="text-xl font-bold text-[#0F4C4A] mt-1">
+          <div className="text-xl font-bold text-[#004CB7] mt-1">
             {grandTotal.toLocaleString()} {settings.currency}
           </div>
           <div className="text-[11px] text-[#6B7873] mt-1">{totalTransactions} transaction(s)</div>
@@ -254,7 +254,7 @@ export const JournalCaissesView: React.FC = () => {
               </div>
               <div className="text-right">
                 <div className="text-[11px] text-[#6B7873]">Total caisse</div>
-                <div className="text-base font-bold text-[#0F4C4A]">
+                <div className="text-base font-bold text-[#004CB7]">
                   {sec.total.toLocaleString()} {settings.currency}
                 </div>
               </div>

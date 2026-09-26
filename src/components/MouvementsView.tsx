@@ -86,7 +86,7 @@ export const MouvementsView: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveSection('prelevements-hammam')}
-          className="px-4 py-2.5 bg-[#E4E9E1] hover:bg-[#0F4C4A] hover:text-white text-[#0F4C4A] border border-[#0F4C4A]/20 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
+          className="px-4 py-2.5 bg-[#E4EAF7] hover:bg-[#004CB7] hover:text-white text-[#004CB7] border border-[#004CB7]/20 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-xs cursor-pointer"
         >
           <span>✨ Prélèvements Hammam</span>
           <ArrowUpRight className="w-4 h-4" />

@@ -58,7 +58,7 @@ export const DashboardView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Role Banner / Greeting */}
-      <div className="bg-[#0A3735] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden border border-[#E7E0D3]/20">
+      <div className="bg-[#002E6E] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden border border-[#E7E0D3]/20">
         <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-[#B8874B]/10 rounded-full blur-2xl pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -84,7 +84,7 @@ export const DashboardView: React.FC = () => {
 
             <button
               onClick={() => setActiveSection('prelevements-hammam')}
-              className="px-3.5 py-2.5 bg-[#B8874B] hover:bg-[#A3743C] text-[#0A3735] font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow-md cursor-pointer"
+              className="px-3.5 py-2.5 bg-[#B8874B] hover:bg-[#A3743C] text-[#002E6E] font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow-md cursor-pointer"
             >
               <Sparkles className="w-4 h-4" />
               <span>Usage Hammam</span>
@@ -275,18 +275,18 @@ export const DashboardView: React.FC = () => {
       )}
 
       {/* Hammam Usages Card Banner */}
-      <div className="p-4 rounded-2xl bg-[#E4E9E1] border border-[#0F4C4A]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+      <div className="p-4 rounded-2xl bg-[#E4EAF7] border border-[#004CB7]/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#0F4C4A] text-white flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#004CB7] text-white flex items-center justify-center shrink-0">
             <Sparkles className="w-5 h-5 text-[#B8874B]" />
           </div>
           <div>
-            <div className="text-xs font-bold text-[#0F4C4A] uppercase tracking-wide">
+            <div className="text-xs font-bold text-[#004CB7] uppercase tracking-wide">
               Produits Boutique Pris par le Hammam ({hammamUsages.length} prélèvement{hammamUsages.length > 1 ? 's' : ''})
             </div>
             <div className="text-xs text-[#1C2321] mt-0.5">
               Valeur totale transférée :{' '}
-              <strong className="text-[#0F4C4A] font-extrabold">
+              <strong className="text-[#004CB7] font-extrabold">
                 {hammamUsages.reduce((sum, u) => sum + u.totalValue, 0).toLocaleString('fr-FR')} {settings.currency}
               </strong>{' '}
               · <span className="text-[#6B7873]">{hammamUsages.reduce((sum, u) => sum + u.qty, 0)} articles déduits du stock boutique</span>
@@ -297,7 +297,7 @@ export const DashboardView: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveSection('prelevements-hammam')}
-          className="px-3.5 py-2 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold shrink-0 transition cursor-pointer shadow-xs flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold shrink-0 transition cursor-pointer shadow-xs flex items-center gap-1.5"
         >
           <span>Consulter les Sorties Hammam</span>
           <ArrowUpRight className="w-3.5 h-3.5" />

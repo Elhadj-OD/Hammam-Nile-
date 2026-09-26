@@ -34,7 +34,7 @@ const MainLayout: React.FC = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#072423]">
+      <div className="min-h-screen flex items-center justify-center bg-[#051B33]">
         <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
       </div>
     );

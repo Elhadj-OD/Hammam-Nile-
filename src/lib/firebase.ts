@@ -202,11 +202,11 @@ export async function sendAdminVerificationCode(email: string): Promise<{
           text: `Bonjour,\n\nVotre code de vérification pour accéder à la partie Admin de Hammam Nile est : ${code}.\n\nCe code est valable 10 minutes. Veuillez le saisir sur l'écran pour confirmer votre identité.\n\nNe communiquez ce code à personne pour empêcher les accès non autorisés.`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #E7E0D3; border-radius: 16px;">
-              <h2 style="color: #0A3735; text-align: center;">Hammam Nile — Espace Admin</h2>
+              <h2 style="color: #002E6E; text-align: center;">Hammam Nile — Espace Admin</h2>
               <p>Bonjour Administrateur,</p>
               <p>Vous avez demandé à déverrouiller la partie <strong>Admin (Gérance)</strong>. Voici votre code de sécurité :</p>
               <div style="text-align: center; margin: 25px 0;">
-                <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0A3735; background: #F7F3EC; padding: 12px 24px; border-radius: 12px; border: 1px solid #E7E0D3; display: inline-block;">${code}</span>
+                <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #002E6E; background: #F7F3EC; padding: 12px 24px; border-radius: 12px; border: 1px solid #E7E0D3; display: inline-block;">${code}</span>
               </div>
               <p style="color: #666; font-size: 13px;">Ce code est valable pendant 10 minutes. Saisissez ce code dans l'application pour confirmer votre identité.</p>
               <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />

@@ -124,7 +124,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
     <div className="space-y-6 max-w-[1100px] mx-auto pb-12">
       {/* Top Banner */}
       <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs">
-        <div className="flex items-center gap-2 text-[#0F4C4A] text-xs font-bold uppercase tracking-wider mb-1">
+        <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
           <Sparkles className="w-4 h-4" />
           <span>{eyebrow}</span>
         </div>
@@ -137,11 +137,11 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between text-[#6B7873] text-xs font-bold uppercase mb-2">
             <span>Total Général</span>
-            <div className="w-7 h-7 rounded-lg bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
               <Wallet className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-[#0F4C4A] font-display">{formatPrice(totalGeneral)}</div>
+          <div className="text-2xl font-black text-[#004CB7] font-display">{formatPrice(totalGeneral)}</div>
         </div>
         <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
           <div className="flex items-center justify-between text-[#6B7873] text-xs font-bold uppercase mb-2">
@@ -173,7 +173,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
                 (activeTab || tabs[0].key) === tab.key
-                  ? 'bg-[#0F4C4A] text-white shadow-xs'
+                  ? 'bg-[#004CB7] text-white shadow-xs'
                   : 'text-[#6B7873] hover:text-[#1C2321]'
               }`}
             >
@@ -190,15 +190,15 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
             key={p.id}
             type="button"
             onClick={() => openModal(p)}
-            className="text-left p-4 rounded-2xl bg-white border border-[#E7E0D3] hover:border-[#0F4C4A]/50 hover:shadow-xs transition cursor-pointer"
+            className="text-left p-4 rounded-2xl bg-white border border-[#E7E0D3] hover:border-[#004CB7]/50 hover:shadow-xs transition cursor-pointer"
           >
             <div className="flex items-start justify-between gap-2">
               <span className="font-bold text-sm text-[#1C2321]">{p.name}</span>
-              <Plus className="w-4 h-4 text-[#0F4C4A] shrink-0" />
+              <Plus className="w-4 h-4 text-[#004CB7] shrink-0" />
             </div>
             <div className="mt-2 text-xs font-bold">
               {p.price > 0 ? (
-                <span className="text-[#0F4C4A]">{formatPrice(p.price)}</span>
+                <span className="text-[#004CB7]">{formatPrice(p.price)}</span>
               ) : (
                 <span className="inline-flex items-center gap-1 text-amber-700">
                   <AlertCircle className="w-3 h-3" />
@@ -219,7 +219,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
       <div className="bg-white rounded-2xl border border-[#E7E0D3] overflow-hidden shadow-xs">
         <div className="p-4 border-b border-[#E7E0D3] bg-[#F7F3EC]/50 flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-xs font-bold text-[#1C2321] uppercase tracking-wider flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#0F4C4A]" />
+            <FileText className="w-4 h-4 text-[#004CB7]" />
             <span>Mes Services ({mySales.length})</span>
           </h3>
           <div className="flex items-center bg-[#F7F3EC] p-1 rounded-xl border border-[#E7E0D3] text-xs">
@@ -229,7 +229,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                 type="button"
                 onClick={() => setFilterPeriod(p)}
                 className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
-                  filterPeriod === p ? 'bg-[#0F4C4A] text-white shadow-xs' : 'text-[#6B7873] hover:text-[#1C2321]'
+                  filterPeriod === p ? 'bg-[#004CB7] text-white shadow-xs' : 'text-[#6B7873] hover:text-[#1C2321]'
                 }`}
               >
                 {p === 'today' ? 'Jour' : p === 'week' ? 'Semaine' : p === 'month' ? 'Mois' : 'Tout'}
@@ -296,7 +296,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#E7E0D3] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-[#E7E0D3]">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#0F4C4A] text-white flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-[#004CB7] text-white flex items-center justify-center">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <div>
@@ -328,7 +328,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                   value={cashierName}
                   onChange={e => setCashierName(e.target.value)}
                   placeholder="ex: Aïcha"
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                 />
                 <p className="text-[11px] text-[#6B7873] mt-1">Affiché sur le ticket. Modifiable si une autre personne tient la caisse.</p>
               </div>
@@ -340,7 +340,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                   value={customerName}
                   onChange={e => setCustomerName(e.target.value)}
                   placeholder="ex: Mariem"
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
@@ -356,7 +356,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                   onChange={e => setPriceInput(e.target.value)}
                   placeholder="ex: 500"
                   autoFocus
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
@@ -368,8 +368,8 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                     onClick={() => setPayment('cash')}
                     className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
                       payment === 'cash'
-                        ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
-                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                        ? 'bg-[#004CB7] border-[#004CB7] text-white'
+                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
                     }`}
                   >
                     💵 Espèces
@@ -379,8 +379,8 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                     onClick={() => setPayment('mobile')}
                     className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
                       payment === 'mobile'
-                        ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
-                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                        ? 'bg-[#004CB7] border-[#004CB7] text-white'
+                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
                     }`}
                   >
                     📱 Mobile Money
@@ -395,7 +395,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                     <select
                       value={mobileOperator}
                       onChange={e => setMobileOperator(e.target.value)}
-                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                     >
                       {MOBILE_OPERATORS.map(op => (
                         <option key={op} value={op}>
@@ -411,7 +411,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                       value={customerPhone}
                       onChange={e => setCustomerPhone(e.target.value)}
                       placeholder="ex: 36 12 34 56"
-                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                     />
                   </div>
                 </>
@@ -425,14 +425,14 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                     value={customerPhone}
                     onChange={e => setCustomerPhone(e.target.value)}
                     placeholder="ex: 36 12 34 56"
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                   />
                 </div>
               )}
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+                className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
               >
                 Enregistrer le service
               </button>

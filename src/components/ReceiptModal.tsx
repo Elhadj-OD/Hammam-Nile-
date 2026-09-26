@@ -88,7 +88,7 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
                 {item.qty} × {fmt(item.price)}
               </span>
             </div>
-            <div className="text-[13px] font-extrabold text-[#0F4C4A] whitespace-nowrap">
+            <div className="text-[13px] font-extrabold text-[#004CB7] whitespace-nowrap">
               {fmt(item.price * item.qty)}
             </div>
           </div>
@@ -145,7 +145,7 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
 
         <div className="flex justify-between items-center pt-3 mt-0.5 border-t border-dashed border-[#E7E0D3]">
           <span className="text-[13px] text-[#6B7873]">Total payé</span>
-          <span className="font-display text-[20px] font-bold text-[#0F4C4A]">
+          <span className="font-display text-[20px] font-bold text-[#004CB7]">
             {fmt(sale.total)}
           </span>
         </div>
@@ -154,9 +154,9 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0A3735]/55 backdrop-blur-xs overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#002E6E]/55 backdrop-blur-xs overflow-y-auto">
       {/* Phone-style Ticket Card Container */}
-      <div className="relative w-full max-w-[370px] max-h-[92vh] overflow-y-auto bg-white rounded-[30px] p-6 shadow-[0_40px_70px_-30px_rgba(10,55,53,0.5)] border border-[#E7E0D3] my-auto text-[#1C2321] animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-[370px] max-h-[92vh] overflow-y-auto bg-white rounded-[30px] p-6 shadow-[0_40px_70px_-30px_rgba(0,46,110,0.5)] border border-[#E7E0D3] my-auto text-[#1C2321] animate-in fade-in zoom-in-95 duration-200">
         {/* Close Button in corner */}
         <button
           type="button"
@@ -193,7 +193,7 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
           <button
             type="button"
             onClick={handlePrint}
-            className="w-full bg-[#0A3735] hover:bg-[#0F4C4A] text-white border-none rounded-full py-3.5 px-4 font-bold text-[14px] cursor-pointer transition duration-150 flex items-center justify-center gap-2 shadow-md font-sans"
+            className="w-full bg-[#002E6E] hover:bg-[#004CB7] text-white border-none rounded-full py-3.5 px-4 font-bold text-[14px] cursor-pointer transition duration-150 flex items-center justify-center gap-2 shadow-md font-sans"
           >
             <Printer className="w-4 h-4" />
             <span>Imprimer le ticket (2 exemplaires)</span>

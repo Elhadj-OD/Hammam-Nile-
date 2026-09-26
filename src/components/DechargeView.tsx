@@ -138,7 +138,7 @@ export const DechargeView: React.FC = () => {
     <div className="space-y-6 max-w-[1000px] mx-auto pb-12">
       {/* Top Banner */}
       <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs">
-        <div className="flex items-center gap-2 text-[#0F4C4A] text-xs font-bold uppercase tracking-wider mb-1">
+        <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
           <ShieldCheck className="w-4 h-4" />
           <span>Décharge — {myDept ? `${myDept.icon} ${myDept.label}` : 'Votre caisse'}</span>
         </div>
@@ -166,11 +166,11 @@ export const DechargeView: React.FC = () => {
             <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
               <div className="flex items-center justify-between text-[#6B7873] text-xs font-bold uppercase mb-2">
                 <span>Espèces (calculé)</span>
-                <div className="w-7 h-7 rounded-lg bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
                   <Wallet className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-black text-[#0F4C4A] font-display">{formatPrice(totalEspeceCalcule)}</div>
+              <div className="text-2xl font-black text-[#004CB7] font-display">{formatPrice(totalEspeceCalcule)}</div>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-[#E7E0D3] shadow-xs">
@@ -227,7 +227,7 @@ export const DechargeView: React.FC = () => {
                   value={montantEspeceReel}
                   onChange={e => setMontantEspeceReel(e.target.value)}
                   placeholder={String(totalEspeceCalcule)}
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                 />
                 {ecartEspecePreview !== null && (
                   <div className="mt-1.5">
@@ -247,7 +247,7 @@ export const DechargeView: React.FC = () => {
                   value={montantMobileMoneyReel}
                   onChange={e => setMontantMobileMoneyReel(e.target.value)}
                   placeholder={String(totalMobileMoneyCalcule)}
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                 />
                 {ecartMobilePreview !== null && (
                   <div className="mt-1.5">
@@ -260,7 +260,7 @@ export const DechargeView: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60"
+                  className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   <span>{submitting ? 'Enregistrement...' : 'Faire la décharge'}</span>
@@ -275,7 +275,7 @@ export const DechargeView: React.FC = () => {
       <div className="bg-white rounded-2xl border border-[#E7E0D3] overflow-hidden shadow-xs">
         <div className="p-4 border-b border-[#E7E0D3] bg-[#F7F3EC]/50">
           <h3 className="text-xs font-bold text-[#1C2321] uppercase tracking-wider flex items-center gap-2">
-            <History className="w-4 h-4 text-[#0F4C4A]" />
+            <History className="w-4 h-4 text-[#004CB7]" />
             <span>Mon Historique ({myHistory.length})</span>
           </h3>
         </div>

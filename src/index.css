@@ -3,16 +3,16 @@
 :root {
   --base: #F7F3EC;
   --panel: #FFFFFF;
-  --sidebar: #0A3735;
-  --sidebar-hover: #0F4C4A;
-  --teal: #0F4C4A;
+  --sidebar: #002E6E;
+  --sidebar-hover: #004CB7;
+  --brand: #004CB7;
   --brass: #B8874B;
   --brass-light: #EFDFC2;
   --clay: #C1613F;
   --ink: #1C2321;
   --ink-soft: #6B7873;
   --line: #E7E0D3;
-  --sage: #E4E9E1;
+  --tint: #E4EAF7;
 }
 
 @layer base {

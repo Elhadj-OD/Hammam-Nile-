@@ -40,7 +40,7 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#072423] nile-waves p-4 sm:p-6 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#051B33] nile-waves p-4 sm:p-6 relative overflow-hidden">
       <div className="max-w-md w-full relative z-10">
         {/* Card */}
         <div className="bg-white rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-[#E7E0D3] p-6 sm:p-8">
@@ -136,7 +136,7 @@ export const LoginView: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-px transition flex items-center justify-center gap-2 cursor-pointer text-white bg-[#0F4C4A] hover:bg-[#0A3735] disabled:opacity-60 disabled:translate-y-0"
+              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-px transition flex items-center justify-center gap-2 cursor-pointer text-white bg-[#004CB7] hover:bg-[#002E6E] disabled:opacity-60 disabled:translate-y-0"
             >
               <Lock className="w-4 h-4" />
               <span>{loading ? 'Connexion…' : 'Se connecter'}</span>

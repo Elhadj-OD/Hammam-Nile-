@@ -87,7 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
       )}
 
       <aside
-        className={`fixed xl:static top-0 bottom-0 left-0 z-50 w-[218px] bg-[#072423] text-[#EFE8D8] flex flex-col p-[22px_16px] transition-transform duration-300 ease-in-out shrink-0 border-r border-[#E7E0D3]/10 ${
+        className={`fixed xl:static top-0 bottom-0 left-0 z-50 w-[218px] bg-[#051B33] text-[#EFE8D8] flex flex-col p-[22px_16px] transition-transform duration-300 ease-in-out shrink-0 border-r border-[#E7E0D3]/10 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'
         }`}
       >
@@ -128,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('caisse')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'caisse'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -148,8 +148,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
                     activeSection === 'caisse'
-                      ? 'bg-[#0A3735] text-[#B8874B]'
-                      : 'bg-[#B8874B] text-[#0A3735]'
+                      ? 'bg-[#002E6E] text-[#B8874B]'
+                      : 'bg-[#B8874B] text-[#002E6E]'
                   }`}
                 >
                   {cart.length}
@@ -164,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('mes-ventes')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'mes-ventes' || activeSection === 'devis' || activeSection === 'factures'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -188,7 +188,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('clients')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'clients'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -212,7 +212,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('rapports')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'rapports'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -236,7 +236,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('decharge')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'decharge'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -259,7 +259,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             onClick={() => handleNavClick('produits')}
             className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
               activeSection === 'produits'
-                ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                 : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
             }`}
           >
@@ -283,7 +283,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('utilisateurs')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'utilisateurs'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -309,7 +309,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('prelevements-hammam')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'prelevements-hammam'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -329,7 +329,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
                     activeSection === 'prelevements-hammam'
-                      ? 'bg-[#0A3735] text-[#B8874B]'
+                      ? 'bg-[#002E6E] text-[#B8874B]'
                       : 'bg-white/20 text-[#EFE8D8]'
                   }`}
                 >
@@ -345,7 +345,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('commissions-laveurs')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'commissions-laveurs'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -366,7 +366,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
                     activeSection === 'commissions-laveurs'
-                      ? 'bg-[#0A3735] text-[#B8874B]'
+                      ? 'bg-[#002E6E] text-[#B8874B]'
                       : 'bg-white/20 text-[#EFE8D8]'
                   }`}
                 >
@@ -382,7 +382,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('laveurs')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'laveurs'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -404,7 +404,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               {laveurs.length > 0 && (
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                    activeSection === 'laveurs' ? 'bg-[#0A3735] text-[#B8874B]' : 'bg-white/20 text-[#EFE8D8]'
+                    activeSection === 'laveurs' ? 'bg-[#002E6E] text-[#B8874B]' : 'bg-white/20 text-[#EFE8D8]'
                   }`}
                 >
                   {laveurs.length}
@@ -419,7 +419,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('abonnements-gym')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'abonnements-gym'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -434,7 +434,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('inventaire')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'inventaire' || activeSection === 'mouvements'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -463,7 +463,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('journal-caisses')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'journal-caisses'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -489,7 +489,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('assistant')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'assistant'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -513,7 +513,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
               onClick={() => handleNavClick('parametres')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
                 activeSection === 'parametres'
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
             >
@@ -550,7 +550,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
         {/* Connected User Badge */}
         <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/5 border border-white/10 mt-auto mb-2">
           <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs font-mono shadow-xs ${
-            isGerant ? 'bg-[#0A3735] text-white' : 'bg-[#004CB7] text-white'
+            isGerant ? 'bg-[#002E6E] text-white' : 'bg-[#004CB7] text-white'
           }`}>
             {currentUser.avatar && !currentUser.avatar.startsWith('data:') && !currentUser.avatar.startsWith('http')
               ? currentUser.avatar

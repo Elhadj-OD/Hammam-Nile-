@@ -204,7 +204,7 @@ export const ProduitsView: React.FC = () => {
       {/* Header Banner */}
       <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[#0F4C4A] text-xs font-bold uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
             <Package className="w-4 h-4" />
             <span>{isServiceDept ? 'Catalogue des Prestations' : 'Catalogue & Gestion des Articles'}</span>
           </div>
@@ -221,7 +221,7 @@ export const ProduitsView: React.FC = () => {
         <button
           type="button"
           onClick={openAddForm}
-          className="bg-[#0F4C4A] hover:bg-[#0A3735] text-white px-5 py-3 rounded-full font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
+          className="bg-[#004CB7] hover:bg-[#002E6E] text-white px-5 py-3 rounded-full font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Ajouter un {itemWord}</span>
@@ -242,7 +242,7 @@ export const ProduitsView: React.FC = () => {
           <>
             <div className="bg-white p-4.5 rounded-2xl border border-[#E7E0D3] shadow-xs">
               <div className="text-xs text-[#6B7873] font-bold uppercase">Total Pièces en Stock</div>
-              <div className="text-2xl font-bold font-display text-[#0F4C4A] mt-1">
+              <div className="text-2xl font-bold font-display text-[#004CB7] mt-1">
                 {totalPieces} pièces
               </div>
             </div>
@@ -265,12 +265,12 @@ export const ProduitsView: React.FC = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Rechercher par nom d'article..."
-            className="w-full text-xs pl-9 pr-4 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+            className="w-full text-xs pl-9 pr-4 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
           />
         </div>
 
         {myDept ? (
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#0F4C4A] text-white text-[13px] font-bold w-fit shrink-0">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#004CB7] text-white text-[13px] font-bold w-fit shrink-0">
             <span>{myDept.icon}</span>
             <span>{myDept.label}</span>
           </div>
@@ -281,7 +281,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('all')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'all'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
           >
@@ -292,7 +292,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('savons')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'savons'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
           >
@@ -303,7 +303,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('huiles')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'huiles'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
           >
@@ -314,7 +314,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('accessoires')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'accessoires'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
           >
@@ -325,7 +325,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('linge')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'linge'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
           >
@@ -337,7 +337,7 @@ export const ProduitsView: React.FC = () => {
               onClick={() => setSelectedCategory('femmes')}
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
                 selectedCategory === 'femmes'
-                  ? 'bg-[#0F4C4A] text-white'
+                  ? 'bg-[#004CB7] text-white'
                   : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
               }`}
               title="Réservée aux caissières marquées « Femme » sur l'écran Caisse"
@@ -351,7 +351,7 @@ export const ProduitsView: React.FC = () => {
               onClick={() => setSelectedCategory('hommes')}
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
                 selectedCategory === 'hommes'
-                  ? 'bg-[#0F4C4A] text-white'
+                  ? 'bg-[#004CB7] text-white'
                   : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
               }`}
               title="Réservée aux caissiers marqués « Homme » sur l'écran Caisse"
@@ -364,7 +364,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('hammam_bains')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'hammam_bains'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
             title="Caisse dédiée Hammam & Bains"
@@ -376,7 +376,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('spa_massage')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'spa_massage'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
             title="Caisse dédiée Esthétique"
@@ -388,7 +388,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('epilation_traditionnelle')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'epilation_traditionnelle'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
             title="Caisse dédiée Épilation Traditionnelle"
@@ -400,7 +400,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('fitness_gym')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'fitness_gym'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
             title="Caisse dédiée Fitness Gym"
@@ -412,7 +412,7 @@ export const ProduitsView: React.FC = () => {
             onClick={() => setSelectedCategory('coiffure_salon')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
               selectedCategory === 'coiffure_salon'
-                ? 'bg-[#0F4C4A] text-white'
+                ? 'bg-[#004CB7] text-white'
                 : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
             }`}
             title="Caisse dédiée Coiffure & Salon"
@@ -469,7 +469,7 @@ export const ProduitsView: React.FC = () => {
                     <tr key={p.id} className="hover:bg-[#FDFBF7] transition">
                       {/* Photo / Emoji Box */}
                       <td className="p-3.5 pl-5">
-                        <div className="w-12 h-12 rounded-xl bg-[#E4E9E1] overflow-hidden flex items-center justify-center text-2xl border border-[#E7E0D3] shrink-0">
+                        <div className="w-12 h-12 rounded-xl bg-[#E4EAF7] overflow-hidden flex items-center justify-center text-2xl border border-[#E7E0D3] shrink-0">
                           {p.image ? (
                             <img
                               src={p.image}
@@ -499,13 +499,13 @@ export const ProduitsView: React.FC = () => {
 
                       {/* Catégorie */}
                       <td className="p-3.5">
-                        <span className="text-xs px-2.5 py-1 rounded-full bg-[#F7F3EC] text-[#0F4C4A] font-semibold capitalize border border-[#E7E0D3]">
+                        <span className="text-xs px-2.5 py-1 rounded-full bg-[#F7F3EC] text-[#004CB7] font-semibold capitalize border border-[#E7E0D3]">
                           {p.category}
                         </span>
                       </td>
 
                       {/* Prix de vente */}
-                      <td className="p-3.5 font-bold text-[#0F4C4A]">
+                      <td className="p-3.5 font-bold text-[#004CB7]">
                         {formatPrice(p.price)}
                       </td>
 
@@ -529,7 +529,7 @@ export const ProduitsView: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => handleStockAdjustment(p.id, 1)}
-                                className="w-6 h-6 rounded-full bg-[#0F4C4A] hover:bg-[#0A3735] text-white flex items-center justify-center font-bold text-xs cursor-pointer"
+                                className="w-6 h-6 rounded-full bg-[#004CB7] hover:bg-[#002E6E] text-white flex items-center justify-center font-bold text-xs cursor-pointer"
                                 title="Ajouter 1 pièce"
                               >
                                 +
@@ -565,7 +565,7 @@ export const ProduitsView: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => openEditForm(p)}
-                            className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#0F4C4A] hover:bg-[#F7F3EC] transition cursor-pointer"
+                            className="p-1.5 rounded-lg text-[#6B7873] hover:text-[#004CB7] hover:bg-[#F7F3EC] transition cursor-pointer"
                             title="Modifier le produit"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -600,7 +600,7 @@ export const ProduitsView: React.FC = () => {
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-4 border-b border-[#E7E0D3]">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
                   <Package className="w-5 h-5" />
                 </div>
                 <div>
@@ -626,15 +626,15 @@ export const ProduitsView: React.FC = () => {
               {!isServiceDept && (
                 <>
                   {/* ── Scan Indicator Banner ── */}
-                  <div className="flex items-center gap-2.5 bg-[#E4E9E1]/50 border border-[#0F4C4A]/20 rounded-xl px-3.5 py-2.5">
+                  <div className="flex items-center gap-2.5 bg-[#E4EAF7]/50 border border-[#004CB7]/20 rounded-xl px-3.5 py-2.5">
                     <span
                       className={`w-2.5 h-2.5 rounded-full flex-none transition-all duration-300 ${
                         barcode.length > 3
-                          ? 'bg-[#0F4C4A] shadow-[0_0_0_4px_rgba(15,76,74,0.2)]'
+                          ? 'bg-[#004CB7] shadow-[0_0_0_4px_rgba(0,76,183,0.2)]'
                           : 'bg-[#B8B2A0]'
                       }`}
                     />
-                    <span className="text-[12px] text-[#3f5b52]">
+                    <span className="text-[12px] text-[#3a4f66]">
                       {barcode.length > 3 ? (
                         <>
                           Code détecté :
@@ -683,7 +683,7 @@ export const ProduitsView: React.FC = () => {
                       placeholder="Scannez ici ou tapez le code EAN-13…"
                       autoComplete="off"
                       autoFocus
-                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A] placeholder:font-sans placeholder:text-[#B8B2A0]"
+                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7] placeholder:font-sans placeholder:text-[#B8B2A0]"
                     />
                   </div>
                 </>
@@ -719,7 +719,7 @@ export const ProduitsView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="text-xs font-bold bg-white text-[#0F4C4A] border border-[#0F4C4A] hover:bg-[#E4E9E1] px-3 py-1.5 rounded-lg cursor-pointer transition flex items-center gap-1.5"
+                        className="text-xs font-bold bg-white text-[#004CB7] border border-[#004CB7] hover:bg-[#E4EAF7] px-3 py-1.5 rounded-lg cursor-pointer transition flex items-center gap-1.5"
                       >
                         <Camera className="w-3.5 h-3.5" />
                         <span>Téléverser la photo</span>
@@ -751,8 +751,8 @@ export const ProduitsView: React.FC = () => {
                         onClick={() => setSelectedEmoji(em)}
                         className={`w-7 h-7 rounded-lg text-sm flex items-center justify-center cursor-pointer transition ${
                           selectedEmoji === em && !imagePreview
-                            ? 'bg-[#0F4C4A] text-white shadow-xs'
-                            : 'bg-[#F7F3EC] hover:bg-[#E4E9E1]'
+                            ? 'bg-[#004CB7] text-white shadow-xs'
+                            : 'bg-[#F7F3EC] hover:bg-[#E4EAF7]'
                         }`}
                       >
                         {em}
@@ -774,7 +774,7 @@ export const ProduitsView: React.FC = () => {
                   placeholder="ex: Savon Noir Beldi à l'Eucalyptus"
                   required
                   data-prod-field="name"
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
@@ -795,8 +795,8 @@ export const ProduitsView: React.FC = () => {
                             onClick={() => setCategory(cat as ProductCategory)}
                             className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ${
                               category === cat
-                                ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
-                                : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                                ? 'bg-[#004CB7] border-[#004CB7] text-white'
+                                : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
                             }`}
                           >
                             <span>{meta.icon}</span>
@@ -814,7 +814,7 @@ export const ProduitsView: React.FC = () => {
                     <select
                       value={category}
                       onChange={e => setCategory(e.target.value as ProductCategory)}
-                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                     >
                       <option value="savons">Savons & Gommages</option>
                       <option value="huiles">Huiles & Parfums</option>
@@ -847,7 +847,7 @@ export const ProduitsView: React.FC = () => {
                     onChange={e => setPrice(e.target.value)}
                     placeholder="150"
                     required
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                   />
                 </div>
               </div>
@@ -856,7 +856,7 @@ export const ProduitsView: React.FC = () => {
               {!isServiceDept && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-[#F7F3EC] p-3 rounded-xl border border-[#B8874B]/30">
-                    <label className="block text-xs font-extrabold text-[#0F4C4A] mb-1">
+                    <label className="block text-xs font-extrabold text-[#004CB7] mb-1">
                       Nombre de Pièces en Stock *
                     </label>
                     <div className="flex items-center gap-2">
@@ -867,7 +867,7 @@ export const ProduitsView: React.FC = () => {
                         onChange={e => setQty(e.target.value)}
                         placeholder="20"
                         required
-                        className="w-full text-base font-bold font-mono p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                        className="w-full text-base font-bold font-mono p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                       />
                       <span className="text-xs font-bold text-[#6B7873]">pièces</span>
                     </div>
@@ -885,7 +885,7 @@ export const ProduitsView: React.FC = () => {
                         onChange={e => setMinQty(e.target.value)}
                         placeholder="5"
                         required
-                        className="w-full text-base font-bold font-mono p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                        className="w-full text-base font-bold font-mono p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                       />
                       <span className="text-xs font-bold text-[#6B7873]">pièces</span>
                     </div>
@@ -903,7 +903,7 @@ export const ProduitsView: React.FC = () => {
                   onChange={e => setDescription(e.target.value)}
                   rows={2}
                   placeholder="ex: Savon noir purifiant traditionnel 100% naturel enrichi à l'eucalyptus."
-                  className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
@@ -918,7 +918,7 @@ export const ProduitsView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="py-2.5 px-6 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+                  className="py-2.5 px-6 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>{editingProduct ? `Mettre à jour le ${itemWord.toLowerCase()}` : 'Ajouter au catalogue'}</span>

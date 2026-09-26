@@ -203,7 +203,7 @@ export const PrelevementsHammamView: React.FC = () => {
       {/* Top Banner */}
       <div className="bg-white rounded-2xl border border-[#E7E0D3] p-5 sm:p-6 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#0F4C4A] uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#004CB7] uppercase tracking-wider mb-1">
             <Sparkles className="w-4 h-4 text-[#B8874B]" />
             <span>Usage Interne & Cabines de Soins</span>
           </div>
@@ -219,7 +219,7 @@ export const PrelevementsHammamView: React.FC = () => {
           <button
             type="button"
             onClick={handleExportCSV}
-            className="flex-1 md:flex-initial px-3.5 py-2.5 bg-[#F7F3EC] hover:bg-[#E4E9E1] text-[#0A3735] border border-[#E7E0D3] rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+            className="flex-1 md:flex-initial px-3.5 py-2.5 bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#002E6E] border border-[#E7E0D3] rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
           >
             <Download className="w-4 h-4" />
             <span>Exporter CSV</span>
@@ -228,7 +228,7 @@ export const PrelevementsHammamView: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="flex-1 md:flex-initial px-4 py-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+            className="flex-1 md:flex-initial px-4 py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
           >
             <Plus className="w-4 h-4" />
             <span>Nouveau Prélèvement</span>
@@ -277,7 +277,7 @@ export const PrelevementsHammamView: React.FC = () => {
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">
               Cabines Concernées
             </span>
-            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#F7F3EC] text-[#004CB7] flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
@@ -303,20 +303,20 @@ export const PrelevementsHammamView: React.FC = () => {
                 onClick={() => setFilterCabin(filterCabin === cab ? 'all' : cab)}
                 className={`p-3.5 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
                   filterCabin === cab
-                    ? 'bg-[#E4E9E1] border-[#0F4C4A] shadow-xs'
-                    : 'bg-[#F7F3EC]/70 border-[#E7E0D3] hover:bg-[#E4E9E1]/50'
+                    ? 'bg-[#E4EAF7] border-[#004CB7] shadow-xs'
+                    : 'bg-[#F7F3EC]/70 border-[#E7E0D3] hover:bg-[#E4EAF7]/50'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-bold text-[#1C2321] line-clamp-1">{cab}</span>
                   {filterCabin === cab && (
-                    <span className="text-[10px] bg-[#0F4C4A] text-white px-1.5 py-0.5 rounded font-bold">
+                    <span className="text-[10px] bg-[#004CB7] text-white px-1.5 py-0.5 rounded font-bold">
                       Actif
                     </span>
                   )}
                 </div>
                 <div className="mt-2">
-                  <span className="text-sm font-extrabold text-[#0F4C4A] font-display">
+                  <span className="text-sm font-extrabold text-[#004CB7] font-display">
                     {data.qty} article{data.qty > 1 ? 's' : ''}
                   </span>
                 </div>
@@ -335,7 +335,7 @@ export const PrelevementsHammamView: React.FC = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Rechercher par produit, cabine, demandeur ou note..."
-            className="w-full text-xs pl-10 pr-4 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
+            className="w-full text-xs pl-10 pr-4 py-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#004CB7]"
           />
           {search && (
             <button
@@ -351,7 +351,7 @@ export const PrelevementsHammamView: React.FC = () => {
           <select
             value={filterCabin}
             onChange={e => setFilterCabin(e.target.value)}
-            className="text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-semibold focus:outline-none focus:border-[#0F4C4A]"
+            className="text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-semibold focus:outline-none focus:border-[#004CB7]"
           >
             <option value="all">Toutes les Cabines ({hammamUsages.length})</option>
             {cabinFilterOptions.map(c => (
@@ -369,7 +369,7 @@ export const PrelevementsHammamView: React.FC = () => {
                 onClick={() => setFilterPeriod(p)}
                 className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer capitalize ${
                   filterPeriod === p
-                    ? 'bg-[#0F4C4A] text-white shadow-xs'
+                    ? 'bg-[#004CB7] text-white shadow-xs'
                     : 'text-[#6B7873] hover:text-[#1C2321]'
                 }`}
               >
@@ -384,10 +384,10 @@ export const PrelevementsHammamView: React.FC = () => {
       <div className="bg-white rounded-2xl border border-[#E7E0D3] overflow-hidden shadow-xs">
         <div className="p-4 border-b border-[#E7E0D3] bg-[#F7F3EC]/50 flex items-center justify-between">
           <h3 className="text-xs font-bold text-[#1C2321] uppercase tracking-wider flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-[#0F4C4A]" />
+            <ShoppingBag className="w-4 h-4 text-[#004CB7]" />
             <span>Historique des Sorties Hammam ({filteredUsages.length})</span>
           </h3>
-          <span className="text-xs font-extrabold text-[#0F4C4A]">
+          <span className="text-xs font-extrabold text-[#004CB7]">
             {totalArticlesPris} article{totalArticlesPris > 1 ? 's' : ''} au total
           </span>
         </div>
@@ -404,7 +404,7 @@ export const PrelevementsHammamView: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
-              className="mt-4 px-4 py-2 bg-[#0F4C4A] text-white rounded-xl text-xs font-bold transition hover:bg-[#0A3735] cursor-pointer"
+              className="mt-4 px-4 py-2 bg-[#004CB7] text-white rounded-xl text-xs font-bold transition hover:bg-[#002E6E] cursor-pointer"
             >
               Enregistrer un premier prélèvement
             </button>
@@ -439,7 +439,7 @@ export const PrelevementsHammamView: React.FC = () => {
                       )}
                     </td>
                     <td className="py-3 px-4">
-                      <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#E4E9E1] text-[#0F4C4A] border border-[#0F4C4A]/20">
+                      <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#E4EAF7] text-[#004CB7] border border-[#004CB7]/20">
                         {u.serviceOrCabin}
                       </span>
                     </td>
@@ -460,7 +460,7 @@ export const PrelevementsHammamView: React.FC = () => {
                           type="button"
                           onClick={() => setSelectedTicket(u)}
                           title="Imprimer / Voir le Bon de Décharge"
-                          className="p-1.5 rounded-lg bg-[#F7F3EC] hover:bg-[#E4E9E1] text-[#0A3735] transition cursor-pointer"
+                          className="p-1.5 rounded-lg bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#002E6E] transition cursor-pointer"
                         >
                           <FileText className="w-3.5 h-3.5" />
                         </button>
@@ -496,7 +496,7 @@ export const PrelevementsHammamView: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#E7E0D3] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-[#E7E0D3]">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#0F4C4A] text-white flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-[#004CB7] text-white flex items-center justify-center">
                   <Sparkles className="w-4 h-4 text-[#B8874B]" />
                 </div>
                 <div>
@@ -544,7 +544,7 @@ export const PrelevementsHammamView: React.FC = () => {
                   placeholder="Tapez le nom de l'article..."
                   autoComplete="off"
                   required
-                  className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#004CB7]"
                 />
                 <datalist id="prelevement-articles">
                   {accessibleProducts
@@ -561,7 +561,7 @@ export const PrelevementsHammamView: React.FC = () => {
                   selectedProduct && (
                     <div className="mt-1.5 text-[11px] text-[#6B7873] bg-[#F7F3EC] p-2 rounded-lg">
                       Stock actuel disponible :{' '}
-                      <strong className={selectedProduct.qty < 5 ? 'text-amber-700' : 'text-[#0F4C4A]'}>
+                      <strong className={selectedProduct.qty < 5 ? 'text-amber-700' : 'text-[#004CB7]'}>
                         {selectedProduct.qty} unités
                       </strong>
                     </div>
@@ -578,7 +578,7 @@ export const PrelevementsHammamView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                    className="w-9 h-9 rounded-xl bg-[#F7F3EC] border border-[#E7E0D3] font-bold text-base text-[#1C2321] hover:bg-[#E4E9E1] transition"
+                    className="w-9 h-9 rounded-xl bg-[#F7F3EC] border border-[#E7E0D3] font-bold text-base text-[#1C2321] hover:bg-[#E4EAF7] transition"
                   >
                     -
                   </button>
@@ -589,14 +589,14 @@ export const PrelevementsHammamView: React.FC = () => {
                     value={quantity}
                     onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                     required
-                    className="flex-1 text-center font-bold text-sm p-2 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
+                    className="flex-1 text-center font-bold text-sm p-2 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#004CB7]"
                   />
                   <button
                     type="button"
                     onClick={() =>
                       setQuantity(prev => (selectedProduct ? Math.min(selectedProduct.qty, prev + 1) : prev + 1))
                     }
-                    className="w-9 h-9 rounded-xl bg-[#F7F3EC] border border-[#E7E0D3] font-bold text-base text-[#1C2321] hover:bg-[#E4E9E1] transition"
+                    className="w-9 h-9 rounded-xl bg-[#F7F3EC] border border-[#E7E0D3] font-bold text-base text-[#1C2321] hover:bg-[#E4EAF7] transition"
                   >
                     +
                   </button>
@@ -621,7 +621,7 @@ export const PrelevementsHammamView: React.FC = () => {
                     placeholder="ex: Cabine de Gommage, Vestiaires..."
                     autoComplete="off"
                     required
-                    className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
+                    className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#004CB7]"
                   />
                 )}
                 <datalist id="prelevement-cabines">
@@ -644,7 +644,7 @@ export const PrelevementsHammamView: React.FC = () => {
                   placeholder="ex: Khadija (Gommeuse)..."
                   autoComplete="off"
                   required
-                  className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-medium focus:outline-none focus:border-[#004CB7]"
                 />
                 <datalist id="prelevement-demandeurs">
                   {staffSuggestions.map(s => (
@@ -663,13 +663,13 @@ export const PrelevementsHammamView: React.FC = () => {
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   placeholder="ex: Soin spécial mariée, réapprovisionnement matin, séance groupe..."
-                  className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-xs p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
               {/* Summary note */}
-              <div className="bg-[#E4E9E1]/60 p-3 rounded-xl border border-[#0F4C4A]/20 text-[11px] text-[#0A3735] flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#0F4C4A] shrink-0 mt-0.5" />
+              <div className="bg-[#E4EAF7]/60 p-3 rounded-xl border border-[#004CB7]/20 text-[11px] text-[#002E6E] flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#004CB7] shrink-0 mt-0.5" />
                 <div>
                   Ce prélèvement déduira automatiquement les {quantity} article(s) du stock de la boutique et enregistrera une sortie avec le nom de l'opératrice connectée (
                   <strong>{currentUser?.name || 'Caissière'}</strong>).
@@ -681,13 +681,13 @@ export const PrelevementsHammamView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4E9E1] transition"
+                  className="flex-1 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4EAF7] transition"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-[#0F4C4A] text-white rounded-xl text-xs font-bold hover:bg-[#0A3735] transition shadow-xs"
+                  className="flex-1 py-2.5 bg-[#004CB7] text-white rounded-xl text-xs font-bold hover:bg-[#002E6E] transition shadow-xs"
                 >
                   Valider la Sortie Hammam
                 </button>
@@ -703,7 +703,7 @@ export const PrelevementsHammamView: React.FC = () => {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#E7E0D3]">
             <div className="flex items-center justify-between pb-3 border-b border-[#E7E0D3]">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#B8874B] text-[#0A3735] flex items-center justify-center font-bold text-xs">
+                <div className="w-7 h-7 rounded-lg bg-[#B8874B] text-[#002E6E] flex items-center justify-center font-bold text-xs">
                   AN
                 </div>
                 <div>
@@ -731,7 +731,7 @@ export const PrelevementsHammamView: React.FC = () => {
               </div>
               <div className="flex justify-between text-[#6B7873]">
                 <span>Espace / Cabine :</span>
-                <span className="font-bold text-[#0F4C4A]">
+                <span className="font-bold text-[#004CB7]">
                   {selectedTicket.serviceOrCabin}
                 </span>
               </div>
@@ -758,13 +758,13 @@ export const PrelevementsHammamView: React.FC = () => {
             <div className="grid grid-cols-2 gap-3 pt-2 text-[11px] text-[#6B7873]">
               <div className="border border-dashed border-[#E7E0D3] rounded-xl p-2.5 text-center">
                 <div className="font-bold text-[#1C2321]">Demandé par :</div>
-                <div className="text-[#0F4C4A] font-semibold mt-0.5">{selectedTicket.requestedBy}</div>
+                <div className="text-[#004CB7] font-semibold mt-0.5">{selectedTicket.requestedBy}</div>
                 <div className="h-7 border-b border-[#E7E0D3] mt-1" />
                 <div className="text-[9px] mt-1 text-[#6B7873]/70">Signature Hammam</div>
               </div>
               <div className="border border-dashed border-[#E7E0D3] rounded-xl p-2.5 text-center">
                 <div className="font-bold text-[#1C2321]">Remis en boutique par :</div>
-                <div className="text-[#0F4C4A] font-semibold mt-0.5">{selectedTicket.takenByStaff}</div>
+                <div className="text-[#004CB7] font-semibold mt-0.5">{selectedTicket.takenByStaff}</div>
                 <div className="h-7 border-b border-[#E7E0D3] mt-1" />
                 <div className="text-[9px] mt-1 text-[#6B7873]/70">Visa Boutique</div>
               </div>
@@ -774,7 +774,7 @@ export const PrelevementsHammamView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="flex-1 py-2.5 bg-[#0F4C4A] text-white rounded-xl text-xs font-bold hover:bg-[#0A3735] transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                className="flex-1 py-2.5 bg-[#004CB7] text-white rounded-xl text-xs font-bold hover:bg-[#002E6E] transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>Imprimer le Bon</span>
@@ -782,7 +782,7 @@ export const PrelevementsHammamView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedTicket(null)}
-                className="px-4 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4E9E1] transition"
+                className="px-4 py-2.5 bg-[#F7F3EC] text-[#1C2321] border border-[#E7E0D3] rounded-xl text-xs font-bold hover:bg-[#E4EAF7] transition"
               >
                 Fermer
               </button>

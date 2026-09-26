@@ -100,7 +100,7 @@ export const MesVentesView: React.FC = () => {
       {/* Shift Overview Banner */}
       <div className="bg-white rounded-2xl border border-[#E7E0D3] p-6 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#0F4C4A] mb-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#004CB7] mb-1">
             <Clock className="w-3.5 h-3.5" />
             <span>Journal de caisse & Commandes</span>
           </div>
@@ -138,7 +138,7 @@ export const MesVentesView: React.FC = () => {
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">
               Total Encaissé
             </span>
-            <div className="w-9 h-9 rounded-xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
@@ -155,14 +155,14 @@ export const MesVentesView: React.FC = () => {
             <span className="text-xs font-bold text-[#6B7873] uppercase tracking-wider">
               Espèces (Tiroir)
             </span>
-            <div className="w-9 h-9 rounded-xl bg-[#E4E9E1] text-[#0F4C4A] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-[#E4EAF7] text-[#004CB7] flex items-center justify-center">
               <Banknote className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-3 text-2xl font-bold text-[#1C2321] font-display tracking-tight">
             {fmt(cashCollected)}
           </div>
-          <div className="mt-2 text-xs text-[#0F4C4A] font-bold">
+          <div className="mt-2 text-xs text-[#004CB7] font-bold">
             Montant liquide en caisse
           </div>
         </div>
@@ -189,7 +189,7 @@ export const MesVentesView: React.FC = () => {
       <div className="bg-white rounded-2xl border border-[#E7E0D3] overflow-hidden shadow-xs">
         <div className="p-4 border-b border-[#E7E0D3] flex items-center justify-between bg-white">
           <div className="flex items-center gap-2">
-            <Receipt className="w-4 h-4 text-[#0F4C4A]" />
+            <Receipt className="w-4 h-4 text-[#004CB7]" />
             <h3 className="font-bold text-sm text-[#1C2321]">
               Détail des tickets émis ({displayedSales.length})
             </h3>
@@ -245,11 +245,11 @@ export const MesVentesView: React.FC = () => {
                       {sale.caissierName || sale.caissier}
                     </td>
                     <td className="py-3 px-4">
-                      <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E4E9E1] text-[#0F4C4A]">
+                      <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E4EAF7] text-[#004CB7]">
                         {sale.paymentDetail || (sale.payment === 'cash' ? '💵 Espèces' : '📱 Mobile')}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-[#0F4C4A]">
+                    <td className="py-3 px-4 text-right font-bold text-[#004CB7]">
                       {fmt(sale.total)}
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -257,7 +257,7 @@ export const MesVentesView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setLastSale(sale)}
-                          className="p-1.5 text-[#0F4C4A] hover:bg-[#E4E9E1] rounded-lg transition cursor-pointer"
+                          className="p-1.5 text-[#004CB7] hover:bg-[#E4EAF7] rounded-lg transition cursor-pointer"
                           title="Imprimer / Voir le ticket"
                         >
                           <Printer className="w-4 h-4" />
@@ -275,7 +275,7 @@ export const MesVentesView: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => openEditModal(sale)}
-                              className="p-1.5 text-[#6B7873] hover:text-[#0A3735] hover:bg-[#F7F3EC] rounded-lg transition cursor-pointer"
+                              className="p-1.5 text-[#6B7873] hover:text-[#002E6E] hover:bg-[#F7F3EC] rounded-lg transition cursor-pointer"
                               title="Modifier cette vente"
                             >
                               <Pencil className="w-4 h-4" />
@@ -321,7 +321,7 @@ export const MesVentesView: React.FC = () => {
                   value={editCustomerName}
                   onChange={e => setEditCustomerName(e.target.value)}
                   placeholder="ex: Mariem"
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
@@ -336,7 +336,7 @@ export const MesVentesView: React.FC = () => {
                     step="1"
                     value={editItemPrice}
                     onChange={e => setEditItemPrice(e.target.value)}
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A]"
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                   />
                 </div>
               )}
@@ -349,8 +349,8 @@ export const MesVentesView: React.FC = () => {
                     onClick={() => setEditPayment('cash')}
                     className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
                       editPayment === 'cash'
-                        ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
-                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                        ? 'bg-[#004CB7] border-[#004CB7] text-white'
+                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
                     }`}
                   >
                     💵 Espèces
@@ -360,8 +360,8 @@ export const MesVentesView: React.FC = () => {
                     onClick={() => setEditPayment('mobile')}
                     className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
                       editPayment === 'mobile'
-                        ? 'bg-[#0F4C4A] border-[#0F4C4A] text-white'
-                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4E9E1]'
+                        ? 'bg-[#004CB7] border-[#004CB7] text-white'
+                        : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
                     }`}
                   >
                     📱 Mobile Money
@@ -375,7 +375,7 @@ export const MesVentesView: React.FC = () => {
                   <select
                     value={editMobileOperator}
                     onChange={e => setEditMobileOperator(e.target.value)}
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                   >
                     {MOBILE_OPERATORS.map(op => (
                       <option key={op} value={op}>
@@ -395,13 +395,13 @@ export const MesVentesView: React.FC = () => {
                   value={editCustomerPhone}
                   onChange={e => setEditCustomerPhone(e.target.value)}
                   placeholder="ex: 36 12 34 56"
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+                className="w-full py-2.5 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
               >
                 Enregistrer les modifications
               </button>
