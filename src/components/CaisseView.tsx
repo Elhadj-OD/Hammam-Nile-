@@ -83,12 +83,11 @@ export const CaisseView: React.FC = () => {
   // Une caissière avec un département assigné n'a accès qu'à sa propre caisse
   const myDept = currentUser?.department ? DEPARTMENTS[currentUser.department] : null;
 
-  // Le hammam des femmes se vend dans la même caisse que la Boutique Femme
-  // (même logique que le hammam des garçons, géré dans leur propre caisse) —
-  // pas une caisse séparée. Chaque profil = une seule caisse.
+  // Le hammam (femmes et hommes) se vend dans la même caisse que la Boutique
+  // correspondante — pas une caisse séparée. Chaque profil = une seule caisse.
   const myDeptCategories =
-    myDept?.category === 'femmes'
-      ? ['femmes', 'hammam_bains']
+    myDept?.category === 'femmes' || myDept?.category === 'hommes'
+      ? [myDept.category, 'hammam_bains']
       : myDept?.category === 'boissons'
         ? ['boissons', 'snacks']
         : myDept
