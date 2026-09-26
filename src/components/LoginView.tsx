@@ -48,10 +48,12 @@ export const LoginView: React.FC = () => {
 
       <div className="max-w-md w-full relative z-10">
         {/* Card */}
-        <div className="bg-white/45 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
+        <div className="water-glass rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] p-6 sm:p-8">
+          {/* Contenu au-dessus du reflet animé (voir .water-glass::before) */}
+          <div className="relative">
           {/* Official Logo & Header */}
           <div className="text-center mb-6 pt-1">
-            <div className="inline-block p-4 rounded-3xl bg-white/25 border border-white/50 shadow-xs mb-2">
+            <div className="inline-block p-4 rounded-3xl bg-gradient-to-br from-white/50 to-[#004CB7]/10 border border-white/50 shadow-xs mb-2">
               <HammamNileLogo variant="full" size="lg" color="#004CB7" textColor="#004CB7" />
             </div>
             <div className="w-10 h-[3px] rounded-full bg-[#B8874B] mx-auto mb-2" />
@@ -157,6 +159,7 @@ export const LoginView: React.FC = () => {
             <p className="text-[11px] text-[#3A4149] mt-1">
               Chaque personne se connecte avec son propre identifiant et son propre code confidentiel.
             </p>
+          </div>
           </div>
         </div>
 
