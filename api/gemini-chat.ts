@@ -11,12 +11,14 @@ interface ChatHistoryItem {
   text: string;
 }
 
-const PRODUCT_EXTRACTION_PROMPT = `Tu lis une photo d'une note manuscrite listant des articles de boutique (hammam, cosmétiques, accessoires...).
-Chaque ligne contient en général une quantité puis le nom de l'article, parfois avec une marque ou une variante entre parenthèses.
-Extrais CHAQUE ligne lisible en un objet avec :
-- "name" : le nom de l'article, nettoyé et proprement capitalisé (garde la marque/variante si présente)
-- "qty" : la quantité en nombre entier (0 si aucune quantité n'est écrite)
-Ignore les lignes totalement illisibles. Ne remplis JAMAIS un prix ou une catégorie : ces champs seront complétés par la gérante ensuite.
+const PRODUCT_EXTRACTION_PROMPT = `Tu lis soit une photo, soit un texte tapé, listant des articles de boutique OU des prestations/services (menu de coiffure, tarifs hammam, liste de stock manuscrite, etc.).
+Chaque ligne contient en général un nom, parfois une quantité, et souvent un prix.
+Extrais CHAQUE ligne reconnaissable en un objet avec :
+- "name" : le nom de l'article ou du service, nettoyé et proprement capitalisé (garde la marque/variante si présente)
+- "qty" : la quantité en nombre entier si elle est indiquée sur la ligne (0 si absente — normal pour un service ou un menu de prix)
+- "price" : le prix en nombre, sans unité ni symbole monétaire (0 si aucun prix n'est visible sur cette ligne)
+Si une ligne propose plusieurs prix au choix (ex: "Tress 300,400,500"), prends le premier prix et garde les autres dans le nom entre parenthèses.
+Ignore les lignes totalement illisibles ou qui ne sont ni un article ni un service. Ne devine jamais une catégorie.
 Réponds uniquement avec la liste JSON, rien d'autre.`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -41,26 +43,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     history?: ChatHistoryItem[];
     imageBase64?: string;
     mimeType?: string;
+    text?: string;
   };
 
   try {
     if (body.mode === 'extract-products') {
-      if (!body.imageBase64) {
-        res.status(400).json({ error: 'Aucune image reçue.' });
+      if (!body.imageBase64 && !body.text?.trim()) {
+        res.status(400).json({ error: 'Aucune image ni texte reçu.' });
         return;
       }
 
+      const parts = body.imageBase64
+        ? [
+            { inlineData: { data: body.imageBase64, mimeType: body.mimeType || 'image/jpeg' } },
+            { text: PRODUCT_EXTRACTION_PROMPT },
+          ]
+        : [{ text: `${PRODUCT_EXTRACTION_PROMPT}\n\nTexte à analyser :\n${body.text}` }];
+
       const response = await ai.models.generateContent({
         model: 'gemini-3.8-flash',
-        contents: [
-          {
-            role: 'user',
-            parts: [
-              { inlineData: { data: body.imageBase64, mimeType: body.mimeType || 'image/jpeg' } },
-              { text: PRODUCT_EXTRACTION_PROMPT },
-            ],
-          },
-        ],
+        contents: [{ role: 'user', parts }],
         config: {
           responseMimeType: 'application/json',
           responseSchema: {
@@ -70,19 +72,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               properties: {
                 name: { type: Type.STRING },
                 qty: { type: Type.INTEGER },
+                price: { type: Type.NUMBER },
               },
-              required: ['name', 'qty'],
+              required: ['name', 'qty', 'price'],
             },
           },
         },
       });
 
       const raw = response.text || '[]';
-      let items: Array<{ name: string; qty: number }> = [];
+      let items: Array<{ name: string; qty: number; price: number }> = [];
       try {
         items = JSON.parse(raw);
       } catch {
-        res.status(502).json({ error: "L'assistant n'a pas pu lire cette note clairement. Réessayez avec une photo plus nette." });
+        res.status(502).json({ error: "L'assistant n'a pas pu lire ça clairement. Réessayez avec une photo plus nette ou un texte plus simple." });
         return;
       }
 
@@ -101,7 +104,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       contents,
       config: {
         systemInstruction:
-          "Tu es l'assistant intégré de l'application Hammam Nile : un système de caisse et de gestion de boutique/hammam à Nouakchott (Mauritanie). Tu aides la gérante à utiliser l'application, comprendre ses ventes/stocks, ou répondre à des questions générales de gestion de sa boutique. Réponds en français, de façon concise, chaleureuse et directement utile.",
+          "Tu es l'assistant intégré de l'application Hammam Nile : un système de caisse et de gestion de boutique/hammam à Nouakchott (Mauritanie), utilisé par la gérante ET par les caissières de chaque caisse (boutique, hammam, coiffure, épilation, gym...). Tu aides à utiliser l'application, comprendre les ventes/stocks/prix, ou répondre à des questions générales de gestion. Rappelle si besoin que l'onglet « Assistant IA » permet aussi d'ajouter des produits ou services (avec leur prix) en tapant une liste ou en envoyant la photo d'un menu/liste de prix. Réponds en français, de façon concise, chaleureuse et directement utile.",
       },
     });
 
