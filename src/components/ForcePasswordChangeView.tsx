@@ -41,9 +41,9 @@ export const ForcePasswordChangeView: React.FC = () => {
       </div>
 
       <div className="max-w-md w-full relative z-10">
-        <div className="bg-white/90 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
+        <div className="bg-white/70 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
           <div className="text-center mb-6 pt-1">
-            <div className="inline-block p-4 rounded-3xl bg-slate-50/80 border border-slate-100 shadow-xs mb-3">
+            <div className="inline-block p-4 rounded-3xl bg-white/50 border border-white/60 shadow-xs mb-3">
               <HammamNileLogo variant="full" size="lg" color="#004CB7" textColor="#004CB7" />
             </div>
             <p className="text-[11px] text-[#6B7873] font-sans font-bold tracking-widest uppercase">
