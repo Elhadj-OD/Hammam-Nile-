@@ -12,7 +12,7 @@ import {
 import { HammamNileEmblem } from './HammamNileLogo';
 
 export const AuthSwitchModal: React.FC = () => {
-  const { authModal, closeAuthModal, verifyAndSwitch } = useApp();
+  const { authModal, closeAuthModal, verifyAndSwitch, users } = useApp();
 
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -34,11 +34,17 @@ export const AuthSwitchModal: React.FC = () => {
 
   if (!authModal.isOpen) return null;
 
-  const isAdmin =
-    authModal.targetRole === 'gerant' ||
-    authModal.targetUsername?.toLowerCase() === 'sophia';
+  const matchedUser = authModal.targetUsername
+    ? users.find(u => u.username.toLowerCase() === authModal.targetUsername?.toLowerCase())
+    : undefined;
+  const isAdmin = matchedUser ? matchedUser.role === 'gerant' : authModal.targetRole === 'gerant';
   const targetLabel = isAdmin ? 'Partie Admin (Direction)' : 'Partie Caisse (Vente)';
-  const targetUser = isAdmin ? 'Sophia' : 'Elhadj';
+  const targetUser = matchedUser?.name || authModal.targetName || (isAdmin ? 'Gérante' : 'Caissière');
+  const targetInitials = matchedUser
+    ? matchedUser.name.substring(0, 2).toUpperCase()
+    : isAdmin
+      ? 'AD'
+      : 'CA';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +108,7 @@ export const AuthSwitchModal: React.FC = () => {
                   isAdmin ? 'bg-[#0A3735]' : 'bg-[#004CB7]'
                 }`}
               >
-                {isAdmin ? 'SO' : 'EH'}
+                {targetInitials}
               </div>
               <div>
                 <div className="text-xs font-bold text-[#1C2321]">
