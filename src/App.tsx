@@ -119,7 +119,7 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#E9E3D6] flex text-[#1C2321]">
+    <div className="min-h-screen app-water-bg flex text-[#1C2321]">
       {/* Sidebar navigation */}
       <Sidebar mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
 

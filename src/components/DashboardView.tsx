@@ -58,7 +58,7 @@ export const DashboardView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Role Banner / Greeting */}
-      <div className="bg-[#002E6E] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden border border-[#E7E0D3]/20">
+      <div className="water-glass rounded-2xl p-6 text-white shadow-lg border border-white/15">
         <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-[#B8874B]/10 rounded-full blur-2xl pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>

@@ -48,7 +48,7 @@ export const LoginView: React.FC = () => {
 
       <div className="max-w-md w-full relative z-10">
         {/* Card */}
-        <div className="water-glass rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] p-6 sm:p-8">
+        <div className="water-glass border border-white/55 rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] p-6 sm:p-8">
           {/* Contenu au-dessus du reflet animé (voir .water-glass::before) */}
           <div className="relative">
           {/* Official Logo & Header */}

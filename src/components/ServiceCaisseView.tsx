@@ -123,7 +123,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
   return (
     <div className="space-y-6 max-w-[1100px] mx-auto pb-12">
       {/* Top Banner */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs">
+      <div className="water-glass-light rounded-2xl p-6 border border-white/60 shadow-xs">
         <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
           <Sparkles className="w-4 h-4" />
           <span>{eyebrow}</span>

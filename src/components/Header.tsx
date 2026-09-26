@@ -56,8 +56,8 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   });
 
   return (
-    <header className="h-16 bg-white/95 backdrop-blur-xs border-b border-[#E7E0D3] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-      <div className="flex items-center gap-3">
+    <header className="h-16 water-glass-light border-b border-[#E7E0D3] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+      <div className="relative flex items-center gap-3">
         <button
           onClick={onMenuToggle}
           className="xl:hidden p-2 rounded-full text-[#004CB7] hover:bg-[#F0F5FD] transition cursor-pointer"
@@ -81,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5 sm:gap-3">
+      <div className="relative flex items-center gap-2.5 sm:gap-3">
         {/* Date badge */}
         <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-[#F7F3EC] rounded-xl text-[#6B7873] text-xs font-medium border border-[#E7E0D3]">
           <Calendar className="w-3.5 h-3.5 text-[#004CB7]" />
