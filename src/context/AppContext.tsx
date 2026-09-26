@@ -175,6 +175,20 @@ interface AppContextType {
 
   // Sales
   sales: Sale[];
+  // Une caissière peut corriger une vente qu'elle a déjà faite aujourd'hui
+  // (nom/téléphone client, paiement, prix si un seul article) tant que sa
+  // caisse n'a pas encore fait sa décharge du jour — ensuite c'est figé.
+  isSaleLocked: (sale: Sale) => boolean;
+  updateSale: (
+    id: number,
+    updates: {
+      customerName?: string;
+      customerPhone?: string;
+      payment?: PaymentMethod;
+      paymentDetail?: string;
+      itemPrice?: number;
+    }
+  ) => { success: boolean; error?: string };
 
   // Clients
   clients: Client[];
@@ -1190,6 +1204,62 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return newSale;
   };
 
+  // "26/9/2026" et "26/09/2026" doivent être reconnus comme le même jour :
+  // toLocaleDateString('fr-FR') n'est pas garanti zéro-paddé partout.
+  const normalizeDateStr = (d: string): string => {
+    const parts = d.split('/');
+    if (parts.length !== 3) return d;
+    const [dd, mm, yyyy] = parts;
+    return `${parseInt(dd, 10)}-${parseInt(mm, 10)}-${yyyy}`;
+  };
+
+  const isSaleLocked = (sale: Sale): boolean => {
+    const owner = users.find(u => u.username.toLowerCase() === sale.caissier.toLowerCase());
+    if (!owner?.department) return false;
+    return decharges.some(
+      d => d.department === owner.department && normalizeDateStr(d.dateDecharge) === normalizeDateStr(sale.date)
+    );
+  };
+
+  const updateSale = (
+    id: number,
+    updates: {
+      customerName?: string;
+      customerPhone?: string;
+      payment?: PaymentMethod;
+      paymentDetail?: string;
+      itemPrice?: number;
+    }
+  ): { success: boolean; error?: string } => {
+    const sale = sales.find(s => s.id === id);
+    if (!sale) return { success: false, error: 'Vente introuvable.' };
+    if (isSaleLocked(sale)) {
+      return { success: false, error: 'Cette caisse a déjà été clôturée pour ce jour : la vente ne peut plus être modifiée.' };
+    }
+
+    const updatedItems =
+      updates.itemPrice !== undefined && !isNaN(updates.itemPrice) && sale.items.length === 1
+        ? [{ ...sale.items[0], price: Math.max(0, updates.itemPrice) }]
+        : sale.items;
+    const subtotal = updatedItems.reduce((sum, i) => sum + i.price * i.qty, 0);
+    const total = Math.max(0, subtotal - (sale.discount || 0));
+
+    const updated: Sale = {
+      ...sale,
+      customerName: updates.customerName !== undefined ? updates.customerName : sale.customerName,
+      customerPhone: updates.customerPhone !== undefined ? updates.customerPhone : sale.customerPhone,
+      payment: updates.payment || sale.payment,
+      paymentDetail: updates.paymentDetail !== undefined ? updates.paymentDetail : sale.paymentDetail,
+      items: updatedItems,
+      subtotal,
+      total,
+    };
+
+    setSales(prev => prev.map(s => (s.id === id ? updated : s)));
+    saveSaleToSupabase(updated);
+    return { success: true };
+  };
+
   // Clients
   const addClient = (clientData: Omit<Client, 'id'>): Client => {
     const newId = clients.length > 0 ? Math.max(...clients.map(c => c.id)) + 1 : 1;
@@ -1750,6 +1820,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         completeSale,
         completeServiceSale,
         sales,
+        isSaleLocked,
+        updateSale,
         clients,
         addClient,
         updateClient,
