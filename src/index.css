@@ -46,6 +46,49 @@
   }
 }
 
+/* Effet "verre d'eau" : dégradé bleu translucide + reflet qui ondule
+   doucement à la surface, comme la lumière sur l'eau. Utilisé pour la
+   carte de connexion (thème Hammam Nile). Respecte prefers-reduced-motion. */
+.water-glass {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(191, 217, 247, 0.4) 45%,
+    rgba(0, 76, 183, 0.22) 100%
+  );
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.water-glass::before {
+  content: '';
+  position: absolute;
+  inset: -50% -20%;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 45%,
+    rgba(255, 255, 255, 0.06) 55%,
+    transparent 70%
+  );
+  animation: water-shimmer 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes water-shimmer {
+  0%, 100% { transform: translate(-12%, -6%); }
+  50% { transform: translate(10%, 6%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .water-glass::before {
+    animation: none;
+  }
+}
+
 /* Motif discret évoquant les ondulations du Nil — utilisé avec parcimonie,
    jamais comme simple décor générique (ex: écran de connexion). */
 .nile-waves {

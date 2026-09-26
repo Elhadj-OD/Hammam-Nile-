@@ -41,9 +41,11 @@ export const ForcePasswordChangeView: React.FC = () => {
       </div>
 
       <div className="max-w-md w-full relative z-10">
-        <div className="bg-white/45 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
+        <div className="water-glass rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] p-6 sm:p-8">
+          {/* Contenu au-dessus du reflet animé (voir .water-glass::before) */}
+          <div className="relative">
           <div className="text-center mb-6 pt-1">
-            <div className="inline-block p-4 rounded-3xl bg-white/25 border border-white/50 shadow-xs mb-3">
+            <div className="inline-block p-4 rounded-3xl bg-gradient-to-br from-white/50 to-[#004CB7]/10 border border-white/50 shadow-xs mb-3">
               <HammamNileLogo variant="full" size="lg" color="#004CB7" textColor="#004CB7" />
             </div>
             <p className="text-[11px] text-[#3A4149] font-sans font-bold tracking-widest uppercase">
@@ -134,6 +136,7 @@ export const ForcePasswordChangeView: React.FC = () => {
             <LogOut className="w-3.5 h-3.5" />
             <span>Ce n'est pas moi — se déconnecter</span>
           </button>
+          </div>
         </div>
       </div>
     </div>
