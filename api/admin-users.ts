@@ -28,6 +28,7 @@ interface UpdatePayload {
   action: 'update';
   username: string;
   updates: Partial<{
+    username: string;
     name: string;
     email: string;
     role: Role;
@@ -177,6 +178,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const updates: Record<string, unknown> = {};
         if (caller.role === 'gerant') {
           // La gérante peut tout modifier sauf le rôle du dernier compte gérant
+          if (body.updates.username !== undefined) {
+            const newUsername = sanitizeUsername(body.updates.username);
+            if (!newUsername) {
+              res.status(400).json({ error: 'Identifiant invalide.' });
+              return;
+            }
+            updates.username = newUsername;
+          }
           if (body.updates.name !== undefined) updates.name = body.updates.name.trim();
           if (body.updates.email !== undefined) updates.email = body.updates.email.trim().toLowerCase();
           if (body.updates.role !== undefined) updates.role = body.updates.role;
@@ -209,6 +218,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return;
         }
 
+        // Renommage de l'identifiant : vérifie qu'il est libre, et fait
+        // suivre l'e-mail interne synthétique s'il n'a jamais été
+        // personnalisé (sinon il reste tel quel).
+        if (typeof updates.username === 'string' && updates.username !== username) {
+          const newUsername = updates.username;
+          const { data: clash } = await admin.from('profiles').select('id').eq('username', newUsername).maybeSingle();
+          if (clash) {
+            res.status(409).json({ error: 'Cet identifiant est déjà utilisé.' });
+            return;
+          }
+          if (updates.email === undefined) {
+            const { data: current } = await admin.from('profiles').select('email').eq('username', username).maybeSingle();
+            if (current?.email === usernameToEmail(username)) {
+              updates.email = usernameToEmail(newUsername);
+            }
+          }
+        }
+
         // L'e-mail est aussi l'identifiant Supabase Auth : les deux doivent
         // rester synchronisés, sinon la connexion utiliserait un e-mail
         // qui ne correspond plus au compte Auth réel.
@@ -229,6 +256,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const { error: emailErr } = await admin.auth.admin.updateUserById(target.id, {
             email: finalEmail,
             email_confirm: true,
+            user_metadata: { username: (updates.username as string) || username },
           });
           if (emailErr) {
             console.error('admin-users email sync error:', emailErr);
