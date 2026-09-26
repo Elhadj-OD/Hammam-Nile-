@@ -89,8 +89,13 @@ const MainLayout: React.FC = () => {
         if (!canSeeHammam) return <DashboardView />;
         return activeSection === 'prelevements-hammam' ? <PrelevementsHammamView /> : <CommissionsLaveursView />;
       }
-      case 'laveurs':
-        return <LaveursView />;
+      case 'laveurs': {
+        const canSeeLaveurs =
+          currentUser.role === 'gerant' ||
+          currentUser.department === 'boutique_homme' ||
+          currentUser.department === 'boutique_femme';
+        return canSeeLaveurs ? <LaveursView /> : <DashboardView />;
+      }
       case 'rapports':
         return <RapportsView />;
       case 'decharge':
