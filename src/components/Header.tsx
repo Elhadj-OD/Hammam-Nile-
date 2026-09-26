@@ -8,7 +8,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
-  const { currentUser, switchRole, activeSection, settings } = useApp();
+  const { activeSection, settings } = useApp();
 
   const getSectionInfo = () => {
     switch (activeSection) {
@@ -51,8 +51,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
     year: 'numeric',
   });
 
-  const isGerant = currentUser?.role === 'gerant';
-
   return (
     <header className="h-16 bg-white/95 backdrop-blur-xs border-b border-[#E7E0D3] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
       <div className="flex items-center gap-3">
@@ -89,34 +87,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
         {/* Currency badge */}
         <div className="px-2.5 py-1 bg-[#F0F5FD] text-[#004CB7] rounded-xl text-xs font-extrabold tracking-wide border border-[#004CB7]/20">
           {settings.currency}
-        </div>
-
-        {/* Quick Role Switcher with password protection (passwords masked) */}
-        <div className="flex items-center bg-[#F7F3EC] p-0.5 rounded-xl text-xs border border-[#E7E0D3]">
-          <button
-            type="button"
-            onClick={() => switchRole('caissier')}
-            className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
-              !isGerant
-                ? 'bg-[#004CB7] text-white shadow-xs'
-                : 'text-[#6B7873] hover:text-[#1C2321]'
-            }`}
-            title="Partie Caisse (Elhadj)"
-          >
-            Caissier (Elhadj)
-          </button>
-          <button
-            type="button"
-            onClick={() => switchRole('gerant')}
-            className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
-              isGerant
-                ? 'bg-[#0A3735] text-[#EFE8D8] shadow-xs'
-                : 'text-[#6B7873] hover:text-[#1C2321]'
-            }`}
-            title="Partie Admin (Sophia)"
-          >
-            Admin (Sophia)
-          </button>
         </div>
       </div>
     </header>

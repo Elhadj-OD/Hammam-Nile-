@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { ActiveSection, UserRole } from '../types';
+import { ActiveSection } from '../types';
 import { DEPARTMENTS } from '../lib/departments';
 import {
   X,
@@ -19,7 +19,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
     currentUser,
     activeSection,
     setActiveSection,
-    switchRole,
     logout,
     lowStockProducts,
     cart,
@@ -43,10 +42,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
   const handleNavClick = (section: ActiveSection) => {
     setActiveSection(section);
     if (setMobileOpen) setMobileOpen(false);
-  };
-
-  const handleRoleSwitch = (role: UserRole) => {
-    switchRole(role);
   };
 
   // Force le rechargement de la dernière version publiée : vide le cache du
@@ -113,36 +108,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             </button>
           )}
         </div>
-
-        {/* Role Switcher — masqué si le profil est verrouillé par l'admin (poste partagé) */}
-        {(!currentUser.locked || isGerant) && (
-          <div className="flex bg-white/10 rounded-[10px] p-[3px] mb-[18px] gap-[3px]">
-            <button
-              type="button"
-              onClick={() => handleRoleSwitch('gerant')}
-              className={`flex-1 border-0 text-[11px] font-bold py-2 px-1 rounded-[7px] cursor-pointer transition-all duration-150 ${
-                isGerant
-                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 shadow-xs'
-                  : 'bg-transparent text-[#EFE8D8] opacity-60 hover:opacity-85'
-              }`}
-              title="Partie Admin (Sophia)"
-            >
-              Admin (Sophia)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleRoleSwitch('caissier')}
-              className={`flex-1 border-0 text-[11px] font-bold py-2 px-1 rounded-[7px] cursor-pointer transition-all duration-150 ${
-                !isGerant
-                  ? 'bg-[#004CB7] text-white opacity-100 shadow-xs'
-                  : 'bg-transparent text-[#EFE8D8] opacity-60 hover:opacity-85'
-              }`}
-              title="Changer de caisse"
-            >
-              Changer de caisse
-            </button>
-          </div>
-        )}
 
         {/* Navigation list */}
         <ul className="list-none p-0 m-0 flex flex-col gap-1 flex-1">
