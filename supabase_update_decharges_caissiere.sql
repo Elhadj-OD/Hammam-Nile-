@@ -45,6 +45,12 @@ DO $$
 DECLARE
   cname text;
 BEGIN
+  -- Si jamais ce bloc est exécuté seul (sans le CREATE TABLE au-dessus),
+  -- on ne casse rien : on sort simplement sans rien faire.
+  IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'decharges') THEN
+    RETURN;
+  END IF;
+
   SELECT tc.constraint_name INTO cname
   FROM information_schema.table_constraints tc
   JOIN information_schema.constraint_column_usage ccu
