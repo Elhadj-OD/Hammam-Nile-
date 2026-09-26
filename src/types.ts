@@ -202,6 +202,7 @@ export type ActiveSection =
   | 'prelevements-hammam'
   | 'commissions-laveurs'
   | 'laveurs'
+  | 'abonnements-gym'
   | 'rapports'
   | 'decharge'
   | 'utilisateurs'
