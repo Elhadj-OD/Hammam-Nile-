@@ -16,7 +16,27 @@
 -- l'app une fois la caisse clôturée.
 -- ==============================================================================
 
+-- La table n'existait pas encore chez vous (le tout premier script
+-- "supabase_add_decharges.sql" n'a jamais été lancé) : on la crée ici avec
+-- le schéma déjà à jour. Si elle existe déjà, ce bloc ne fait rien.
+CREATE TABLE IF NOT EXISTS public.decharges (
+  id BIGSERIAL PRIMARY KEY,
+  "dateDecharge" TEXT NOT NULL,
+  "department" TEXT,
+  "totalEspeceCalcule" NUMERIC NOT NULL DEFAULT 0,
+  "totalMobileMoneyCalcule" NUMERIC NOT NULL DEFAULT 0,
+  "nombreTransactions" INT NOT NULL DEFAULT 0,
+  "montantEspeceReel" NUMERIC NOT NULL DEFAULT 0,
+  "montantMobileMoneyReel" NUMERIC NOT NULL DEFAULT 0,
+  "ecartEspece" NUMERIC NOT NULL DEFAULT 0,
+  "ecartMobileMoney" NUMERIC NOT NULL DEFAULT 0,
+  "faitPar" TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 ALTER TABLE public.decharges ADD COLUMN IF NOT EXISTS "department" TEXT;
+ALTER TABLE public.decharges ENABLE ROW LEVEL SECURITY;
 
 -- Retire l'ancienne contrainte "une seule décharge par jour" (globale) —
 -- recherchée dynamiquement pour ne pas dépendre du nom exact généré par
@@ -73,3 +93,9 @@ CREATE POLICY "Own department insert decharges" ON public.decharges FOR INSERT W
 
 -- Aucune policy UPDATE ni DELETE : une fois créée, une décharge est
 -- définitive pour tout le monde depuis l'app (y compris la gérante).
+
+DO $$
+BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.decharges;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
