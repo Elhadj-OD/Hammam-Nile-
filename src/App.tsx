@@ -71,9 +71,16 @@ const MainLayout: React.FC = () => {
       case 'mouvements':
         return currentUser.role === 'gerant' ? <MouvementsView /> : <DashboardView />;
       case 'prelevements-hammam':
-        return <PrelevementsHammamView />;
-      case 'commissions-laveurs':
-        return <CommissionsLaveursView />;
+      case 'commissions-laveurs': {
+        // Prélèvements & Hammam : réservés à Boutique Homme, Boutique
+        // Femme+Hammam et l'admin — pas les autres caisses.
+        const canSeeHammam =
+          currentUser.role === 'gerant' ||
+          currentUser.department === 'boutique_homme' ||
+          currentUser.department === 'boutique_femme';
+        if (!canSeeHammam) return <DashboardView />;
+        return activeSection === 'prelevements-hammam' ? <PrelevementsHammamView /> : <CommissionsLaveursView />;
+      }
       case 'laveurs':
         return <LaveursView />;
       case 'rapports':
