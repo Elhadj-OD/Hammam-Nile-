@@ -282,7 +282,7 @@ export const AssistantView: React.FC = () => {
   return (
     <div className="space-y-6 max-w-[1000px] mx-auto pb-12">
       {/* Top Banner */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs">
+      <div className="water-glass-light rounded-2xl p-6 border border-white/60 shadow-xs">
         <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
           <Sparkles className="w-4 h-4 text-[#B8874B]" />
           <span>Assistant IA</span>
@@ -295,7 +295,7 @@ export const AssistantView: React.FC = () => {
         </p>
 
         {/* Mode Tabs */}
-        <div className="flex gap-2 mt-4">
+        <div className="relative flex gap-2 mt-4">
           <button
             type="button"
             onClick={() => setMode('chat')}

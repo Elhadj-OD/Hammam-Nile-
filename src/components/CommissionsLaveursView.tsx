@@ -311,8 +311,8 @@ export const CommissionsLaveursView: React.FC = () => {
   return (
     <div className="space-y-6 max-w-[1360px] mx-auto pb-12">
       {/* Top Banner */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+      <div className="water-glass-light rounded-2xl p-6 border border-white/60 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="relative">
           <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
             <Users className="w-4 h-4" />
             <span>Hammam</span>
@@ -326,7 +326,7 @@ export const CommissionsLaveursView: React.FC = () => {
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
-          className="bg-[#004CB7] hover:bg-[#002E6E] text-white px-5 py-3 rounded-full font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
+          className="relative bg-[#004CB7] hover:bg-[#002E6E] text-white px-5 py-3 rounded-full font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Nouveau Service</span>

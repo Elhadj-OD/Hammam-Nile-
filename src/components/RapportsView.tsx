@@ -260,8 +260,8 @@ export const RapportsView: React.FC = () => {
   return (
     <div className="space-y-6 max-w-[1360px] mx-auto pb-12">
       {/* Header & Main Toggles */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E7E0D3] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+      <div className="water-glass-light rounded-2xl p-6 border border-white/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="relative">
           <div className="flex items-center gap-2 text-[#004CB7] text-xs font-bold uppercase tracking-wider mb-1">
             <BarChart3 className="w-4 h-4" />
             <span>Tableau de Bord Analytique</span>
@@ -275,7 +275,7 @@ export const RapportsView: React.FC = () => {
         </div>
 
         {/* 3 PERIOD TOGGLES: Journalière, Hebdomadaire, Mensuelle */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex flex-wrap items-center gap-2">
           <div className="bg-[#F7F3EC] p-1.5 rounded-2xl border border-[#E7E0D3] flex items-center gap-1 shadow-xs">
             <button
               type="button"
