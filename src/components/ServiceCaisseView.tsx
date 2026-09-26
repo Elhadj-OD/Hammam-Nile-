@@ -48,7 +48,9 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
   const [priceInput, setPriceInput] = useState('');
   const [payment, setPayment] = useState<'cash' | 'mobile'>('cash');
   const [mobileOperator, setMobileOperator] = useState<string>('Bankily');
+  const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [cashierName, setCashierName] = useState('');
   const [formError, setFormError] = useState('');
 
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
@@ -81,7 +83,9 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
     setPriceInput(product.price > 0 ? String(product.price) : '');
     setPayment('cash');
     setMobileOperator('Bankily');
+    setCustomerName('');
     setCustomerPhone('');
+    setCashierName(currentUser?.name || '');
     setFormError('');
     setShowModal(true);
   };
@@ -108,7 +112,9 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
 
     completeServiceSale(selectedProduct, price, payment, {
       paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
+      customerName: customerName.trim() || undefined,
       customerPhone: customerPhone.trim() || undefined,
+      cashierName: cashierName.trim() || undefined,
     });
 
     closeModal();
@@ -314,6 +320,29 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                   <span>{formError}</span>
                 </div>
               )}
+
+              <div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1">Nom de la caissière</label>
+                <input
+                  type="text"
+                  value={cashierName}
+                  onChange={e => setCashierName(e.target.value)}
+                  placeholder="ex: Aïcha"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                />
+                <p className="text-[11px] text-[#6B7873] mt-1">Affiché sur le ticket. Modifiable si une autre personne tient la caisse.</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1">Nom du client</label>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={e => setCustomerName(e.target.value)}
+                  placeholder="ex: Mariem"
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                />
+              </div>
 
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">
