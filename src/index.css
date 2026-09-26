@@ -25,6 +25,25 @@
   .font-display {
     font-family: 'Fraunces', Georgia, serif;
   }
+
+  /* Retour tactile sur tous les boutons : léger "clic" visuel à l'appui,
+     pour confirmer que l'action a bien été prise en compte (utile sur
+     tablette tactile en caisse). Respecte prefers-reduced-motion. */
+  button:not(:disabled) {
+    transition-property: transform, background-color, box-shadow, opacity, color, border-color;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  button:not(:disabled):active {
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active {
+    transform: none;
+  }
 }
 
 /* Motif discret évoquant les ondulations du Nil — utilisé avec parcimonie,
