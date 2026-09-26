@@ -764,12 +764,12 @@ export const CaissieresView: React.FC = () => {
                     .map(([key, d]) => (
                       <option key={key} value={key}>
                         {d.icon} {d.label}
-                        {key === 'boutique_femme' || key === 'boutique_homme' ? ' (+ Hammam)' : ''}
+                        {key === 'boutique_femme' ? ' (+ Hammam)' : ''}
                       </option>
                     ))}
                 </select>
                 <p className="text-[11px] text-[#6B7873] mt-1">
-                  Si une caisse est choisie, cette caissière ne voit et ne vend que les articles de cette partie à la connexion. « Boutique Femme » et « Boutique Homme » incluent aussi les services hammam (Hammam simple, Gommage, Signature...).
+                  Si une caisse est choisie, cette caissière ne voit et ne vend que les articles de cette partie à la connexion. « Boutique Femme » inclut aussi les services hammam pour femmes (Hammam simple, Gommage, Signature...).
                 </p>
               </div>
 

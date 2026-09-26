@@ -22,8 +22,7 @@ import {
 
 const CATEGORY_META: Partial<Record<ProductCategory, { icon: string; label: string }>> = {
   femmes: { icon: '💄', label: 'Boutique Femme' },
-  hommes: { icon: '🧔', label: 'Boutique Homme' },
-  hammam_bains: { icon: '♨️', label: 'Hammam' },
+  hammam_bains: { icon: '♨️', label: 'Hammam Femme' },
   boissons: { icon: '🥤', label: 'Boissons' },
   snacks: { icon: '🍪', label: 'Snacks' },
 };
@@ -42,11 +41,12 @@ export const ProduitsView: React.FC = () => {
   const isServiceDept =
     currentUser?.department === 'coiffure_salon' || currentUser?.department === 'epilation_traditionnelle';
   const itemWord = isServiceDept ? 'Service' : 'Produit';
-  // Le hammam (femmes et hommes) vit dans le même rayon que la Boutique
-  // correspondante — pas un rayon à part.
+  // Le hammam des femmes vit dans le même rayon que la Boutique Femme —
+  // pas un rayon à part. Boutique Homme garde son propre rayon : les
+  // catalogues homme et femme ne se mélangent jamais.
   const myDeptCategories =
-    myDept?.category === 'femmes' || myDept?.category === 'hommes'
-      ? [myDept.category, 'hammam_bains']
+    myDept?.category === 'femmes'
+      ? ['femmes', 'hammam_bains']
       : myDept?.category === 'boissons'
         ? ['boissons', 'snacks']
         : myDept
