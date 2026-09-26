@@ -8,7 +8,9 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
-  const { activeSection, settings } = useApp();
+  const { activeSection, settings, currentUser } = useApp();
+  const isServiceDept =
+    currentUser?.department === 'coiffure_salon' || currentUser?.department === 'epilation_traditionnelle';
 
   const getSectionInfo = () => {
     switch (activeSection) {
@@ -29,7 +31,9 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
       case 'journal-caisses':
         return { title: 'Journal des Caisses', desc: 'Détail des ventes encaissées, caisse par caisse, pour vérification' };
       case 'produits':
-        return { title: 'Gestion du Catalogue', desc: 'Ajout et modification des articles' };
+        return isServiceDept
+          ? { title: 'Gestion des Services', desc: 'Ajout et modification des prestations' }
+          : { title: 'Gestion du Catalogue', desc: 'Ajout et modification des articles' };
       case 'mouvements':
         return { title: 'Mouvements de Stock', desc: 'Entrées, sorties et ajustements' };
       case 'prelevements-hammam':

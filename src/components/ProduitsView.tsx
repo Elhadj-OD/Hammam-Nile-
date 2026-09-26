@@ -36,6 +36,11 @@ export const ProduitsView: React.FC = () => {
   // Homme) — exactement les mêmes règles que sur l'écran Caisse.
   const isGerant = currentUser?.role === 'gerant';
   const myDept = !isGerant && currentUser?.department ? DEPARTMENTS[currentUser.department] : null;
+  // Coiffure & Salon et Épilation vendent des prestations, pas des produits
+  // physiques — le vocabulaire de cette page doit dire "Service".
+  const isServiceDept =
+    currentUser?.department === 'coiffure_salon' || currentUser?.department === 'epilation_traditionnelle';
+  const itemWord = isServiceDept ? 'Service' : 'Produit';
   // Le hammam des femmes vit dans le même rayon que la Boutique Femme
   // (même logique que le hammam des garçons dans leur propre caisse).
   const myDeptCategories =
@@ -198,13 +203,15 @@ export const ProduitsView: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-[#0F4C4A] text-xs font-bold uppercase tracking-wider mb-1">
             <Package className="w-4 h-4" />
-            <span>Catalogue & Gestion des Articles</span>
+            <span>{isServiceDept ? 'Catalogue des Prestations' : 'Catalogue & Gestion des Articles'}</span>
           </div>
           <h1 className="text-2xl font-bold font-display text-[#1C2321]">
-            Produits & Pièces en Stock
+            {isServiceDept ? 'Services Proposés' : 'Produits & Pièces en Stock'}
           </h1>
           <p className="text-sm text-[#6B7873] mt-1">
-            Ajoutez de nouveaux articles avec leur photo, leur nom, le nombre de pièces disponibles et leur prix de vente.
+            {isServiceDept
+              ? 'Ajoutez de nouvelles prestations avec leur nom et leur prix de vente.'
+              : 'Ajoutez de nouveaux articles avec leur photo, leur nom, le nombre de pièces disponibles et leur prix de vente.'}
           </p>
         </div>
 
@@ -214,7 +221,7 @@ export const ProduitsView: React.FC = () => {
           className="bg-[#0F4C4A] hover:bg-[#0A3735] text-white px-5 py-3 rounded-full font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          <span>Ajouter un Produit</span>
+          <span>Ajouter un {itemWord}</span>
         </button>
       </div>
 
@@ -411,18 +418,20 @@ export const ProduitsView: React.FC = () => {
       <div className="bg-white rounded-2xl border border-[#E7E0D3] shadow-xs overflow-hidden">
         <div className="p-4 border-b border-[#E7E0D3] flex items-center justify-between">
           <h3 className="font-bold font-display text-base text-[#1C2321]">
-            Liste des Produits ({filteredProducts.length})
+            {isServiceDept ? 'Liste des Services' : 'Liste des Produits'} ({filteredProducts.length})
           </h3>
           <span className="text-xs text-[#6B7873]">
-            Affichage avec photo, nom et nombre de pièces
+            {isServiceDept ? 'Affichage avec nom et prix' : 'Affichage avec photo, nom et nombre de pièces'}
           </span>
         </div>
 
         {filteredProducts.length === 0 ? (
           <div className="py-16 text-center text-[#6B7873]">
             <Package className="w-10 h-10 mx-auto text-[#6B7873]/40 mb-2" />
-            <p className="font-bold text-sm">Aucun produit ne correspond à votre recherche</p>
-            <p className="text-xs mt-1">Cliquez sur « Ajouter un Produit » pour créer un nouvel article.</p>
+            <p className="font-bold text-sm">
+              {isServiceDept ? 'Aucun service ne correspond à votre recherche' : 'Aucun produit ne correspond à votre recherche'}
+            </p>
+            <p className="text-xs mt-1">Cliquez sur « Ajouter un {itemWord} » pour créer un nouvel article.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -430,7 +439,7 @@ export const ProduitsView: React.FC = () => {
               <thead>
                 <tr className="bg-[#F7F3EC] text-[#6B7873] text-[11px] font-bold uppercase tracking-wider border-b border-[#E7E0D3]">
                   <th className="p-3.5 pl-5">Photo / Visuel</th>
-                  <th className="p-3.5">Nom du Produit</th>
+                  <th className="p-3.5">Nom du {itemWord}</th>
                   <th className="p-3.5">Catégorie</th>
                   <th className="p-3.5">Prix Unitaire</th>
                   <th className="p-3.5 text-center">Nombre de Pièces</th>
@@ -579,7 +588,7 @@ export const ProduitsView: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold font-display text-[#1C2321]">
-                    {editingProduct ? 'Modifier le Produit' : 'Ajouter un Nouveau Produit'}
+                    {editingProduct ? `Modifier le ${itemWord}` : `Ajouter un Nouveau ${itemWord}`}
                   </h3>
                   <p className="text-xs text-[#6B7873]">
                     Photo, nom, nombre de pièces et tarification
@@ -597,72 +606,76 @@ export const ProduitsView: React.FC = () => {
 
             <form onSubmit={handleSaveProduct} className="space-y-4 mt-5">
 
-              {/* ── Scan Indicator Banner ── */}
-              <div className="flex items-center gap-2.5 bg-[#E4E9E1]/50 border border-[#0F4C4A]/20 rounded-xl px-3.5 py-2.5">
-                <span
-                  className={`w-2.5 h-2.5 rounded-full flex-none transition-all duration-300 ${
-                    barcode.length > 3
-                      ? 'bg-[#0F4C4A] shadow-[0_0_0_4px_rgba(15,76,74,0.2)]'
-                      : 'bg-[#B8B2A0]'
-                  }`}
-                />
-                <span className="text-[12px] text-[#3f5b52]">
-                  {barcode.length > 3 ? (
-                    <>
-                      Code détecté :
-                      <strong className="font-mono ml-1">{barcode}</strong>
-                    </>
-                  ) : (
-                    'Cliquez dans le champ ci-dessous puis scannez l\'article avec la douchette.'
+              {!isServiceDept && (
+                <>
+                  {/* ── Scan Indicator Banner ── */}
+                  <div className="flex items-center gap-2.5 bg-[#E4E9E1]/50 border border-[#0F4C4A]/20 rounded-xl px-3.5 py-2.5">
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full flex-none transition-all duration-300 ${
+                        barcode.length > 3
+                          ? 'bg-[#0F4C4A] shadow-[0_0_0_4px_rgba(15,76,74,0.2)]'
+                          : 'bg-[#B8B2A0]'
+                      }`}
+                    />
+                    <span className="text-[12px] text-[#3f5b52]">
+                      {barcode.length > 3 ? (
+                        <>
+                          Code détecté :
+                          <strong className="font-mono ml-1">{barcode}</strong>
+                        </>
+                      ) : (
+                        'Cliquez dans le champ ci-dessous puis scannez l\'article avec la douchette.'
+                      )}
+                    </span>
+                  </div>
+
+                  {/* ── Article déjà enregistré avec ce code-barres ── */}
+                  {duplicateProduct && (
+                    <div className="flex items-center justify-between gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5">
+                      <span className="text-[12px] text-amber-800">
+                        Ce code-barres est déjà utilisé par <strong>« {duplicateProduct.name} »</strong> (stock actuel : {duplicateProduct.qty}). Scanner un article déjà enregistré ne crée pas de doublon.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => openEditForm(duplicateProduct)}
+                        className="shrink-0 text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2.5 py-1.5 rounded-lg cursor-pointer transition"
+                      >
+                        Modifier ce produit
+                      </button>
+                    </div>
                   )}
-                </span>
-              </div>
 
-              {/* ── Article déjà enregistré avec ce code-barres ── */}
-              {duplicateProduct && (
-                <div className="flex items-center justify-between gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5">
-                  <span className="text-[12px] text-amber-800">
-                    Ce code-barres est déjà utilisé par <strong>« {duplicateProduct.name} »</strong> (stock actuel : {duplicateProduct.qty}). Scanner un article déjà enregistré ne crée pas de doublon.
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => openEditForm(duplicateProduct)}
-                    className="shrink-0 text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2.5 py-1.5 rounded-lg cursor-pointer transition"
-                  >
-                    Modifier ce produit
-                  </button>
-                </div>
+                  {/* ── Code-barres ── */}
+                  <div>
+                    <label className="block text-xs font-bold text-[#1C2321] mb-1">
+                      Code-barres (EAN-13) — Scanner ou saisir manuellement
+                    </label>
+                    <input
+                      ref={barcodeInputRef}
+                      type="text"
+                      value={barcode}
+                      onChange={e => setBarcode(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (barcode.trim().length > 3) {
+                            (document.querySelector('[data-prod-field="name"]') as HTMLInputElement)?.focus();
+                          }
+                        }
+                      }}
+                      placeholder="Scannez ici ou tapez le code EAN-13…"
+                      autoComplete="off"
+                      autoFocus
+                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A] placeholder:font-sans placeholder:text-[#B8B2A0]"
+                    />
+                  </div>
+                </>
               )}
-
-              {/* ── Code-barres ── */}
-              <div>
-                <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                  Code-barres (EAN-13) — Scanner ou saisir manuellement
-                </label>
-                <input
-                  ref={barcodeInputRef}
-                  type="text"
-                  value={barcode}
-                  onChange={e => setBarcode(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      if (barcode.trim().length > 3) {
-                        (document.querySelector('[data-prod-field="name"]') as HTMLInputElement)?.focus();
-                      }
-                    }
-                  }}
-                  placeholder="Scannez ici ou tapez le code EAN-13…"
-                  autoComplete="off"
-                  autoFocus
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#0F4C4A] placeholder:font-sans placeholder:text-[#B8B2A0]"
-                />
-              </div>
 
               {/* Photo Upload & Preview */}
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1.5">
-                  Photo du Produit
+                  {isServiceDept ? 'Icône / Photo du Service (optionnel)' : 'Photo du Produit'}
                 </label>
                 <div className="flex items-center gap-4 bg-[#F7F3EC] p-3 rounded-xl border border-[#E7E0D3]">
                   <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white border border-[#E7E0D3] shrink-0 flex items-center justify-center text-3xl">
@@ -735,7 +748,7 @@ export const ProduitsView: React.FC = () => {
               {/* Nom du Produit */}
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                  Nom du Produit (Désignation) *
+                  Nom du {itemWord} (Désignation) *
                 </label>
                 <input
                   type="text"
@@ -889,7 +902,7 @@ export const ProduitsView: React.FC = () => {
                   className="py-2.5 px-6 bg-[#0F4C4A] hover:bg-[#0A3735] text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>{editingProduct ? 'Mettre à jour le produit' : 'Ajouter au catalogue'}</span>
+                  <span>{editingProduct ? `Mettre à jour le ${itemWord.toLowerCase()}` : 'Ajouter au catalogue'}</span>
                 </button>
               </div>
             </form>
