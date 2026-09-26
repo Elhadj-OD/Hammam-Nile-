@@ -431,12 +431,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             )}
           </li>
 
-          {/* Inventaire (Stock) - Admin only */}
+          {/* Inventaire (Journal des Caisses) - Admin only */}
           {isGerant && (
             <li
               onClick={() => handleNavClick('inventaire')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
-                activeSection === 'inventaire' || activeSection === 'mouvements'
+                activeSection === 'inventaire'
                   ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
@@ -453,6 +453,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                   <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                 </svg>
                 <span>Inventaire</span>
+              </div>
+            </li>
+          )}
+
+          {/* Mouvements de Stock - Admin only */}
+          {isGerant && (
+            <li
+              onClick={() => handleNavClick('mouvements')}
+              className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+                activeSection === 'mouvements'
+                  ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
+                  : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="w-[17px] h-[17px] shrink-0"
+                >
+                  <path d="M3 3v18h18" />
+                  <path d="M18.7 8 12 14.7l-3.3-3.4L4 16" />
+                </svg>
+                <span>Mouvements de Stock</span>
               </div>
               {lowStockProducts.length > 0 && (
                 <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
@@ -513,7 +539,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
         {lowStockProducts.length > 0 && isGerant && (
           <div className="mt-2 mb-2">
             <button
-              onClick={() => handleNavClick('inventaire')}
+              onClick={() => handleNavClick('mouvements')}
               className="w-full text-left p-2 rounded-xl bg-rose-900/30 border border-rose-500/20 text-rose-200 hover:bg-rose-900/50 transition cursor-pointer text-[11px]"
             >
               <div className="flex items-center gap-1.5 font-semibold">
