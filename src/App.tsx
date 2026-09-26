@@ -11,6 +11,7 @@ import { DevisView } from './components/DevisView';
 import { FacturesView } from './components/FacturesView';
 import { ClientsView } from './components/ClientsView';
 import { InventaireView } from './components/InventaireView';
+import { JournalCaissesView } from './components/JournalCaissesView';
 import { ProduitsView } from './components/ProduitsView';
 import { MouvementsView } from './components/MouvementsView';
 import { RapportsView } from './components/RapportsView';
@@ -62,6 +63,9 @@ const MainLayout: React.FC = () => {
       case 'inventaire':
         // Vue de stock centralisée : réservée à la gérante
         return currentUser.role === 'gerant' ? <InventaireView /> : <DashboardView />;
+      case 'journal-caisses':
+        // Détail des ventes de chaque caisse, pour vérification : réservé à la gérante
+        return currentUser.role === 'gerant' ? <JournalCaissesView /> : <DashboardView />;
       case 'produits':
         return <ProduitsView />;
       case 'mouvements':

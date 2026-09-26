@@ -196,6 +196,7 @@ export type ActiveSection =
   | 'factures'
   | 'clients'
   | 'inventaire'
+  | 'journal-caisses'
   | 'produits'
   | 'mouvements'
   | 'prelevements-hammam'

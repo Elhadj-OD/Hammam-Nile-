@@ -42,6 +42,7 @@ export const CommissionsLaveursView: React.FC = () => {
     settings,
     products,
     addProduct,
+    sales,
   } = useApp();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -119,6 +120,49 @@ export const CommissionsLaveursView: React.FC = () => {
     });
     return Object.entries(map).sort((a, b) => b[1].total - a[1].total);
   }, [filteredCommissions]);
+
+  // Hammam Femme : pas de commission de laveur, ce sont des articles
+  // 'hammam_bains' vendus dans la même caisse que la Boutique Femme. On
+  // isole ici la part hammam et la part boutique de chaque vente concernée,
+  // pour donner à la gérante la même visibilité que côté Hammam Homme.
+  const femmeHammamRows = useMemo(() => {
+    const now = Date.now();
+    return sales
+      .filter(s => {
+        let matchesPeriod = true;
+        if (filterPeriod === 'today') matchesPeriod = now - s.timestamp < 86400000;
+        else if (filterPeriod === 'week') matchesPeriod = now - s.timestamp < 86400000 * 7;
+        else if (filterPeriod === 'month') matchesPeriod = now - s.timestamp < 86400000 * 30;
+        return matchesPeriod;
+      })
+      .map(s => {
+        const hammamItems = s.items.filter(i => i.category === 'hammam_bains');
+        if (hammamItems.length === 0) return null;
+        const hammamAmount = hammamItems.reduce((sum, i) => sum + i.price * i.qty, 0);
+        return {
+          id: s.id,
+          date: s.date,
+          time: s.time,
+          cashier: s.caissierName || s.caissier,
+          payment: s.payment,
+          paymentDetail: s.paymentDetail,
+          customerPhone: s.customerPhone,
+          hammamAmount,
+          boutiqueAmount: s.total - hammamAmount,
+        };
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null)
+      .sort((a, b) => b.id - a.id);
+  }, [sales, filterPeriod]);
+
+  const femmeHammamTotal = femmeHammamRows.reduce((sum, r) => sum + r.hammamAmount, 0);
+  const femmeBoutiqueTotal = femmeHammamRows.reduce((sum, r) => sum + r.boutiqueAmount, 0);
+  const femmeMobileTotal = femmeHammamRows
+    .filter(r => r.payment === 'mobile')
+    .reduce((sum, r) => sum + r.hammamAmount + r.boutiqueAmount, 0);
+  const femmeEspecesTotal = femmeHammamRows
+    .filter(r => r.payment === 'cash')
+    .reduce((sum, r) => sum + r.hammamAmount + r.boutiqueAmount, 0);
 
   const resetForm = () => {
     setShowAddModal(false);
@@ -266,6 +310,10 @@ export const CommissionsLaveursView: React.FC = () => {
           <span>Nouveau Service</span>
         </button>
       </div>
+
+      <h2 className="text-sm font-bold text-[#1C2321] flex items-center gap-2 pt-1">
+        <span>🧔 Hammam Homme</span>
+      </h2>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -535,6 +583,95 @@ export const CommissionsLaveursView: React.FC = () => {
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <h2 className="text-sm font-bold text-[#1C2321] flex items-center gap-2 pt-1">
+        <span>👩 Hammam Femme</span>
+      </h2>
+
+      {/* Hammam Femme — pas de laveur/commission, articles hammam_bains vendus via la Boutique Femme */}
+      <div className="bg-white rounded-2xl border border-[#E7E0D3] overflow-hidden shadow-xs">
+        <div className="p-4 border-b border-[#E7E0D3] bg-[#F7F3EC]/50 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-xs font-bold text-[#1C2321] uppercase tracking-wider flex items-center gap-2">
+            <Droplet className="w-4 h-4 text-[#0F4C4A]" />
+            <span>Hammam Femme — Détail des Entrées ({femmeHammamRows.length})</span>
+          </h3>
+          <div className="flex flex-wrap items-center gap-4 text-[11px] text-[#6B7873]">
+            <span>
+              Hammam : <span className="font-bold text-[#0F4C4A]">{formatPrice(femmeHammamTotal)}</span>
+            </span>
+            <span>
+              Boutique associée : <span className="font-bold text-[#5F7D6D]">{formatPrice(femmeBoutiqueTotal)}</span>
+            </span>
+            <span>
+              Espèces : <span className="font-bold text-[#1C2321]">{formatPrice(femmeEspecesTotal)}</span>
+            </span>
+            <span>
+              Mobile Money : <span className="font-bold text-[#1C2321]">{formatPrice(femmeMobileTotal)}</span>
+            </span>
+          </div>
+        </div>
+
+        {femmeHammamRows.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-[#F7F3EC] text-[#6B7873] flex items-center justify-center mx-auto mb-3">
+              <Droplet className="w-6 h-6 text-[#B8874B]" />
+            </div>
+            <h4 className="text-sm font-bold text-[#1C2321]">Aucune entrée hammam femme sur la période</h4>
+            <p className="text-xs text-[#6B7873] mt-1 max-w-sm mx-auto">
+              Ces ventes se font depuis la caisse Boutique Femme (articles Hammam & Bains).
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-[#F7F3EC]/80 border-b border-[#E7E0D3] text-[#6B7873] font-bold uppercase tracking-wider text-[10px]">
+                  <th className="py-3 px-4">Date & Heure</th>
+                  <th className="py-3 px-4">N°</th>
+                  <th className="py-3 px-4">Caissière</th>
+                  <th className="py-3 px-4">Paiement</th>
+                  <th className="py-3 px-4 text-right">Hammam</th>
+                  <th className="py-3 px-4 text-right">Boutique</th>
+                  <th className="py-3 px-4 text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E7E0D3]">
+                {femmeHammamRows.map(r => (
+                  <tr key={r.id} className="hover:bg-[#F7F3EC]/40 transition">
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <div className="font-bold text-[#1C2321]">{r.date}</div>
+                      <div className="text-[10px] text-[#6B7873]">{r.time}</div>
+                    </td>
+                    <td className="py-3 px-4 font-mono text-[#6B7873]">{r.id}</td>
+                    <td className="py-3 px-4 font-bold text-[#1C2321]">{r.cashier}</td>
+                    <td className="py-3 px-4 whitespace-nowrap text-[#6B7873]">
+                      {r.payment === 'mobile' ? (
+                        <div>
+                          <div className="font-semibold text-[#1C2321]">
+                            📱 Mobile{r.paymentDetail ? ` (${r.paymentDetail})` : ''}
+                          </div>
+                          {r.customerPhone && <div className="text-[10px]">{r.customerPhone}</div>}
+                        </div>
+                      ) : (
+                        '💵 Espèces'
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#1C2321]">
+                      {formatPrice(r.hammamAmount)}
+                    </td>
+                    <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#5F7D6D]">
+                      {r.boutiqueAmount > 0 ? formatPrice(r.boutiqueAmount) : '—'}
+                    </td>
+                    <td className="py-3 px-4 text-right whitespace-nowrap font-extrabold text-[#1C2321]">
+                      {formatPrice(r.hammamAmount + r.boutiqueAmount)}
                     </td>
                   </tr>
                 ))}

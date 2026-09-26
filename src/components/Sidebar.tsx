@@ -431,12 +431,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             )}
           </li>
 
-          {/* Inventaire (Journal des Caisses) - Admin only */}
+          {/* Inventaire (Stock) - Admin only */}
           {isGerant && (
             <li
               onClick={() => handleNavClick('inventaire')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
-                activeSection === 'inventaire'
+                activeSection === 'inventaire' || activeSection === 'mouvements'
                   ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
@@ -454,15 +454,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                 </svg>
                 <span>Inventaire</span>
               </div>
+              {lowStockProducts.length > 0 && (
+                <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+              )}
             </li>
           )}
 
-          {/* Mouvements de Stock - Admin only */}
+          {/* Journal des Caisses (vérification détaillée par caisse) - Admin only */}
           {isGerant && (
             <li
-              onClick={() => handleNavClick('mouvements')}
+              onClick={() => handleNavClick('journal-caisses')}
               className={`flex items-center justify-between p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
-                activeSection === 'mouvements'
+                activeSection === 'journal-caisses'
                   ? 'bg-[#B8874B] text-[#0A3735] opacity-100 font-bold'
                   : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
               }`}
@@ -475,14 +478,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                   strokeWidth="2"
                   className="w-[17px] h-[17px] shrink-0"
                 >
-                  <path d="M3 3v18h18" />
-                  <path d="M18.7 8 12 14.7l-3.3-3.4L4 16" />
+                  <path d="M9 2h6l3 3v17H6V5z" />
+                  <path d="M9 10h6M9 14h6M9 18h3" />
                 </svg>
-                <span>Mouvements de Stock</span>
+                <span>Journal des Caisses</span>
               </div>
-              {lowStockProducts.length > 0 && (
-                <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
-              )}
             </li>
           )}
 
@@ -539,7 +539,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
         {lowStockProducts.length > 0 && isGerant && (
           <div className="mt-2 mb-2">
             <button
-              onClick={() => handleNavClick('mouvements')}
+              onClick={() => handleNavClick('inventaire')}
               className="w-full text-left p-2 rounded-xl bg-rose-900/30 border border-rose-500/20 text-rose-200 hover:bg-rose-900/50 transition cursor-pointer text-[11px]"
             >
               <div className="flex items-center gap-1.5 font-semibold">
