@@ -22,6 +22,7 @@ import {
   Smartphone,
   Banknote,
   Droplet,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface BoutiqueCartItem {
@@ -43,6 +44,7 @@ export const CommissionsLaveursView: React.FC = () => {
     products,
     addProduct,
     sales,
+    decharges,
   } = useApp();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -68,6 +70,18 @@ export const CommissionsLaveursView: React.FC = () => {
   const [newProductQty, setNewProductQty] = useState('1');
 
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
+
+  // Une fois que la caissière Boutique Homme a fait sa décharge du jour,
+  // les services déjà enregistrés ce jour-là deviennent définitifs.
+  const todayStr = useMemo(() => {
+    const d = new Date();
+    return { formatted: `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`, zeroPadded: `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}` };
+  }, []);
+  const boutiqueHommeClosedToday = decharges.some(
+    d => d.department === 'boutique_homme' && (d.dateDecharge === todayStr.formatted || d.dateDecharge === todayStr.zeroPadded)
+  );
+  const isCommissionLocked = (c: LaveurCommission) =>
+    boutiqueHommeClosedToday && (c.date === todayStr.formatted || c.date === todayStr.zeroPadded);
 
   const knownLaveurs = useMemo(
     () =>
@@ -184,6 +198,10 @@ export const CommissionsLaveursView: React.FC = () => {
   };
 
   const handleOpenEdit = (c: LaveurCommission) => {
+    if (isCommissionLocked(c)) {
+      alert('La caisse Boutique Homme a déjà été clôturée aujourd\'hui : ce service ne peut plus être modifié.');
+      return;
+    }
     setEditingCommission(c);
     setLaveurName(c.laveurName);
     setClientType(c.clientType);
@@ -279,6 +297,10 @@ export const CommissionsLaveursView: React.FC = () => {
   const boutiqueSubtotal = boutiqueCart.reduce((sum, i) => sum + i.price * i.qty, 0);
 
   const handleDelete = (c: LaveurCommission) => {
+    if (isCommissionLocked(c)) {
+      alert('La caisse Boutique Homme a déjà été clôturée aujourd\'hui : ce service ne peut plus être supprimé.');
+      return;
+    }
     if (window.confirm(`Supprimer ce service de ${c.laveurName} (${formatPrice(c.total)}) ?`)) {
       deleteLaveurCommission(c.id);
     }
@@ -565,24 +587,34 @@ export const CommissionsLaveursView: React.FC = () => {
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap text-[#6B7873]">{c.recordedBy}</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEdit(c)}
-                          title="Modifier"
-                          className="p-1.5 rounded-lg bg-[#F7F3EC] hover:bg-[#E4E9E1] text-[#0A3735] transition cursor-pointer"
+                      {isCommissionLocked(c) ? (
+                        <span
+                          className="inline-flex items-center gap-1 text-[10px] font-bold text-[#6B7873]"
+                          title="Caisse clôturée aujourd'hui : service définitif"
                         >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(c)}
-                          title="Supprimer"
-                          className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          Clôturé
+                        </span>
+                      ) : (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEdit(c)}
+                            title="Modifier"
+                            className="p-1.5 rounded-lg bg-[#F7F3EC] hover:bg-[#E4E9E1] text-[#0A3735] transition cursor-pointer"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(c)}
+                            title="Supprimer"
+                            className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

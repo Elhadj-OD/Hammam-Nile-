@@ -416,8 +416,10 @@ export async function getDechargesFromSupabase(): Promise<Decharge[] | null> {
   }
 }
 
-// Une seule décharge par jour : upsert sur "dateDecharge" (refaire une
-// décharge le même jour corrige l'existante au lieu d'en créer une autre).
+// Une seule décharge par jour et par caisse : upsert sur ("dateDecharge",
+// "department"). Une caissière n'a pas la permission de modifier une
+// décharge existante (pas de policy RLS UPDATE) — une fois faite, elle est
+// définitive ; seul un premier INSERT réussit.
 // L'id étant généré côté serveur (BIGSERIAL), on ne l'envoie jamais dans le
 // payload — on relit la ligne réelle après écriture pour rester synchronisé.
 export async function saveDechargeToSupabase(decharge: Omit<Decharge, 'id'>): Promise<Decharge | null> {
@@ -428,6 +430,7 @@ export async function saveDechargeToSupabase(decharge: Omit<Decharge, 'id'>): Pr
       .upsert(
         {
           dateDecharge: decharge.dateDecharge,
+          department: decharge.department,
           totalEspeceCalcule: decharge.totalEspeceCalcule,
           totalMobileMoneyCalcule: decharge.totalMobileMoneyCalcule,
           nombreTransactions: decharge.nombreTransactions,
@@ -438,7 +441,7 @@ export async function saveDechargeToSupabase(decharge: Omit<Decharge, 'id'>): Pr
           faitPar: decharge.faitPar,
           timestamp: decharge.timestamp,
         },
-        { onConflict: 'dateDecharge' }
+        { onConflict: 'dateDecharge,department' }
       )
       .select()
       .single();

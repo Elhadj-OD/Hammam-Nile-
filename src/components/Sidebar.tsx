@@ -254,8 +254,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             </li>
           )}
 
-          {/* Décharge (Clôture Journalière) - Admin only */}
-          {isGerant && (
+          {/* Décharge (Clôture Journalière) - Caissières uniquement (leur propre caisse) */}
+          {!isGerant && currentUser.department && (
             <li
               onClick={() => handleNavClick('decharge')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-[11px] text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
