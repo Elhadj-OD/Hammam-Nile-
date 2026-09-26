@@ -136,11 +136,13 @@ export const ProduitsView: React.FC = () => {
     e.preventDefault();
 
     const priceNum = parseFloat(price);
-    const qtyNum = parseInt(qty) || 0;
-    const minQtyNum = parseInt(minQty) || 5;
+    // Une prestation n'a pas de "pièces en stock" : toujours disponible,
+    // jamais d'alerte de stock bas.
+    const qtyNum = isServiceDept ? 999 : parseInt(qty) || 0;
+    const minQtyNum = isServiceDept ? 0 : parseInt(minQty) || 5;
 
     if (!name.trim()) {
-      alert('Veuillez renseigner un nom pour le produit.');
+      alert(`Veuillez renseigner un nom pour le ${itemWord.toLowerCase()}.`);
       return;
     }
     if (isNaN(priceNum) || priceNum <= 0) {
@@ -226,25 +228,31 @@ export const ProduitsView: React.FC = () => {
       </div>
 
       {/* KPI Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className={`grid grid-cols-1 ${isServiceDept ? '' : 'sm:grid-cols-3'} gap-4`}>
         <div className="bg-white p-4.5 rounded-2xl border border-[#E7E0D3] shadow-xs">
-          <div className="text-xs text-[#6B7873] font-bold uppercase">Nombre de Références</div>
+          <div className="text-xs text-[#6B7873] font-bold uppercase">
+            {isServiceDept ? 'Nombre de Services' : 'Nombre de Références'}
+          </div>
           <div className="text-2xl font-bold font-display text-[#1C2321] mt-1">
-            {accessibleProducts.length} articles
+            {accessibleProducts.length} {isServiceDept ? 'services' : 'articles'}
           </div>
         </div>
-        <div className="bg-white p-4.5 rounded-2xl border border-[#E7E0D3] shadow-xs">
-          <div className="text-xs text-[#6B7873] font-bold uppercase">Total Pièces en Stock</div>
-          <div className="text-2xl font-bold font-display text-[#0F4C4A] mt-1">
-            {totalPieces} pièces
-          </div>
-        </div>
-        <div className="bg-white p-4.5 rounded-2xl border border-[#E7E0D3] shadow-xs">
-          <div className="text-xs text-[#6B7873] font-bold uppercase">Valeur du Stock Boutique</div>
-          <div className="text-2xl font-bold font-display text-[#B8874B] mt-1">
-            {formatPrice(totalValuation)}
-          </div>
-        </div>
+        {!isServiceDept && (
+          <>
+            <div className="bg-white p-4.5 rounded-2xl border border-[#E7E0D3] shadow-xs">
+              <div className="text-xs text-[#6B7873] font-bold uppercase">Total Pièces en Stock</div>
+              <div className="text-2xl font-bold font-display text-[#0F4C4A] mt-1">
+                {totalPieces} pièces
+              </div>
+            </div>
+            <div className="bg-white p-4.5 rounded-2xl border border-[#E7E0D3] shadow-xs">
+              <div className="text-xs text-[#6B7873] font-bold uppercase">Valeur du Stock Boutique</div>
+              <div className="text-2xl font-bold font-display text-[#B8874B] mt-1">
+                {formatPrice(totalValuation)}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Filter and Search Bar */}
@@ -442,8 +450,12 @@ export const ProduitsView: React.FC = () => {
                   <th className="p-3.5">Nom du {itemWord}</th>
                   <th className="p-3.5">Catégorie</th>
                   <th className="p-3.5">Prix Unitaire</th>
-                  <th className="p-3.5 text-center">Nombre de Pièces</th>
-                  <th className="p-3.5">État du Stock</th>
+                  {!isServiceDept && (
+                    <>
+                      <th className="p-3.5 text-center">Nombre de Pièces</th>
+                      <th className="p-3.5">État du Stock</th>
+                    </>
+                  )}
                   <th className="p-3.5 pr-5 text-right">Actions</th>
                 </tr>
               </thead>
@@ -496,51 +508,55 @@ export const ProduitsView: React.FC = () => {
                         {formatPrice(p.price)}
                       </td>
 
-                      {/* Nombre de pièces & quick stock buttons */}
-                      <td className="p-3.5">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleStockAdjustment(p.id, -1)}
-                            disabled={p.qty <= 0}
-                            className="w-6 h-6 rounded-full bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] flex items-center justify-center font-bold text-xs disabled:opacity-30 cursor-pointer"
-                            title="Retirer 1 pièce"
-                          >
-                            -
-                          </button>
-                          <span className="font-bold text-base text-[#1C2321] min-w-[36px] text-center font-mono">
-                            {p.qty}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleStockAdjustment(p.id, 1)}
-                            className="w-6 h-6 rounded-full bg-[#0F4C4A] hover:bg-[#0A3735] text-white flex items-center justify-center font-bold text-xs cursor-pointer"
-                            title="Ajouter 1 pièce"
-                          >
-                            +
-                          </button>
-                          <span className="text-xs text-[#6B7873] ml-0.5">pièces</span>
-                        </div>
-                      </td>
+                      {!isServiceDept && (
+                        <>
+                          {/* Nombre de pièces & quick stock buttons */}
+                          <td className="p-3.5">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleStockAdjustment(p.id, -1)}
+                                disabled={p.qty <= 0}
+                                className="w-6 h-6 rounded-full bg-[#F7F3EC] hover:bg-[#E7E0D3] text-[#1C2321] flex items-center justify-center font-bold text-xs disabled:opacity-30 cursor-pointer"
+                                title="Retirer 1 pièce"
+                              >
+                                -
+                              </button>
+                              <span className="font-bold text-base text-[#1C2321] min-w-[36px] text-center font-mono">
+                                {p.qty}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleStockAdjustment(p.id, 1)}
+                                className="w-6 h-6 rounded-full bg-[#0F4C4A] hover:bg-[#0A3735] text-white flex items-center justify-center font-bold text-xs cursor-pointer"
+                                title="Ajouter 1 pièce"
+                              >
+                                +
+                              </button>
+                              <span className="text-xs text-[#6B7873] ml-0.5">pièces</span>
+                            </div>
+                          </td>
 
-                      {/* État */}
-                      <td className="p-3.5">
-                        {isOut ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
-                            Épuisé (0 pièce)
-                          </span>
-                        ) : isLow ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-                            <AlertTriangle className="w-3 h-3" />
-                            Alerte ({p.qty} restantes)
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                            <CheckCircle2 className="w-3 h-3" />
-                            Disponible
-                          </span>
-                        )}
-                      </td>
+                          {/* État */}
+                          <td className="p-3.5">
+                            {isOut ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
+                                Épuisé (0 pièce)
+                              </span>
+                            ) : isLow ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                                <AlertTriangle className="w-3 h-3" />
+                                Alerte ({p.qty} restantes)
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Disponible
+                              </span>
+                            )}
+                          </td>
+                        </>
+                      )}
 
                       {/* Actions */}
                       <td className="p-3.5 pr-5 text-right">
@@ -835,44 +851,46 @@ export const ProduitsView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Nombre de Pièces & Seuil d'alerte */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="bg-[#F7F3EC] p-3 rounded-xl border border-[#B8874B]/30">
-                  <label className="block text-xs font-extrabold text-[#0F4C4A] mb-1">
-                    Nombre de Pièces en Stock *
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      min="0"
-                      value={qty}
-                      onChange={e => setQty(e.target.value)}
-                      placeholder="20"
-                      required
-                      className="w-full text-base font-bold font-mono p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
-                    />
-                    <span className="text-xs font-bold text-[#6B7873]">pièces</span>
+              {/* Nombre de Pièces & Seuil d'alerte — une prestation n'a pas de stock */}
+              {!isServiceDept && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="bg-[#F7F3EC] p-3 rounded-xl border border-[#B8874B]/30">
+                    <label className="block text-xs font-extrabold text-[#0F4C4A] mb-1">
+                      Nombre de Pièces en Stock *
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        value={qty}
+                        onChange={e => setQty(e.target.value)}
+                        placeholder="20"
+                        required
+                        className="w-full text-base font-bold font-mono p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                      />
+                      <span className="text-xs font-bold text-[#6B7873]">pièces</span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="bg-[#F7F3EC] p-3 rounded-xl border border-[#E7E0D3]">
-                  <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                    Seuil d'alerte stock bas
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      min="1"
-                      value={minQty}
-                      onChange={e => setMinQty(e.target.value)}
-                      placeholder="5"
-                      required
-                      className="w-full text-base font-bold font-mono p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
-                    />
-                    <span className="text-xs font-bold text-[#6B7873]">pièces</span>
+                  <div className="bg-[#F7F3EC] p-3 rounded-xl border border-[#E7E0D3]">
+                    <label className="block text-xs font-bold text-[#1C2321] mb-1">
+                      Seuil d'alerte stock bas
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="1"
+                        value={minQty}
+                        onChange={e => setMinQty(e.target.value)}
+                        placeholder="5"
+                        required
+                        className="w-full text-base font-bold font-mono p-2 bg-white border border-[#E7E0D3] rounded-lg text-[#1C2321] focus:outline-none focus:border-[#0F4C4A]"
+                      />
+                      <span className="text-xs font-bold text-[#6B7873]">pièces</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Description */}
               <div>
