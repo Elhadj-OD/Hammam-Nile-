@@ -27,6 +27,18 @@
   }
 }
 
+/* Motif discret évoquant les ondulations du Nil — utilisé avec parcimonie,
+   jamais comme simple décor générique (ex: écran de connexion). */
+.nile-waves {
+  background-image: repeating-radial-gradient(
+    circle at 50% 120%,
+    transparent 0,
+    transparent 38px,
+    rgba(184, 135, 75, 0.06) 39px,
+    rgba(184, 135, 75, 0.06) 40px
+  );
+}
+
 /* Thermal receipt saw-tooth serrated paper edges */
 .receipt-edge-top {
   background: radial-gradient(circle, transparent, transparent 4px, #ffffff 4px, #ffffff);

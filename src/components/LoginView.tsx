@@ -7,7 +7,6 @@ import {
   KeyRound,
   Eye,
   EyeOff,
-  ArrowRight,
   ShieldCheck,
 } from 'lucide-react';
 import { HammamNileLogo } from './HammamNileLogo';
@@ -41,26 +40,23 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#072423] p-4 sm:p-6 relative overflow-hidden">
-      {/* Decorative background ambient glows */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#004CB7]/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#B8874B]/10 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="min-h-screen flex items-center justify-center bg-[#072423] nile-waves p-4 sm:p-6 relative overflow-hidden">
       <div className="max-w-md w-full relative z-10">
         {/* Card */}
         <div className="bg-white rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-[#E7E0D3] p-6 sm:p-8">
           {/* Official Logo & Header */}
           <div className="text-center mb-6 pt-1">
-            <div className="inline-block p-4 rounded-3xl bg-slate-50/80 border border-slate-100 shadow-xs mb-3">
+            <div className="inline-block p-4 rounded-3xl bg-slate-50/80 border border-slate-100 shadow-xs mb-2">
               <HammamNileLogo variant="full" size="lg" color="#004CB7" textColor="#004CB7" />
             </div>
-            <p className="text-[11px] text-[#6B7873] font-sans font-bold tracking-widest uppercase">
-              Caisse, Boutique & Gestion Hammam
+            <div className="w-10 h-[3px] rounded-full bg-[#B8874B] mx-auto mb-2" />
+            <p className="text-xs text-[#6B7873] font-semibold">
+              Caisse, boutique & gestion du hammam
             </p>
             {firebaseConnected && (
-              <div className="mt-1 flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-700">
+              <div className="mt-1.5 flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-700">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Synchronisation Cloud Active</span>
+                <span>Synchronisation cloud active</span>
               </div>
             )}
           </div>
@@ -76,7 +72,7 @@ export const LoginView: React.FC = () => {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#6B7873] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#6B7873] mb-1.5">
                 Nom d'utilisateur
               </label>
               <div className="relative">
@@ -101,8 +97,8 @@ export const LoginView: React.FC = () => {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-[#6B7873] uppercase tracking-wider">
-                  Code / Mot de passe confidentiel
+                <label className="block text-xs font-bold text-[#6B7873]">
+                  Code confidentiel
                 </label>
                 <span className="text-[11px] text-[#6B7873] flex items-center gap-1">
                   <Lock className="w-3 h-3 text-[#004CB7]" />
@@ -140,11 +136,10 @@ export const LoginView: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 group cursor-pointer text-white bg-[#0F4C4A] hover:bg-[#0A3735] disabled:opacity-60"
+              className="w-full mt-2 py-3.5 px-4 font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-px transition flex items-center justify-center gap-2 cursor-pointer text-white bg-[#0F4C4A] hover:bg-[#0A3735] disabled:opacity-60 disabled:translate-y-0"
             >
               <Lock className="w-4 h-4" />
               <span>{loading ? 'Connexion…' : 'Se connecter'}</span>
-              {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />}
             </button>
           </form>
 
@@ -152,7 +147,7 @@ export const LoginView: React.FC = () => {
           <div className="mt-5 pt-4 border-t border-[#E7E0D3] text-center">
             <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-[#6B7873]">
               <ShieldCheck className="w-4 h-4 text-[#004CB7]" />
-              <span>Authentification Sécurisée Hammam Nile</span>
+              <span>Connexion sécurisée</span>
             </div>
             <p className="text-[11px] text-[#6B7873]/80 mt-1">
               Chaque personne se connecte avec son propre identifiant et son propre code confidentiel.
@@ -162,7 +157,7 @@ export const LoginView: React.FC = () => {
 
         {/* Footer info */}
         <p className="text-center text-xs text-[#EFE8D8]/70 mt-5">
-          {settings.shopName || 'Hammam Nile'} — Caisse, Soins & Gestion
+          {settings.shopName || 'Hammam Nile'} — Caisse, soins & gestion
         </p>
       </div>
     </div>
