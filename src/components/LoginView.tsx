@@ -48,14 +48,14 @@ export const LoginView: React.FC = () => {
 
       <div className="max-w-md w-full relative z-10">
         {/* Card */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
+        <div className="bg-white/45 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
           {/* Official Logo & Header */}
           <div className="text-center mb-6 pt-1">
-            <div className="inline-block p-4 rounded-3xl bg-white/50 border border-white/60 shadow-xs mb-2">
+            <div className="inline-block p-4 rounded-3xl bg-white/25 border border-white/50 shadow-xs mb-2">
               <HammamNileLogo variant="full" size="lg" color="#004CB7" textColor="#004CB7" />
             </div>
             <div className="w-10 h-[3px] rounded-full bg-[#B8874B] mx-auto mb-2" />
-            <p className="text-xs text-[#6B7873] font-semibold">
+            <p className="text-xs text-[#3A4149] font-semibold">
               Caisse, boutique & gestion du hammam
             </p>
             {firebaseConnected && (
@@ -77,11 +77,11 @@ export const LoginView: React.FC = () => {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#6B7873] mb-1.5">
+              <label className="block text-xs font-bold text-[#3A4149] mb-1.5">
                 Nom d'utilisateur
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6B7873]">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#3A4149]">
                   <UserIcon className="w-4 h-4" />
                 </div>
                 <input
@@ -102,16 +102,16 @@ export const LoginView: React.FC = () => {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-[#6B7873]">
+                <label className="block text-xs font-bold text-[#3A4149]">
                   Code confidentiel
                 </label>
-                <span className="text-[11px] text-[#6B7873] flex items-center gap-1">
+                <span className="text-[11px] text-[#3A4149] flex items-center gap-1">
                   <Lock className="w-3 h-3 text-[#004CB7]" />
                   <span>Masqué</span>
                 </span>
               </div>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6B7873]">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#3A4149]">
                   <KeyRound className="w-4 h-4" />
                 </div>
                 <input
@@ -130,7 +130,7 @@ export const LoginView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(prev => !prev)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#6B7873] hover:text-[#1C2321] cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#3A4149] hover:text-[#1C2321] cursor-pointer"
                   title={showPassword ? 'Masquer' : 'Afficher'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -150,11 +150,11 @@ export const LoginView: React.FC = () => {
 
           {/* Security notice */}
           <div className="mt-5 pt-4 border-t border-[#E7E0D3] text-center">
-            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-[#6B7873]">
+            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-[#3A4149]">
               <ShieldCheck className="w-4 h-4 text-[#004CB7]" />
               <span>Connexion sécurisée</span>
             </div>
-            <p className="text-[11px] text-[#6B7873]/80 mt-1">
+            <p className="text-[11px] text-[#3A4149] mt-1">
               Chaque personne se connecte avec son propre identifiant et son propre code confidentiel.
             </p>
           </div>

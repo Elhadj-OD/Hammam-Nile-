@@ -41,12 +41,12 @@ export const ForcePasswordChangeView: React.FC = () => {
       </div>
 
       <div className="max-w-md w-full relative z-10">
-        <div className="bg-white/70 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
+        <div className="bg-white/45 backdrop-blur-xl rounded-[32px] shadow-[0_30px_70px_-20px_rgba(0,0,0,0.55)] border border-white/40 p-6 sm:p-8">
           <div className="text-center mb-6 pt-1">
-            <div className="inline-block p-4 rounded-3xl bg-white/50 border border-white/60 shadow-xs mb-3">
+            <div className="inline-block p-4 rounded-3xl bg-white/25 border border-white/50 shadow-xs mb-3">
               <HammamNileLogo variant="full" size="lg" color="#004CB7" textColor="#004CB7" />
             </div>
-            <p className="text-[11px] text-[#6B7873] font-sans font-bold tracking-widest uppercase">
+            <p className="text-[11px] text-[#3A4149] font-sans font-bold tracking-widest uppercase">
               Nouveau mot de passe requis
             </p>
           </div>
@@ -68,11 +68,11 @@ export const ForcePasswordChangeView: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#6B7873] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#3A4149] uppercase tracking-wider mb-1.5">
                 Nouveau mot de passe
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6B7873]">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#3A4149]">
                   <KeyRound className="w-4 h-4" />
                 </div>
                 <input
@@ -91,7 +91,7 @@ export const ForcePasswordChangeView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(prev => !prev)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#6B7873] hover:text-[#1C2321] cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#3A4149] hover:text-[#1C2321] cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -99,7 +99,7 @@ export const ForcePasswordChangeView: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#6B7873] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#3A4149] uppercase tracking-wider mb-1.5">
                 Confirmez le mot de passe
               </label>
               <input
@@ -129,7 +129,7 @@ export const ForcePasswordChangeView: React.FC = () => {
           <button
             type="button"
             onClick={logout}
-            className="w-full mt-4 py-2 text-xs font-bold text-[#6B7873] hover:text-[#1C2321] flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full mt-4 py-2 text-xs font-bold text-[#3A4149] hover:text-[#1C2321] flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Ce n'est pas moi — se déconnecter</span>
