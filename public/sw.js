@@ -1,5 +1,5 @@
 // Hammam Nile — Service Worker (PWA)
-const CACHE_NAME = 'hammam-nile-v2';
+const CACHE_NAME = 'hammam-nile-v3';
 const OFFLINE_URL = '/';
 
 // Permet à la page de forcer l'activation immédiate d'un nouveau SW en attente

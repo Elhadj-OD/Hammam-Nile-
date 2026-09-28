@@ -55,22 +55,57 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Great+Vibes&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration : se met à jour tout seul dès qu'une
+         nouvelle version est déployée, sans attendre que quelqu'un clique
+         sur "Actualiser l'app" (qui devient injoignable si la page reste
+         bloquée sur une ancienne version cassée). -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
           navigator.serviceWorker.register('/sw.js', { scope: '/' })
             .then(function(reg) {
               console.log('[PWA] Service Worker enregistré :', reg.scope);
+
+              // Un nouveau SW en attente (déjà présent à l'enregistrement) :
+              // on le fait passer actif tout de suite.
+              if (reg.waiting) {
+                reg.waiting.postMessage('SKIP_WAITING');
+              }
+
+              // Une mise à jour arrive pendant que la page est ouverte.
+              reg.addEventListener('updatefound', function () {
+                var newWorker = reg.installing;
+                if (!newWorker) return;
+                newWorker.addEventListener('statechange', function () {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    newWorker.postMessage('SKIP_WAITING');
+                  }
+                });
+              });
+
+              // Vérifie s'il existe une version plus récente à chaque
+              // retour sur l'app (utile pour un onglet/PWA resté ouvert).
+              document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') reg.update();
+              });
             })
             .catch(function(err) {
               console.warn('[PWA] Échec enregistrement Service Worker :', err);
             });
+
+          // Le nouveau SW vient de prendre le contrôle : recharge une
+          // seule fois pour utiliser la dernière version.
+          var reloading = false;
+          navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (reloading) return;
+            reloading = true;
+            window.location.reload();
+          });
         });
       }
     </script>
   </head>
-  <body class="bg-[#E9E3D6] text-[#1C2321] antialiased selection:bg-[#B8874B] selection:text-white">
+  <body class="bg-[#E4EEF9] text-[#1C2321] antialiased selection:bg-[#B8874B] selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
