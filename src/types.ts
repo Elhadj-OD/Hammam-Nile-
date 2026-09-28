@@ -217,6 +217,10 @@ export interface LaveurCommission {
   clientType: ClientType;
   price: number;
   commission: number;
+  // Pourcentage utilisé pour calculer la commission, quand la caissière l'a
+  // saisi elle-même (côté Boutique Femme/Hammam) au lieu du montant fixe de
+  // la grille. Absent = commission fixe classique.
+  commissionPercent?: number;
   bonus: number;
   total: number;
   payment: 'cash' | 'mobile';
@@ -229,12 +233,16 @@ export interface LaveurCommission {
   recordedBy: string;
 }
 
+export type LaveurGender = 'homme' | 'femme';
+
 // Profil d'un laveur (juste un nom — pas de compte, pas de connexion) :
 // permet de le "déclarer" avant son premier service et de retrouver
-// facilement ses gains cumulés (commissions + bonus).
+// facilement ses gains cumulés (commissions + bonus). Les laveurs hommes et
+// femmes sont des équipes séparées : chaque caisse ne voit que les siens.
 export interface Laveur {
   id: number;
   name: string;
+  gender?: LaveurGender;
   createdAt: string;
 }
 

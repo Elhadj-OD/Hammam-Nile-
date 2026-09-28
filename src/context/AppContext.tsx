@@ -22,6 +22,7 @@ import {
   ClientType,
   Decharge,
   Laveur,
+  LaveurGender,
 } from '../types';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
 import {
@@ -63,6 +64,7 @@ import {
   deleteLaveurCommissionFromSupabase,
   getLaveursFromSupabase,
   saveLaveurToSupabase,
+  updateLaveurInSupabase,
   deleteLaveurFromSupabase,
   getDechargesFromSupabase,
   saveDechargeToSupabase,
@@ -179,6 +181,7 @@ interface AppContextType {
   // (nom/téléphone client, paiement, prix si un seul article) tant que sa
   // caisse n'a pas encore fait sa décharge du jour — ensuite c'est figé.
   isSaleLocked: (sale: Sale) => boolean;
+  isLaveurCommissionLocked: (commission: LaveurCommission) => boolean;
   updateSale: (
     id: number,
     updates: {
@@ -251,6 +254,7 @@ interface AppContextType {
   addLaveurCommission: (data: {
     laveurName: string;
     clientType: ClientType;
+    commissionPercent?: number;
     bonus: number;
     payment: 'cash' | 'mobile';
     paymentDetail?: string;
@@ -262,6 +266,7 @@ interface AppContextType {
     updates: {
       laveurName?: string;
       clientType?: ClientType;
+      commissionPercent?: number | null;
       bonus?: number;
       payment?: 'cash' | 'mobile';
       paymentDetail?: string;
@@ -272,7 +277,8 @@ interface AppContextType {
 
   // Profils des laveurs (juste un nom, pas de compte)
   laveurs: Laveur[];
-  addLaveur: (name: string) => { success: boolean; error?: string };
+  addLaveur: (name: string, gender: LaveurGender) => { success: boolean; error?: string };
+  updateLaveurGender: (id: number, gender: LaveurGender) => void;
   deleteLaveur: (id: number) => void;
 
   // Décharge (clôture journalière) — chaque caissière clôture sa propre
@@ -1221,6 +1227,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
+  // Même logique que isSaleLocked, pour les services laveurs (Boutique
+  // Homme et Boutique Femme/Hammam partagent cette page, donc le verrou se
+  // détermine par le département de la caissière qui a enregistré le
+  // service, pas par une caisse unique codée en dur).
+  const isLaveurCommissionLocked = (commission: LaveurCommission): boolean => {
+    const owner = users.find(u => u.username.toLowerCase() === commission.recordedBy.toLowerCase());
+    if (!owner?.department) return false;
+    return decharges.some(
+      d => d.department === owner.department && normalizeDateStr(d.dateDecharge) === normalizeDateStr(commission.date)
+    );
+  };
+
   const updateSale = (
     id: number,
     updates: {
@@ -1556,6 +1574,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const addLaveurCommission = (data: {
     laveurName: string;
     clientType: ClientType;
+    commissionPercent?: number;
     bonus: number;
     payment: 'cash' | 'mobile';
     paymentDetail?: string;
@@ -1563,6 +1582,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     products?: { productId: number; qty: number; price?: number }[];
   }): LaveurCommission => {
     const grid = CLIENT_TYPE_GRID[data.clientType];
+    // Côté Boutique Femme/Hammam, la caissière peut taper elle-même un
+    // pourcentage de commission au lieu du montant fixe de la grille.
+    const hasCustomPercent = data.commissionPercent != null && data.commissionPercent >= 0;
+    const commission = hasCustomPercent
+      ? Math.round((grid.price * (data.commissionPercent as number)) / 100)
+      : grid.commission;
     const now = new Date();
     const timestamp = now.getTime();
     const bonus = Math.max(0, data.bonus || 0);
@@ -1644,9 +1669,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       laveurName,
       clientType: data.clientType,
       price: grid.price,
-      commission: grid.commission,
+      commission,
+      commissionPercent: hasCustomPercent ? data.commissionPercent : undefined,
       bonus,
-      total: grid.commission + bonus,
+      total: commission + bonus,
       payment: data.payment,
       paymentDetail: data.payment === 'mobile' ? data.paymentDetail?.trim() || undefined : undefined,
       customerPhone: data.customerPhone?.trim() || undefined,
@@ -1666,6 +1692,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     updates: {
       laveurName?: string;
       clientType?: ClientType;
+      commissionPercent?: number | null;
       bonus?: number;
       payment?: 'cash' | 'mobile';
       paymentDetail?: string;
@@ -1680,20 +1707,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const grid = CLIENT_TYPE_GRID[clientType];
         const bonus = updates.bonus != null ? Math.max(0, updates.bonus) : c.bonus;
         const payment = updates.payment ?? c.payment;
+        // null = repasser en commission fixe classique ; undefined = ne pas
+        // changer ; un nombre = nouveau pourcentage tapé par la caissière.
+        const commissionPercent =
+          updates.commissionPercent === null ? undefined : updates.commissionPercent ?? c.commissionPercent;
+        const hasCustomPercent = commissionPercent != null && commissionPercent >= 0;
+        const commission = hasCustomPercent
+          ? Math.round((grid.price * (commissionPercent as number)) / 100)
+          : grid.commission;
 
         const updated: LaveurCommission = {
           ...c,
           laveurName: updates.laveurName?.trim() || c.laveurName,
           clientType,
           price: grid.price,
-          commission: grid.commission,
+          commission,
+          commissionPercent: hasCustomPercent ? commissionPercent : undefined,
           bonus,
-          total: grid.commission + bonus,
+          total: commission + bonus,
           payment,
           paymentDetail: payment === 'mobile' ? updates.paymentDetail?.trim() || c.paymentDetail : undefined,
           customerPhone: payment === 'mobile' ? updates.customerPhone?.trim() || c.customerPhone : undefined,
         };
-        updateLaveurCommissionInSupabase(id, updated);
+        // `undefined` serait simplement omis de la requête Supabase (donc
+        // ne réinitialiserait pas une ancienne valeur) — on envoie `null`
+        // explicitement pour bien effacer la colonne quand on repasse en
+        // commission fixe.
+        updateLaveurCommissionInSupabase(id, { ...updated, commissionPercent: updated.commissionPercent ?? null } as Partial<LaveurCommission>);
         return updated;
       })
     );
@@ -1705,7 +1745,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Profils des laveurs
-  const addLaveur = (name: string): { success: boolean; error?: string } => {
+  const addLaveur = (name: string, gender: LaveurGender): { success: boolean; error?: string } => {
     const cleanName = name.trim();
     if (!cleanName) return { success: false, error: 'Veuillez indiquer un nom.' };
     if (laveurs.some(l => l.name.toLowerCase() === cleanName.toLowerCase())) {
@@ -1714,11 +1754,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const newLaveur: Laveur = {
       id: Date.now(),
       name: cleanName,
+      gender,
       createdAt: new Date().toISOString(),
     };
     setLaveurs(prev => [...prev, newLaveur].sort((a, b) => a.name.localeCompare(b.name)));
     saveLaveurToSupabase(newLaveur);
     return { success: true };
+  };
+
+  const updateLaveurGender = (id: number, gender: LaveurGender) => {
+    setLaveurs(prev => prev.map(l => (l.id === id ? { ...l, gender } : l)));
+    updateLaveurInSupabase(id, { gender });
   };
 
   const deleteLaveur = (id: number) => {
@@ -1821,6 +1867,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         completeServiceSale,
         sales,
         isSaleLocked,
+        isLaveurCommissionLocked,
         updateSale,
         clients,
         addClient,
@@ -1845,6 +1892,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteLaveurCommission,
         laveurs,
         addLaveur,
+        updateLaveurGender,
         deleteLaveur,
         decharges,
         addOrUpdateDecharge,
