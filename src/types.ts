@@ -209,7 +209,7 @@ export type ActiveSection =
   | 'parametres'
   | 'assistant';
 
-export type ClientType = 'vip' | 'simple' | 'enfant';
+export type ClientType = 'vip' | 'standard' | 'simple' | 'enfant';
 
 export interface LaveurCommission {
   id: number;
