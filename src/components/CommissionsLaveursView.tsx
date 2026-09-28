@@ -361,6 +361,8 @@ export const CommissionsLaveursView: React.FC = () => {
         </button>
       </div>
 
+      {(isGerant || myGender === 'homme') && (
+      <>
       <h2 className="text-sm font-bold text-[#1C2321] flex items-center gap-2 pt-1">
         <span>🧔 Hammam Homme</span>
       </h2>
@@ -654,7 +656,11 @@ export const CommissionsLaveursView: React.FC = () => {
           </div>
         )}
       </div>
+      </>
+      )}
 
+      {(isGerant || myGender === 'femme') && (
+      <>
       <h2 className="text-sm font-bold text-[#1C2321] flex items-center gap-2 pt-1">
         <span>👩 Hammam Femme</span>
       </h2>
@@ -743,6 +749,8 @@ export const CommissionsLaveursView: React.FC = () => {
           </div>
         )}
       </div>
+      </>
+      )}
 
       {/* Modal: Add New Service */}
       {showAddModal && (
@@ -799,7 +807,7 @@ export const CommissionsLaveursView: React.FC = () => {
               {/* Client type */}
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1.5">Type de client *</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {(Object.keys(CLIENT_TYPE_GRID) as ClientType[]).map(ct => (
                     <button
                       key={ct}

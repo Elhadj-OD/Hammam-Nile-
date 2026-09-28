@@ -187,7 +187,7 @@ export const LaveursView: React.FC = () => {
           <Percent className="w-4 h-4 text-[#B8874B]" />
           <span>Grille de Commission (par service)</span>
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {(Object.keys(CLIENT_TYPE_GRID) as ClientType[]).map(ct => {
             const g = CLIENT_TYPE_GRID[ct];
             const pct = Math.round((g.commission / g.price) * 100);
