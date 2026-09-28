@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
-import { ClientType, LaveurCommission } from '../types';
+import { ClientType, LaveurCommission, LaveurGender } from '../types';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
 import { MOBILE_OPERATORS } from '../lib/mobileOperators';
 import {
@@ -39,13 +39,21 @@ export const CommissionsLaveursView: React.FC = () => {
     addLaveurCommission,
     updateLaveurCommission,
     deleteLaveurCommission,
+    isLaveurCommissionLocked,
     laveurs,
     settings,
     products,
     addProduct,
     sales,
-    decharges,
+    currentUser,
   } = useApp();
+
+  // Boutique Homme (Elhadj) garde la commission fixe classique ; Boutique
+  // Femme/Hammam peut la remplacer par un pourcentage tapé par la caissière.
+  const isGerant = currentUser?.role === 'gerant';
+  const myGender: LaveurGender | null =
+    currentUser?.department === 'boutique_homme' ? 'homme' : currentUser?.department === 'boutique_femme' ? 'femme' : null;
+  const canUsePercent = myGender !== 'homme';
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCommission, setEditingCommission] = useState<LaveurCommission | null>(null);
@@ -56,6 +64,8 @@ export const CommissionsLaveursView: React.FC = () => {
   // Form state
   const [laveurName, setLaveurName] = useState('');
   const [clientType, setClientType] = useState<ClientType>('simple');
+  const [useCustomPercent, setUseCustomPercent] = useState(false);
+  const [customPercent, setCustomPercent] = useState<string>('20');
   const [bonus, setBonus] = useState<number>(0);
   const [payment, setPayment] = useState<'cash' | 'mobile'>('cash');
   const [mobileOperator, setMobileOperator] = useState<string>('Bankily');
@@ -71,23 +81,22 @@ export const CommissionsLaveursView: React.FC = () => {
 
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
 
-  // Une fois que la caissière Boutique Homme a fait sa décharge du jour,
-  // les services déjà enregistrés ce jour-là deviennent définitifs.
-  const todayStr = useMemo(() => {
-    const d = new Date();
-    return { formatted: `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`, zeroPadded: `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}` };
-  }, []);
-  const boutiqueHommeClosedToday = decharges.some(
-    d => d.department === 'boutique_homme' && (d.dateDecharge === todayStr.formatted || d.dateDecharge === todayStr.zeroPadded)
-  );
-  const isCommissionLocked = (c: LaveurCommission) =>
-    boutiqueHommeClosedToday && (c.date === todayStr.formatted || c.date === todayStr.zeroPadded);
+  const isCommissionLocked = isLaveurCommissionLocked;
 
+  // Une caissière ne propose que les laveurs de sa propre équipe (+ les
+  // fiches anciennes sans genre assigné, pour ne rien cacher par erreur).
   const knownLaveurs = useMemo(
     () =>
       Array.from(new Set([...laveurs.map(l => l.name), ...laveurCommissions.map(c => c.laveurName)])).sort(),
     [laveurs, laveurCommissions]
   );
+  const myKnownLaveurs = useMemo(() => {
+    if (isGerant || !myGender) return knownLaveurs;
+    const allowedNames = new Set(
+      laveurs.filter(l => l.gender === myGender || !l.gender).map(l => l.name)
+    );
+    return knownLaveurs.filter(name => allowedNames.has(name) || !laveurs.some(l => l.name === name));
+  }, [knownLaveurs, laveurs, isGerant, myGender]);
 
   const filteredCommissions = useMemo(() => {
     return laveurCommissions.filter(c => {
@@ -183,6 +192,8 @@ export const CommissionsLaveursView: React.FC = () => {
     setEditingCommission(null);
     setLaveurName('');
     setClientType('simple');
+    setUseCustomPercent(false);
+    setCustomPercent('20');
     setBonus(0);
     setPayment('cash');
     setMobileOperator('Bankily');
@@ -199,12 +210,14 @@ export const CommissionsLaveursView: React.FC = () => {
 
   const handleOpenEdit = (c: LaveurCommission) => {
     if (isCommissionLocked(c)) {
-      alert('La caisse Boutique Homme a déjà été clôturée aujourd\'hui : ce service ne peut plus être modifié.');
+      alert('Votre caisse a déjà été clôturée aujourd\'hui : ce service ne peut plus être modifié.');
       return;
     }
     setEditingCommission(c);
     setLaveurName(c.laveurName);
     setClientType(c.clientType);
+    setUseCustomPercent(c.commissionPercent != null);
+    setCustomPercent(c.commissionPercent != null ? String(c.commissionPercent) : '20');
     setBonus(c.bonus);
     setPayment(c.payment);
     setMobileOperator(c.payment === 'mobile' ? c.paymentDetail || 'Bankily' : 'Bankily');
@@ -230,11 +243,18 @@ export const CommissionsLaveursView: React.FC = () => {
       setFormError('Veuillez indiquer le numéro mobile money du client.');
       return;
     }
+    const percentValue = parseFloat(customPercent);
+    if (canUsePercent && useCustomPercent && (isNaN(percentValue) || percentValue < 0 || percentValue > 100)) {
+      setFormError('Le pourcentage doit être entre 0 et 100.');
+      return;
+    }
+    const commissionPercent = canUsePercent && useCustomPercent ? percentValue : undefined;
 
     if (editingCommission) {
       updateLaveurCommission(editingCommission.id, {
         laveurName: laveurName.trim(),
         clientType,
+        commissionPercent: commissionPercent ?? null,
         bonus,
         payment,
         paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
@@ -244,6 +264,7 @@ export const CommissionsLaveursView: React.FC = () => {
       addLaveurCommission({
         laveurName: laveurName.trim(),
         clientType,
+        commissionPercent,
         bonus,
         payment,
         paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
@@ -298,7 +319,7 @@ export const CommissionsLaveursView: React.FC = () => {
 
   const handleDelete = (c: LaveurCommission) => {
     if (isCommissionLocked(c)) {
-      alert('La caisse Boutique Homme a déjà été clôturée aujourd\'hui : ce service ne peut plus être supprimé.');
+      alert('Votre caisse a déjà été clôturée aujourd\'hui : ce service ne peut plus être supprimé.');
       return;
     }
     if (window.confirm(`Supprimer ce service de ${c.laveurName} (${formatPrice(c.total)}) ?`)) {
@@ -307,6 +328,11 @@ export const CommissionsLaveursView: React.FC = () => {
   };
 
   const grid = CLIENT_TYPE_GRID[clientType];
+  const effectivePercentValue = parseFloat(customPercent);
+  const previewCommission =
+    canUsePercent && useCustomPercent && !isNaN(effectivePercentValue)
+      ? Math.round((grid.price * effectivePercentValue) / 100)
+      : grid.commission;
 
   return (
     <div className="space-y-6 max-w-[1360px] mx-auto pb-12">
@@ -319,7 +345,9 @@ export const CommissionsLaveursView: React.FC = () => {
           </div>
           <h1 className="text-2xl font-bold font-display text-[#1C2321]">Hammam — Services & Commissions</h1>
           <p className="text-sm text-[#6B7873] mt-1">
-            Enregistrez chaque service par type de client — la commission fixe se calcule automatiquement, plus un bonus/pourboire optionnel. Vous pouvez aussi ajouter les articles boutique achetés par le même client.
+            Enregistrez chaque service par type de client — la commission se calcule automatiquement (
+            {canUsePercent ? 'montant fixe, ou en pourcentage si vous préférez' : 'montant fixe'}), plus un
+            bonus/pourboire optionnel. Vous pouvez aussi ajouter les articles boutique achetés par le même client.
           </p>
         </div>
 
@@ -578,6 +606,9 @@ export const CommissionsLaveursView: React.FC = () => {
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap font-bold text-[#004CB7]">
                       {formatPrice(c.commission)}
+                      {c.commissionPercent != null && (
+                        <span className="block text-[9px] font-bold text-[#B8874B]">({c.commissionPercent}%)</span>
+                      )}
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap font-semibold text-[#B8874B]">
                       {c.bonus > 0 ? formatPrice(c.bonus) : '—'}
@@ -759,7 +790,7 @@ export const CommissionsLaveursView: React.FC = () => {
                   className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 />
                 <datalist id="laveur-suggestions">
-                  {knownLaveurs.map(name => (
+                  {myKnownLaveurs.map(name => (
                     <option key={name} value={name} />
                   ))}
                 </datalist>
@@ -788,6 +819,43 @@ export const CommissionsLaveursView: React.FC = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Commission en pourcentage — option Boutique Femme/Hammam */}
+              {canUsePercent && (
+                <div className="p-3.5 rounded-xl border border-[#E7E0D3] bg-[#F7F3EC]/60">
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={useCustomPercent}
+                      onChange={e => setUseCustomPercent(e.target.checked)}
+                      className="w-4 h-4 accent-[#004CB7] cursor-pointer"
+                    />
+                    <span className="text-xs font-bold text-[#1C2321]">
+                      Commission en pourcentage (au lieu du montant fixe)
+                    </span>
+                  </label>
+                  {useCustomPercent && (
+                    <div className="mt-3 flex items-center gap-3">
+                      <div className="relative flex-1 max-w-[140px]">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="1"
+                          value={customPercent}
+                          onChange={e => setCustomPercent(e.target.value)}
+                          className="w-full text-sm p-2.5 pr-7 bg-white border border-[#E7E0D3] rounded-xl text-[#1C2321] font-bold focus:outline-none focus:border-[#004CB7]"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#6B7873] font-bold">%</span>
+                      </div>
+                      <div className="text-xs text-[#6B7873]">
+                        = <span className="font-extrabold text-[#004CB7]">{formatPrice(previewCommission)}</span> sur{' '}
+                        {formatPrice(grid.price)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Payment method */}
               <div>
@@ -1062,8 +1130,8 @@ export const CommissionsLaveursView: React.FC = () => {
                   <span className="font-bold">{formatPrice(grid.price)}</span>
                 </div>
                 <div className="flex justify-between text-[#002E6E]">
-                  <span>Commission fixe (laveur)</span>
-                  <span className="font-bold">{formatPrice(grid.commission)}</span>
+                  <span>Commission {useCustomPercent ? `(${customPercent || 0}%)` : 'fixe'} (laveur)</span>
+                  <span className="font-bold">{formatPrice(previewCommission)}</span>
                 </div>
                 <div className="flex justify-between text-[#002E6E]">
                   <span>Bonus (laveur)</span>
@@ -1071,7 +1139,7 @@ export const CommissionsLaveursView: React.FC = () => {
                 </div>
                 <div className="flex justify-between pt-1.5 border-t border-[#004CB7]/20 font-extrabold text-[#004CB7]">
                   <span>Total commission laveur</span>
-                  <span>{formatPrice(grid.commission + bonus)}</span>
+                  <span>{formatPrice(previewCommission + bonus)}</span>
                 </div>
                 {boutiqueCart.length > 0 && (
                   <>
@@ -1081,7 +1149,7 @@ export const CommissionsLaveursView: React.FC = () => {
                     </div>
                     <div className="flex justify-between pt-1.5 border-t border-[#004CB7]/20 text-sm font-extrabold text-[#1C2321]">
                       <span>Total payé par le client</span>
-                      <span>{formatPrice(grid.commission + bonus + boutiqueSubtotal)}</span>
+                      <span>{formatPrice(previewCommission + bonus + boutiqueSubtotal)}</span>
                     </div>
                   </>
                 )}

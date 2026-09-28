@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
-import { ClientType, LaveurCommission } from '../types';
+import { ClientType, LaveurCommission, LaveurGender } from '../types';
 import {
   Users,
   UserPlus,
@@ -15,11 +15,13 @@ import {
   AlertCircle,
   ChevronRight,
   Percent,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface LaveurProfile {
   laveurId: number | null;
   name: string;
+  gender?: LaveurGender;
   count: number;
   commission: number;
   bonus: number;
@@ -28,11 +30,20 @@ interface LaveurProfile {
 }
 
 export const LaveursView: React.FC = () => {
-  const { laveurs, addLaveur, deleteLaveur, laveurCommissions, settings } = useApp();
+  const { laveurs, addLaveur, updateLaveurGender, deleteLaveur, laveurCommissions, settings, currentUser } = useApp();
+
+  // Les laveurs hommes (caisse Boutique/Elhadj) et femmes (caisse Boutique
+  // Femme/Hammam) sont deux équipes séparées : chaque caissière ne voit
+  // que la sienne. La gérante voit tout, avec le genre affiché sur chaque
+  // fiche (et une alerte pour les fiches anciennes sans genre à corriger).
+  const isGerant = currentUser?.role === 'gerant';
+  const myGender: LaveurGender | null =
+    currentUser?.department === 'boutique_homme' ? 'homme' : currentUser?.department === 'boutique_femme' ? 'femme' : null;
 
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newLaveurName, setNewLaveurName] = useState('');
+  const [newLaveurGender, setNewLaveurGender] = useState<LaveurGender>('femme');
   const [addError, setAddError] = useState('');
   const [selectedLaveur, setSelectedLaveur] = useState<string | null>(null);
   const [detailPeriod, setDetailPeriod] = useState<'today' | 'week' | 'month' | 'all'>('all');
@@ -42,13 +53,14 @@ export const LaveursView: React.FC = () => {
   // Fiche par laveur : union du registre (laveurs) et des noms utilisés
   // dans l'historique des services (au cas où un service a été enregistré
   // avant que le laveur soit déclaré dans le registre).
-  const profiles = useMemo(() => {
+  const allProfiles = useMemo(() => {
     const map = new Map<string, LaveurProfile>();
 
     laveurs.forEach(l => {
       map.set(l.name.toLowerCase(), {
         laveurId: l.id,
         name: l.name,
+        gender: l.gender,
         count: 0,
         commission: 0,
         bonus: 0,
@@ -79,14 +91,26 @@ export const LaveursView: React.FC = () => {
       }
     });
 
-    return Array.from(map.values())
-      .filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
-      .sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
-  }, [laveurs, laveurCommissions, search]);
+    return Array.from(map.values()).sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
+  }, [laveurs, laveurCommissions]);
+
+  // Une caissière ne voit que son équipe (+ les fiches anciennes sans genre
+  // encore assigné, pour ne pas faire disparaître un laveur actif du jour
+  // au lendemain) ; la gérante voit tout.
+  const profiles = useMemo(
+    () =>
+      allProfiles
+        .filter(p => isGerant || !myGender || p.gender === myGender || !p.gender)
+        .filter(p => p.name.toLowerCase().includes(search.toLowerCase())),
+    [allProfiles, isGerant, myGender, search]
+  );
+
+  const ungenderedCount = allProfiles.filter(p => p.laveurId !== null && !p.gender).length;
 
   const handleAddLaveur = (e: React.FormEvent) => {
     e.preventDefault();
-    const res = addLaveur(newLaveurName);
+    const gender = myGender ?? newLaveurGender;
+    const res = addLaveur(newLaveurName, gender);
     if (!res.success) {
       setAddError(res.error || "Impossible d'ajouter ce laveur.");
       return;
@@ -200,6 +224,17 @@ export const LaveursView: React.FC = () => {
         </div>
       </div>
 
+      {isGerant && ungenderedCount > 0 && (
+        <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-xs flex items-center gap-2 font-medium">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>
+            {ungenderedCount} laveur{ungenderedCount > 1 ? 's' : ''} sans équipe assignée (Homme/Femme) — corrigez
+            depuis sa fiche pour qu'{ungenderedCount > 1 ? 'ils' : 'il'} apparaisse{ungenderedCount > 1 ? 'nt' : ''}
+            uniquement dans la bonne caisse.
+          </span>
+        </div>
+      )}
+
       {/* Profiles Grid */}
       {profiles.length === 0 ? (
         <div className="bg-white rounded-2xl border border-[#E7E0D3] shadow-xs p-12 text-center">
@@ -226,12 +261,39 @@ export const LaveursView: React.FC = () => {
                     {p.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-sm font-bold text-[#1C2321] truncate">{p.name}</div>
+                    <div className="text-sm font-bold text-[#1C2321] truncate flex items-center gap-1.5">
+                      <span className="truncate">{p.name}</span>
+                      {p.gender && (
+                        <span
+                          className={`shrink-0 px-1.5 py-0.5 rounded-full text-[9px] font-bold ${
+                            p.gender === 'homme' ? 'bg-[#E4EAF7] text-[#004CB7]' : 'bg-rose-50 text-rose-600'
+                          }`}
+                        >
+                          {p.gender === 'homme' ? 'Homme' : 'Femme'}
+                        </span>
+                      )}
+                    </div>
                     <div className="text-[10px] text-[#6B7873]">{p.count} service(s)</div>
                   </div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-[#6B7873] group-hover:text-[#004CB7] shrink-0" />
               </div>
+
+              {isGerant && p.laveurId !== null && !p.gender && (
+                <div className="mt-3 flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
+                  <span className="text-[10px] text-amber-700 font-bold shrink-0">Équipe :</span>
+                  {(['femme', 'homme'] as LaveurGender[]).map(g => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => updateLaveurGender(p.laveurId as number, g)}
+                      className="px-2 py-1 rounded-full bg-[#F7F3EC] hover:bg-[#E4EAF7] text-[#1C2321] text-[10px] font-bold border border-[#E7E0D3] transition cursor-pointer"
+                    >
+                      {g === 'homme' ? 'Homme' : 'Femme'}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <div className="mt-3 space-y-1 text-[11px] text-[#6B7873]">
                 <div className="flex justify-between">
@@ -306,6 +368,33 @@ export const LaveursView: React.FC = () => {
                   className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-sans focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
+
+              {myGender ? (
+                <p className="text-[11px] text-[#6B7873]">
+                  Sera ajouté à l'équipe {myGender === 'homme' ? 'hommes' : 'femmes'} de votre caisse.
+                </p>
+              ) : (
+                <div>
+                  <label className="block text-xs font-bold text-[#1C2321] mb-1.5">Équipe *</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(['femme', 'homme'] as LaveurGender[]).map(g => (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => setNewLaveurGender(g)}
+                        className={`py-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                          newLaveurGender === g
+                            ? 'bg-[#004CB7] text-white border-[#004CB7]'
+                            : 'bg-[#F7F3EC] text-[#1C2321] border-[#E7E0D3] hover:bg-[#E4EAF7]'
+                        }`}
+                      >
+                        {g === 'homme' ? 'Laveurs (Boutique)' : 'Laveuses (Boutique Femme/Hammam)'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="flex gap-2">
                 <button
                   type="button"

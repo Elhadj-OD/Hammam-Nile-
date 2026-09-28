@@ -366,7 +366,12 @@ export async function getLaveursFromSupabase(): Promise<Laveur[] | null> {
       console.warn('Supabase fetch laveurs error:', error.message);
       return null;
     }
-    return (data || []).map(row => ({ id: row.id, name: row.name, createdAt: row.created_at })) as Laveur[];
+    return (data || []).map(row => ({
+      id: row.id,
+      name: row.name,
+      gender: row.gender ?? undefined,
+      createdAt: row.created_at,
+    })) as Laveur[];
   } catch (err) {
     console.warn('Supabase error:', err);
     return null;
@@ -376,10 +381,22 @@ export async function getLaveursFromSupabase(): Promise<Laveur[] | null> {
 export async function saveLaveurToSupabase(laveur: Laveur): Promise<void> {
   if (!supabase) return;
   try {
-    const { error } = await supabase.from('laveurs').insert({ id: laveur.id, name: laveur.name });
+    const { error } = await supabase
+      .from('laveurs')
+      .insert({ id: laveur.id, name: laveur.name, gender: laveur.gender ?? null });
     if (error) console.warn('Supabase save laveur error:', error.message);
   } catch (err) {
     console.warn('Supabase save laveur error:', err);
+  }
+}
+
+export async function updateLaveurInSupabase(id: number, updates: { gender?: string | null }): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase.from('laveurs').update(updates).eq('id', id);
+    if (error) console.warn('Supabase update laveur error:', error.message);
+  } catch (err) {
+    console.warn('Supabase update laveur error:', err);
   }
 }
 
