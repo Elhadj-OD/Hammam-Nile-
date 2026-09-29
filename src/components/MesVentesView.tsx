@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Sale } from '../types';
 import { MOBILE_OPERATORS } from '../lib/mobileOperators';
+import { DEPARTMENTS } from '../lib/departments';
 import {
   Receipt,
   Banknote,
@@ -29,15 +30,19 @@ export const MesVentesView: React.FC = () => {
   const [editError, setEditError] = useState('');
 
   const isGerant = currentUser?.role === 'gerant';
+  const myDept = currentUser?.department ? DEPARTMENTS[currentUser.department] : null;
 
+  // Chaque caissière voit les ventes de toute son équipe/département (pas
+  // seulement les siennes) — les hommes ne voient que la Boutique Homme, les
+  // femmes que la Boutique Femme. La gérante voit tout, avec un filtre
+  // optionnel par caissière.
   const displayedSales = sales.filter(s => {
-    if (!isGerant) {
-      return s.caissier === currentUser?.username;
+    if (isGerant) {
+      if (filterUser !== 'all') return s.caissier === filterUser;
+      return true;
     }
-    if (filterUser !== 'all') {
-      return s.caissier === filterUser;
-    }
-    return true;
+    const owner = users.find(u => u.username.toLowerCase() === s.caissier.toLowerCase());
+    return owner?.department === currentUser?.department;
   });
 
   const totalCollected = displayedSales.reduce((sum, s) => sum + s.total, 0);
@@ -102,10 +107,10 @@ export const MesVentesView: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-[#004CB7] mb-1">
             <Clock className="w-3.5 h-3.5" />
-            <span>Journal de caisse & Commandes</span>
+            <span>Journal de caisse & Ventes Boutique</span>
           </div>
           <h2 className="text-xl font-bold text-[#1C2321] font-display">
-            {isGerant ? 'Historique des Commandes & Ventes' : `Mes Ventes (${currentUser?.name})`}
+            {isGerant ? 'Historique Boutique — Toutes les caisses' : `Historique Boutique — ${myDept ? myDept.label : currentUser?.name}`}
           </h2>
           <p className="text-xs text-[#6B7873] mt-0.5">
             Arrêté de caisse, encaissements et réimpression des tickets

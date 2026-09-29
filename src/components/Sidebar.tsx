@@ -161,29 +161,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             </li>
           )}
 
-          {/* Commandes - Admin only */}
-          {isGerant && (
-            <li
-              onClick={() => handleNavClick('mes-ventes')}
-              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
-                activeSection === 'mes-ventes' || activeSection === 'devis' || activeSection === 'factures'
-                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
-                  : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
-              }`}
+          {/* Historique Boutique — admin voit tout, chaque caissière ne voit
+              que les ventes de sa propre équipe/département. */}
+          <li
+            onClick={() => handleNavClick('mes-ventes')}
+            className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+              activeSection === 'mes-ventes' || activeSection === 'devis' || activeSection === 'factures'
+                ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
+                : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
+            }`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="w-[17px] h-[17px] shrink-0"
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="w-[17px] h-[17px] shrink-0"
-              >
-                <path d="M3 3h18v4H3z" />
-                <path d="M5 7v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7" />
-              </svg>
-              <span>Commandes</span>
-            </li>
-          )}
+              <path d="M3 3h18v4H3z" />
+              <path d="M5 7v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7" />
+            </svg>
+            <span>Historique Boutique</span>
+          </li>
 
           {/* Clientes - Admin only */}
           {isGerant && (
