@@ -125,7 +125,7 @@ const MainLayout: React.FC = () => {
       <Sidebar mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
 
       {/* Main Content Area */}
-      <div className="relative flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="no-print relative flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Emblème géant en filigrane — même esprit que l'écran de connexion */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0" aria-hidden="true">
           <HammamNileEmblem className="w-[1100px] h-[1100px] opacity-[0.05]" color="#004CB7" />
