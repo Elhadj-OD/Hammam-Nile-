@@ -178,14 +178,8 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
             </div>
           </div>
 
-          {/* Copie client — visible à l'écran et à l'impression */}
-          <TicketCard copyLabel="Exemplaire client" />
-
-          {/* Copie caisse — imprimée en plus, jamais affichée à l'écran */}
-          <div className="print-only">
-            <div className="my-4 border-t-2 border-dashed border-[#B8B2A0]" />
-            <TicketCard copyLabel="Exemplaire caisse — vérification" />
-          </div>
+          {/* Un seul exemplaire — visible à l'écran et à l'impression */}
+          <TicketCard />
         </div>
 
         {/* Ticket Actions */}
@@ -196,7 +190,7 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
             className="w-full bg-[#002E6E] hover:bg-[#004CB7] text-white border-none rounded-full py-3.5 px-4 font-bold text-[14px] cursor-pointer transition duration-150 flex items-center justify-center gap-2 shadow-md font-sans"
           >
             <Printer className="w-4 h-4" />
-            <span>Imprimer le ticket (2 exemplaires)</span>
+            <span>Imprimer le ticket</span>
           </button>
 
           <button
