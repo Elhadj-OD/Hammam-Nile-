@@ -120,8 +120,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
           )}
         </div>
 
-        {/* Navigation list */}
-        <ul className="list-none p-0 m-0 flex flex-col gap-1 flex-1">
+        {/* Navigation list — défilable séparément : avec beaucoup d'entrées
+            (compte gérante) sur un écran bas, la liste dépassait la hauteur
+            visible sans aucun moyen de faire défiler, rendant "Paramètres"
+            et les derniers éléments inatteignables. */}
+        <ul className="list-none p-0 m-0 flex flex-col gap-1 flex-1 min-h-0 overflow-y-auto">
           {/* Caisse - Caissier(ère)s uniquement, pas l'admin (elle ne vend pas) */}
           {!isGerant && (
             <li
