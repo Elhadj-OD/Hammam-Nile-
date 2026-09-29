@@ -79,7 +79,12 @@ export const ProduitsView: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const barcodeInputRef = useRef<HTMLInputElement>(null);
 
-  const emojiOptions = ['🧼', '🧤', '🫙', '🧴', '🧺', '🕯️', '🌸', '✨', '🍃', '🍵', '🧽', '🌿'];
+  const baseEmojiOptions = ['🧼', '🧤', '🫙', '🧴', '🧺', '🕯️', '🌸', '✨', '🍃', '🍵', '🧽', '🌿'];
+  // Icônes supplémentaires pour les articles Boutique Homme (culottes,
+  // boissons, vêtements...) — uniquement quand la catégorie choisie est
+  // "hommes", pas pour les autres rayons.
+  const hommeEmojiOptions = ['🩲', '🍾', '🥤', '💧', '🩳', '👕', '🍬', '🧣', '📦', '🥻'];
+  const emojiOptions = category === 'hommes' ? [...baseEmojiOptions, ...hommeEmojiOptions] : baseEmojiOptions;
 
   // `autoFocus` seul perd la course : le focus revient souvent sur le
   // bouton "Ajouter" qui vient d'être cliqué (comportement natif du

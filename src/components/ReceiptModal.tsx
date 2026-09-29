@@ -12,6 +12,15 @@ interface ReceiptModalProps {
 export const ReceiptModal: React.FC<ReceiptModalProps> = ({ sale, onClose }) => {
   const { settings } = useApp();
   const [copied, setCopied] = useState(false);
+  // Nom/numéro du client et nom de la caissière : modifiables juste avant
+  // l'impression (ex: client oublié à l'encaissement, correction rapide).
+  const [clientName, setClientName] = useState(
+    sale?.customerName && sale.customerName !== 'Client Comptoir' ? sale.customerName : ''
+  );
+  const [clientPhone, setClientPhone] = useState(sale?.customerPhone || '');
+  const [cashierName, setCashierName] = useState(
+    sale?.caissierName || (sale?.caissier?.toLowerCase() === 'sophia' ? 'Sophia (Admin)' : sale ? 'Elhadj (Caisse)' : '')
+  );
 
   if (!sale) return null;
 
@@ -20,8 +29,6 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ sale, onClose }) => 
   };
 
   const ticketNumber = `HN-${String(sale.id).padStart(5, '0')}`;
-  const cashierDisplayName =
-    sale.caissierName || (sale.caissier?.toLowerCase() === 'sophia' ? 'Sophia (Admin)' : 'Elhadj (Caisse)');
 
   const handlePrint = () => {
     window.print();
@@ -36,8 +43,8 @@ Tél : ${settings.phone}
 --------------------------------
 Ticket N° : ${ticketNumber}
 Date/Heure : ${sale.date} à ${sale.time}
-Caissière  : ${cashierDisplayName}
-Client     : ${sale.customerName || 'Passage'}
+Caissière  : ${cashierName}
+Client     : ${clientName || 'Passage'}
 --------------------------------
 ${sale.items.map(i => `${i.name} (x${i.qty}) : ${fmt(i.price * i.qty)}`).join('\n')}
 --------------------------------
@@ -95,19 +102,36 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
           <span className="font-bold font-mono text-[#1C2321]">{ticketNumber}</span>
         </div>
 
-        <div className="flex justify-between items-end gap-3 text-[13px] py-1.5 border-b border-[#E7E0D3]">
+        <div className="flex justify-between items-center gap-3 text-[13px] py-1.5 border-b border-[#E7E0D3]">
           <span className="text-[#6B7873] shrink-0">Nom du client</span>
-          <span className="flex-1 border-b border-dotted border-[#B8B2A0] h-4">&nbsp;</span>
+          <input
+            type="text"
+            value={clientName}
+            onChange={e => setClientName(e.target.value)}
+            placeholder="Écrire ici"
+            className="flex-1 min-w-0 text-right font-bold text-[#1C2321] bg-transparent border-none outline-none focus:bg-[#F7F3EC] rounded px-1 placeholder:font-normal placeholder:text-[#B8B2A0]"
+          />
         </div>
 
-        <div className="flex justify-between items-end gap-3 text-[13px] py-1.5 border-b border-[#E7E0D3]">
+        <div className="flex justify-between items-center gap-3 text-[13px] py-1.5 border-b border-[#E7E0D3]">
           <span className="text-[#6B7873] shrink-0">Numéro</span>
-          <span className="flex-1 border-b border-dotted border-[#B8B2A0] h-4">&nbsp;</span>
+          <input
+            type="tel"
+            value={clientPhone}
+            onChange={e => setClientPhone(e.target.value)}
+            placeholder="Écrire ici"
+            className="flex-1 min-w-0 text-right font-bold text-[#1C2321] bg-transparent border-none outline-none focus:bg-[#F7F3EC] rounded px-1 placeholder:font-normal placeholder:text-[#B8B2A0]"
+          />
         </div>
 
-        <div className="flex justify-between text-[13px] py-1.5 border-b border-[#E7E0D3]">
-          <span className="text-[#6B7873]">Caissière</span>
-          <span className="font-bold text-[#1C2321]">{cashierDisplayName}</span>
+        <div className="flex justify-between items-center gap-3 text-[13px] py-1.5 border-b border-[#E7E0D3]">
+          <span className="text-[#6B7873] shrink-0">Caissière</span>
+          <input
+            type="text"
+            value={cashierName}
+            onChange={e => setCashierName(e.target.value)}
+            className="flex-1 min-w-0 text-right font-bold text-[#1C2321] bg-transparent border-none outline-none focus:bg-[#F7F3EC] rounded px-1"
+          />
         </div>
 
         <div className="flex justify-between text-[13px] py-1.5 border-b border-[#E7E0D3]">
