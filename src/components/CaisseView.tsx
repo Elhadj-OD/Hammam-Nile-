@@ -441,6 +441,13 @@ export const CaisseView: React.FC = () => {
                               +
                             </button>
                           </div>
+                        ) : p.qty <= 0 ? (
+                          <div
+                            title="Quantité en stock à 0 — mettez le stock à jour dans Produits pour pouvoir le vendre"
+                            className="bg-rose-50 text-rose-600 border border-rose-200 rounded-full py-2 px-3.5 font-bold text-[11.5px] w-full text-center"
+                          >
+                            Rupture de stock
+                          </div>
                         ) : (
                           <button
                             type="button"
