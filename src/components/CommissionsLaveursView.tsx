@@ -1150,17 +1150,15 @@ export const CommissionsLaveursView: React.FC = () => {
                   <span>{formatPrice(previewCommission + bonus)}</span>
                 </div>
                 {boutiqueCart.length > 0 && (
-                  <>
-                    <div className="flex justify-between text-[#B8874B] pt-1.5 border-t border-[#004CB7]/20">
-                      <span>Articles boutique (→ inventaire)</span>
-                      <span className="font-bold">{formatPrice(boutiqueSubtotal)}</span>
-                    </div>
-                    <div className="flex justify-between pt-1.5 border-t border-[#004CB7]/20 text-sm font-extrabold text-[#1C2321]">
-                      <span>Total payé par le client</span>
-                      <span>{formatPrice(previewCommission + bonus + boutiqueSubtotal)}</span>
-                    </div>
-                  </>
+                  <div className="flex justify-between text-[#B8874B] pt-1.5 border-t border-[#004CB7]/20">
+                    <span>Articles boutique (→ inventaire)</span>
+                    <span className="font-bold">{formatPrice(boutiqueSubtotal)}</span>
+                  </div>
                 )}
+                <div className="flex justify-between pt-1.5 border-t border-[#004CB7]/20 text-sm font-extrabold text-[#1C2321]">
+                  <span>Total payé par le client</span>
+                  <span>{formatPrice(grid.price + bonus + boutiqueSubtotal)}</span>
+                </div>
               </div>
 
               {/* Buttons */}

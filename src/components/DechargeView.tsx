@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { DEPARTMENTS } from '../lib/departments';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
@@ -33,6 +33,8 @@ export const DechargeView: React.FC = () => {
 
   const [montantEspeceReel, setMontantEspeceReel] = useState<string>('');
   const [montantMobileMoneyReel, setMontantMobileMoneyReel] = useState<string>('');
+  const [especeTouched, setEspeceTouched] = useState(false);
+  const [mobileTouched, setMobileTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -103,6 +105,18 @@ export const DechargeView: React.FC = () => {
     mySales.filter(s => s.payment === 'mobile').reduce((sum, s) => sum + s.total, 0) +
     myCommissions.filter(c => c.payment === 'mobile').reduce((sum, c) => sum + c.price + c.bonus, 0);
   const nombreTransactions = mySales.length + myCommissions.length;
+
+  // Pré-remplit les montants réels avec ce qui est déjà calculé depuis les
+  // services/ventes enregistrés — la caissière n'a plus qu'à confirmer ou
+  // corriger si le compte physique diffère, au lieu de tout retaper. Reste
+  // synchronisé si elle corrige un comptage dans le récap ci-dessus, tant
+  // qu'elle n'a pas édité le champ elle-même.
+  useEffect(() => {
+    if (!especeTouched) setMontantEspeceReel(String(totalEspeceCalcule));
+  }, [totalEspeceCalcule, especeTouched]);
+  useEffect(() => {
+    if (!mobileTouched) setMontantMobileMoneyReel(String(totalMobileMoneyCalcule));
+  }, [totalMobileMoneyCalcule, mobileTouched]);
 
   const myHistory = useMemo(
     () =>
@@ -318,7 +332,10 @@ export const DechargeView: React.FC = () => {
                   min="0"
                   step="1"
                   value={montantEspeceReel}
-                  onChange={e => setMontantEspeceReel(e.target.value)}
+                  onChange={e => {
+                    setEspeceTouched(true);
+                    setMontantEspeceReel(e.target.value);
+                  }}
                   placeholder={String(totalEspeceCalcule)}
                   className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                 />
@@ -338,7 +355,10 @@ export const DechargeView: React.FC = () => {
                   min="0"
                   step="1"
                   value={montantMobileMoneyReel}
-                  onChange={e => setMontantMobileMoneyReel(e.target.value)}
+                  onChange={e => {
+                    setMobileTouched(true);
+                    setMontantMobileMoneyReel(e.target.value);
+                  }}
                   placeholder={String(totalMobileMoneyCalcule)}
                   className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                 />
