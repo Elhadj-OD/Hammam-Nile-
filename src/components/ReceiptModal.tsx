@@ -167,7 +167,7 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
           <X className="w-5 h-5" />
         </button>
 
-        <div className="receipt-print-area">
+        <div className="receipt-print-area receipt-container">
           {/* Official Hammam Nile Header Section */}
           <div className="flex flex-col items-center text-center mb-5 pt-1">
             <div className="p-2.5 rounded-2xl bg-[#F0F5FD] border border-[#004CB7]/15 mb-2">
