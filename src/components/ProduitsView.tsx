@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { Product, ProductCategory } from '../types';
 import { DEPARTMENTS } from '../lib/departments';
@@ -80,6 +80,18 @@ export const ProduitsView: React.FC = () => {
   const barcodeInputRef = useRef<HTMLInputElement>(null);
 
   const emojiOptions = ['🧼', '🧤', '🫙', '🧴', '🧺', '🕯️', '🌸', '✨', '🍃', '🍵', '🧽', '🌿'];
+
+  // `autoFocus` seul perd la course : le focus revient souvent sur le
+  // bouton "Ajouter" qui vient d'être cliqué (comportement natif du
+  // navigateur après un clic), donc les premiers caractères tapés par la
+  // douchette USB/Bluetooth n'atteignent jamais le champ. On force le focus
+  // juste après l'ouverture du formulaire, comme pour le scanner de la Caisse.
+  useEffect(() => {
+    if (isFormOpen && !isServiceDept) {
+      const t = setTimeout(() => barcodeInputRef.current?.focus(), 100);
+      return () => clearTimeout(t);
+    }
+  }, [isFormOpen, isServiceDept]);
 
   // Un code-barres déjà attribué à un autre produit — évite les doublons au scan
   const duplicateProduct = products.find(
@@ -682,7 +694,6 @@ export const ProduitsView: React.FC = () => {
                       }}
                       placeholder="Scannez ici ou tapez le code EAN-13…"
                       autoComplete="off"
-                      autoFocus
                       className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7] placeholder:font-sans placeholder:text-[#B8B2A0]"
                     />
                   </div>
