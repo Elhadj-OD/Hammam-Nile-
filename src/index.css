@@ -187,6 +187,7 @@
   .receipt-print-area,
   .receipt-print-area * {
     color: #000 !important;
+    font-weight: 700 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -211,6 +212,10 @@
     padding: 2mm !important;
     box-shadow: none !important;
     border: none !important;
+    /* Centrage horizontal d'un élément position:absolute : left ET right
+       doivent être fixés (ici 0) pour que margin:auto répartisse l'espace
+       des deux côtés — avec left seul, le ticket colle à gauche. */
+    right: 0 !important;
   }
 
   /* La fenêtre du ticket (ReceiptModal) est en position fixed avec une
