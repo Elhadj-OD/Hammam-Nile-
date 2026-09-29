@@ -25,6 +25,7 @@ import {
   LaveurGender,
 } from '../types';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
+import { openCashDrawer } from '../lib/cashDrawer';
 import {
   INITIAL_PRODUCTS,
   INITIAL_CLIENTS,
@@ -260,6 +261,7 @@ interface AppContextType {
     paymentDetail?: string;
     customerPhone?: string;
     products?: { productId: number; qty: number; price?: number }[];
+    skipCashDrawer?: boolean;
   }) => LaveurCommission;
   updateLaveurCommission: (
     id: number,
@@ -1062,6 +1064,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCart([]);
     setLastSale(newSale);
 
+    // Paiement espèces validé : on ouvre le tiroir-caisse tout de suite
+    // (imprimante thermique, RJ11). Ne bloque jamais la vente si
+    // l'imprimante n'est pas connectée.
+    if (paymentMethod === 'cash') {
+      openCashDrawer();
+    }
+
     // Sync sale to Firebase Firestore & Supabase
     syncSaleToFirestore(newSale).catch(console.error);
     saveSaleToSupabase(newSale);
@@ -1580,6 +1589,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     paymentDetail?: string;
     customerPhone?: string;
     products?: { productId: number; qty: number; price?: number }[];
+    skipCashDrawer?: boolean;
   }): LaveurCommission => {
     const grid = CLIENT_TYPE_GRID[data.clientType];
     // Côté Boutique Femme/Hammam, la caissière peut taper elle-même un
@@ -1684,6 +1694,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setLaveurCommissions(prev => [newCommission, ...prev]);
     saveLaveurCommissionToSupabase(newCommission);
+    if (data.payment === 'cash' && !data.skipCashDrawer) {
+      openCashDrawer();
+    }
     return newCommission;
   };
 

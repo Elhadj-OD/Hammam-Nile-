@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { DEPARTMENTS } from '../lib/departments';
+import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
+import { ClientType } from '../types';
 import {
   Wallet,
   Smartphone,
@@ -9,13 +11,25 @@ import {
   AlertTriangle,
   History,
   ShieldCheck,
+  Users,
+  Plus,
+  Minus,
 } from 'lucide-react';
 
 // Chaque caissière clôture sa propre caisse, pour son propre jour. Une fois
 // faite, la décharge est définitive : pas de re-soumission ni de correction
 // possible depuis l'app (aucune policy RLS d'UPDATE n'est accordée).
 export const DechargeView: React.FC = () => {
-  const { currentUser, sales, laveurCommissions, decharges, addOrUpdateDecharge, settings } = useApp();
+  const {
+    currentUser,
+    sales,
+    laveurCommissions,
+    decharges,
+    addOrUpdateDecharge,
+    addLaveurCommission,
+    deleteLaveurCommission,
+    settings,
+  } = useApp();
 
   const [montantEspeceReel, setMontantEspeceReel] = useState<string>('');
   const [montantMobileMoneyReel, setMontantMobileMoneyReel] = useState<string>('');
@@ -51,6 +65,36 @@ export const DechargeView: React.FC = () => {
         : [],
     [laveurCommissions, currentUser]
   );
+
+  // Récap éditable par laveur/type de client, pour vérifier et corriger les
+  // comptages avant de clôturer (ex: un VIP oublié ou compté en trop).
+  // Devient lecture seule dès que la décharge du jour existe, via le même
+  // verrou (isLaveurCommissionLocked) que partout ailleurs dans l'app.
+  const myLaveurRecap = useMemo(() => {
+    const map: Record<string, Partial<Record<ClientType, number>>> = {};
+    myCommissions.forEach(c => {
+      if (!map[c.laveurName]) map[c.laveurName] = {};
+      map[c.laveurName][c.clientType] = (map[c.laveurName][c.clientType] || 0) + 1;
+    });
+    return Object.entries(map).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [myCommissions]);
+
+  const handleIncrementService = (laveurName: string, clientType: ClientType) => {
+    addLaveurCommission({ laveurName, clientType, bonus: 0, payment: 'cash', skipCashDrawer: true });
+  };
+
+  const handleDecrementService = (laveurName: string, clientType: ClientType) => {
+    const candidates = myCommissions.filter(c => c.laveurName === laveurName && c.clientType === clientType);
+    if (candidates.length === 0) return;
+    // On retire de préférence l'entrée la plus "simple" (pas de bonus, pas
+    // d'articles boutique, en espèces) pour ne jamais perdre un détail saisi
+    // exprès ; à égalité, on retire la plus récente.
+    const target = [...candidates].sort((a, b) => {
+      const score = (c: typeof a) => (c.bonus > 0 ? 1 : 0) + (c.boutiqueTotal ? 1 : 0) + (c.payment === 'mobile' ? 1 : 0);
+      return score(a) - score(b) || b.timestamp - a.timestamp;
+    })[0];
+    deleteLaveurCommission(target.id);
+  };
 
   const totalEspeceCalcule =
     mySales.filter(s => s.payment === 'cash').reduce((sum, s) => sum + s.total, 0) +
@@ -193,6 +237,55 @@ export const DechargeView: React.FC = () => {
               <div className="text-2xl font-black text-[#1C2321] font-display">{nombreTransactions}</div>
             </div>
           </div>
+
+          {/* Récapitulatif par laveur, corrigeable avant de valider */}
+          {myLaveurRecap.length > 0 && (
+            <div className="bg-white rounded-2xl border border-[#E7E0D3] shadow-xs p-6">
+              <h3 className="text-sm font-bold text-[#1C2321] mb-1 flex items-center gap-2">
+                <Users className="w-4 h-4 text-[#004CB7]" />
+                <span>Récapitulatif des services par laveur — {todayZeroPadded}</span>
+              </h3>
+              <p className="text-xs text-[#6B7873] mb-4">
+                Vérifiez le nombre de services par type pour chaque laveur avant de descendre. Vous pouvez encore
+                corriger avec les boutons + / − ; une fois la décharge validée, ce sera figé.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {myLaveurRecap.map(([laveurName, counts]) => (
+                  <div key={laveurName} className="p-3.5 rounded-xl border border-[#E7E0D3] bg-[#F7F3EC]/70">
+                    <div className="text-xs font-bold text-[#1C2321] mb-2">{laveurName}</div>
+                    <div className="space-y-1.5">
+                      {(Object.keys(CLIENT_TYPE_GRID) as ClientType[])
+                        .filter(ct => (counts[ct] || 0) > 0)
+                        .map(ct => (
+                          <div key={ct} className="flex items-center justify-between text-xs">
+                            <span className="text-[#6B7873]">{CLIENT_TYPE_GRID[ct].label}</span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleDecrementService(laveurName, ct)}
+                                title="Retirer un service"
+                                className="w-6 h-6 rounded-full bg-white border border-[#E7E0D3] text-[#1C2321] flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition cursor-pointer"
+                              >
+                                <Minus className="w-3 h-3" />
+                              </button>
+                              <span className="w-5 text-center font-bold text-[#004CB7]">{counts[ct]}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleIncrementService(laveurName, ct)}
+                                title="Ajouter un service"
+                                className="w-6 h-6 rounded-full bg-white border border-[#E7E0D3] text-[#1C2321] flex items-center justify-center hover:bg-[#E4EAF7] hover:text-[#004CB7] hover:border-[#004CB7]/30 transition cursor-pointer"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Faire la décharge */}
           <div className="bg-white rounded-2xl border border-[#E7E0D3] shadow-xs p-6">
