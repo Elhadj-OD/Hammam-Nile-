@@ -69,7 +69,20 @@ export async function pairCashDrawerPrinter(): Promise<{ success: boolean; devic
     localStorage.setItem(STORAGE_KEY, `${device.vendorId}:${device.productId}`);
     return { success: true, deviceName: `USB ${device.vendorId.toString(16)}:${device.productId.toString(16)}` };
   } catch (err) {
-    return { success: false, error: err instanceof Error ? err.message : String(err) };
+    const message = err instanceof Error ? err.message : String(err);
+    // Windows garde l'imprimante réservée à son propre pilote dès qu'un
+    // pilote d'impression normal (nécessaire pour imprimer les tickets) est
+    // installé pour elle — Chrome n'a alors plus le droit d'y accéder
+    // directement en USB. C'est une limitation du système, pas de l'app :
+    // il faut utiliser la fonction "tiroir-caisse" du pilote lui-même.
+    if (/access denied/i.test(message)) {
+      return {
+        success: false,
+        error:
+          "Windows garde cette imprimante réservée pour l'impression normale des tickets — Chrome ne peut pas s'y connecter directement en plus. Utilisez plutôt la fonction d'ouverture du tiroir intégrée au pilote de l'imprimante (Windows > Imprimantes et scanners > [votre imprimante] > Préférences d'impression, ou l'utilitaire fourni par le fabricant) : la plupart des imprimantes à tickets savent ouvrir le tiroir toutes seules à chaque impression, sans passer par cette page.",
+      };
+    }
+    return { success: false, error: message };
   }
 }
 
