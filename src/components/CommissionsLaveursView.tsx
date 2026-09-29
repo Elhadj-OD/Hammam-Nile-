@@ -821,7 +821,7 @@ export const CommissionsLaveursView: React.FC = () => {
                     >
                       <div className="text-xs font-bold">{CLIENT_TYPE_GRID[ct].label}</div>
                       <div className={`text-[10px] mt-0.5 ${clientType === ct ? 'text-white/80' : 'text-[#6B7873]'}`}>
-                        {formatPrice(CLIENT_TYPE_GRID[ct].commission)}
+                        {formatPrice(CLIENT_TYPE_GRID[ct].price)}
                       </div>
                     </button>
                   ))}
