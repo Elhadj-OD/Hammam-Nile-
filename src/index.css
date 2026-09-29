@@ -176,6 +176,19 @@
     font-family: 'Courier New', Courier, monospace, monospace !important;
     margin: 0 !important;
     padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Le ticket utilise des gris foncés (labels, sous-textes) qui restent
+     lisibles à l'écran mais ressortent très pâles sur une imprimante
+     thermique — on force tout le texte du ticket en noir pur à
+     l'impression, indépendamment des couleurs Tailwind appliquées. */
+  .receipt-print-area,
+  .receipt-print-area * {
+    color: #000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .no-print {
