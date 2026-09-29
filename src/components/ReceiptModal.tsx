@@ -70,17 +70,7 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
               idx < sale.items.length - 1 ? 'pb-3' : ''
             }`}
           >
-            <div className="w-11 h-11 rounded-[10px] bg-[#F7F3EC] flex items-center justify-center text-[20px] shrink-0 overflow-hidden">
-              {item.image ? (
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-              ) : (
-                item.emoji || '🧼'
-              )}
-            </div>
             <div className="flex-1 min-w-0">
-              <span className="text-[11px] text-[#6B7873] capitalize block truncate">
-                {item.category || 'Article boutique'}
-              </span>
               <span className="text-[13.5px] font-bold text-[#1C2321] block truncate my-0.5">
                 {item.name}
               </span>
@@ -105,17 +95,15 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
           <span className="font-bold font-mono text-[#1C2321]">{ticketNumber}</span>
         </div>
 
-        <div className="flex justify-between text-[13px] py-1.5 border-b border-[#E7E0D3]">
-          <span className="text-[#6B7873]">Client</span>
-          <span className="font-bold text-[#1C2321]">{sale.customerName || 'Client Comptoir'}</span>
+        <div className="flex justify-between items-end gap-3 text-[13px] py-1.5 border-b border-[#E7E0D3]">
+          <span className="text-[#6B7873] shrink-0">Nom du client</span>
+          <span className="flex-1 border-b border-dotted border-[#B8B2A0] h-4">&nbsp;</span>
         </div>
 
-        {sale.customerPhone && (
-          <div className="flex justify-between text-[13px] py-1.5 border-b border-[#E7E0D3]">
-            <span className="text-[#6B7873]">Téléphone</span>
-            <span className="font-bold text-[#1C2321]">{sale.customerPhone}</span>
-          </div>
-        )}
+        <div className="flex justify-between items-end gap-3 text-[13px] py-1.5 border-b border-[#E7E0D3]">
+          <span className="text-[#6B7873] shrink-0">Numéro</span>
+          <span className="flex-1 border-b border-dotted border-[#B8B2A0] h-4">&nbsp;</span>
+        </div>
 
         <div className="flex justify-between text-[13px] py-1.5 border-b border-[#E7E0D3]">
           <span className="text-[#6B7873]">Caissière</span>
