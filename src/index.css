@@ -166,6 +166,7 @@
 
 @media print {
   @page {
+    size: 80mm auto;
     margin: 3mm 0mm;
   }
 
@@ -197,6 +198,21 @@
     padding: 2mm !important;
     box-shadow: none !important;
     border: none !important;
+  }
+
+  /* La fenêtre du ticket (ReceiptModal) est en position fixed avec une
+     hauteur plafonnée et un scroll interne (max-h-[92vh] overflow-y-auto)
+     pour l'affichage à l'écran — sans ça, sur une imprimante à rouleau
+     continu, seule la partie visible/scrollée serait envoyée à
+     l'impression et le ticket ressortirait coupé avant la fin. */
+  .receipt-modal-backdrop,
+  .receipt-modal-card {
+    position: static !important;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    inset: auto !important;
+    display: block !important;
   }
 
   /* N'imprime que le ticket (reçu), jamais le reste de l'app derrière */
