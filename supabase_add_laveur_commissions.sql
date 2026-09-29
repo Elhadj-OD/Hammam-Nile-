@@ -14,7 +14,7 @@
 CREATE TABLE IF NOT EXISTS public.laveur_commissions (
   id BIGSERIAL PRIMARY KEY,
   "laveurName" TEXT NOT NULL,
-  "clientType" TEXT NOT NULL CHECK ("clientType" IN ('vip', 'simple', 'enfant')),
+  "clientType" TEXT NOT NULL CHECK ("clientType" IN ('vip', 'standard', 'simple', 'enfant')),
   price NUMERIC NOT NULL,
   commission NUMERIC NOT NULL,
   bonus NUMERIC NOT NULL DEFAULT 0,
