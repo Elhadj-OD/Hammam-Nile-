@@ -154,9 +154,9 @@ ${settings.footerNote || 'Merci de votre visite et à très bientôt !'}
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#002E6E]/55 backdrop-blur-xs overflow-y-auto">
+    <div className="receipt-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#002E6E]/55 backdrop-blur-xs overflow-y-auto">
       {/* Phone-style Ticket Card Container */}
-      <div className="relative w-full max-w-[370px] max-h-[92vh] overflow-y-auto bg-white rounded-[30px] p-6 shadow-[0_40px_70px_-30px_rgba(0,46,110,0.5)] border border-[#E7E0D3] my-auto text-[#1C2321] animate-in fade-in zoom-in-95 duration-200">
+      <div className="receipt-modal-card relative w-full max-w-[370px] max-h-[92vh] overflow-y-auto bg-white rounded-[30px] p-6 shadow-[0_40px_70px_-30px_rgba(0,46,110,0.5)] border border-[#E7E0D3] my-auto text-[#1C2321] animate-in fade-in zoom-in-95 duration-200">
         {/* Close Button in corner */}
         <button
           type="button"
