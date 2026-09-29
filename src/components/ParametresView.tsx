@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Settings,
@@ -14,8 +14,11 @@ import {
   Download,
   Upload,
   Sparkles,
+  Printer,
+  AlertTriangle,
 } from 'lucide-react';
 import { HammamNileLogo } from './HammamNileLogo';
+import { pairCashDrawerPrinter, hasCashDrawerPrinter, forgetCashDrawerPrinter } from '../lib/cashDrawer';
 
 export const ParametresView: React.FC = () => {
   const { settings, updateSettings, resetDemoData } = useApp();
@@ -31,6 +34,35 @@ export const ParametresView: React.FC = () => {
   const [footerNote, setFooterNote] = useState(settings.footerNote || '');
 
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Tiroir-caisse (USB, via l'imprimante thermique)
+  const [drawerConnected, setDrawerConnected] = useState(false);
+  const [drawerPairing, setDrawerPairing] = useState(false);
+  const [drawerMsg, setDrawerMsg] = useState<{ text: string; type: 'ok' | 'err' } | null>(null);
+  const webUsbSupported = typeof navigator !== 'undefined' && !!navigator.usb;
+
+  useEffect(() => {
+    hasCashDrawerPrinter().then(setDrawerConnected);
+  }, []);
+
+  const handlePairDrawer = async () => {
+    setDrawerPairing(true);
+    setDrawerMsg(null);
+    const res = await pairCashDrawerPrinter();
+    setDrawerPairing(false);
+    if (res.success) {
+      setDrawerConnected(true);
+      setDrawerMsg({ text: 'Imprimante connectée ! Le tiroir-caisse s\'ouvrira automatiquement à chaque vente en espèces.', type: 'ok' });
+    } else {
+      setDrawerMsg({ text: res.error || 'Connexion impossible.', type: 'err' });
+    }
+  };
+
+  const handleForgetDrawer = () => {
+    forgetCashDrawerPrinter();
+    setDrawerConnected(false);
+    setDrawerMsg(null);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -233,6 +265,69 @@ export const ParametresView: React.FC = () => {
           </button>
         </div>
       </form>
+
+      {/* Tiroir-caisse */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-3">
+        <h4 className="text-xs font-bold uppercase tracking-wider text-[#004CB7] flex items-center gap-1.5">
+          <Printer className="w-3.5 h-3.5" />
+          <span>Tiroir-Caisse (imprimante thermique, USB)</span>
+        </h4>
+        <p className="text-xs text-slate-600">
+          Connectez une seule fois l'imprimante thermique reliée au tiroir-caisse (câble RJ11) : le tiroir s'ouvrira
+          ensuite automatiquement à chaque vente encaissée en espèces, sans rien faire de plus.
+        </p>
+
+        {!webUsbSupported && (
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs flex items-center gap-2 font-medium">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>Cette fonction nécessite Chrome ou Edge sur ordinateur.</span>
+          </div>
+        )}
+
+        {drawerMsg && (
+          <div
+            className={`p-3 rounded-xl text-xs flex items-center gap-2 font-medium border ${
+              drawerMsg.type === 'ok'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                : 'bg-rose-50 border-rose-200 text-rose-700'
+            }`}
+          >
+            {drawerMsg.type === 'ok' ? (
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+            )}
+            <span>{drawerMsg.text}</span>
+          </div>
+        )}
+
+        <div className="flex items-center gap-2">
+          {drawerConnected && !drawerMsg && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Imprimante connectée
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handlePairDrawer}
+            disabled={!webUsbSupported || drawerPairing}
+            className="py-2 px-4 bg-[#004CB7] hover:bg-[#002E6E] text-white rounded-full text-xs font-bold flex items-center gap-2 transition cursor-pointer disabled:opacity-60"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>{drawerPairing ? 'Connexion...' : drawerConnected ? 'Reconnecter / changer' : 'Connecter le tiroir-caisse'}</span>
+          </button>
+          {drawerConnected && (
+            <button
+              type="button"
+              onClick={handleForgetDrawer}
+              className="py-2 px-4 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-full text-xs font-semibold transition cursor-pointer"
+            >
+              Oublier
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Danger Zone: Reset Data */}
       <div className="bg-rose-50/50 rounded-2xl border border-rose-200 p-6 space-y-3">
