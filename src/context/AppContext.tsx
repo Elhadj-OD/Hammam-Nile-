@@ -265,6 +265,7 @@ interface AppContextType {
     payment: 'cash' | 'mobile';
     paymentDetail?: string;
     customerPhone?: string;
+    cashierName?: string;
     products?: { productId: number; qty: number; price?: number }[];
     skipCashDrawer?: boolean;
   }) => LaveurCommission;
@@ -278,6 +279,7 @@ interface AppContextType {
       payment?: 'cash' | 'mobile';
       paymentDetail?: string;
       customerPhone?: string;
+      cashierName?: string;
     }
   ) => void;
   deleteLaveurCommission: (id: number) => void;
@@ -1617,6 +1619,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     payment: 'cash' | 'mobile';
     paymentDetail?: string;
     customerPhone?: string;
+    cashierName?: string;
     products?: { productId: number; qty: number; price?: number }[];
     skipCashDrawer?: boolean;
   }): LaveurCommission => {
@@ -1720,6 +1723,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
       timestamp,
       recordedBy: currentUser?.username || 'admin',
+      cashierName: data.cashierName?.trim() || undefined,
     };
     setLaveurCommissions(prev => [newCommission, ...prev]);
     saveLaveurCommissionToSupabase(newCommission);
@@ -1739,6 +1743,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       payment?: 'cash' | 'mobile';
       paymentDetail?: string;
       customerPhone?: string;
+      cashierName?: string;
     }
   ) => {
     setLaveurCommissions(prev =>
@@ -1770,6 +1775,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           payment,
           paymentDetail: payment === 'mobile' ? updates.paymentDetail?.trim() || c.paymentDetail : undefined,
           customerPhone: payment === 'mobile' ? updates.customerPhone?.trim() || c.customerPhone : undefined,
+          cashierName: updates.cashierName?.trim() || c.cashierName,
         };
         // `undefined` serait simplement omis de la requête Supabase (donc
         // ne réinitialiserait pas une ancienne valeur) — on envoie `null`
