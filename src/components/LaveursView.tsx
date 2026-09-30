@@ -94,13 +94,13 @@ export const LaveursView: React.FC = () => {
     return Array.from(map.values()).sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
   }, [laveurs, laveurCommissions]);
 
-  // Une caissière ne voit que son équipe (+ les fiches anciennes sans genre
-  // encore assigné, pour ne pas faire disparaître un laveur actif du jour
-  // au lendemain) ; la gérante voit tout.
+  // Une caissière ne voit que sa propre équipe : les laveurs homme restent
+  // côté homme, les laveuses femme côté femme. Une fiche sans genre assigné
+  // n'apparaît que pour la gérante, le temps qu'elle lui attribue une équipe.
   const profiles = useMemo(
     () =>
       allProfiles
-        .filter(p => isGerant || !myGender || p.gender === myGender || !p.gender)
+        .filter(p => isGerant || !myGender || p.gender === myGender)
         .filter(p => p.name.toLowerCase().includes(search.toLowerCase())),
     [allProfiles, isGerant, myGender, search]
   );

@@ -88,17 +88,18 @@ export const CommissionsLaveursView: React.FC = () => {
   // Plusieurs personnes se relaient sur le même compte caissière, côté
   // Hammam Homme comme Hammam Femme — cette liste permet d'indiquer qui
   // était en caisse pour ce service précis, sans créer de compte de
-  // connexion par personne. Même séparation homme/femme que les laveurs.
+  // connexion par personne. Séparation stricte homme/femme, comme pour les
+  // laveurs : une caissière ne voit que sa propre équipe.
   const hammamCashiers = useMemo(() => {
     const inCategory = employees.filter(e => e.category === 'hammam_bains');
     if (isGerant || !myGender) return inCategory.sort((a, b) => a.name.localeCompare(b.name));
-    return inCategory
-      .filter(e => e.gender === myGender || !e.gender)
-      .sort((a, b) => a.name.localeCompare(b.name));
+    return inCategory.filter(e => e.gender === myGender).sort((a, b) => a.name.localeCompare(b.name));
   }, [employees, isGerant, myGender]);
 
-  // Une caissière ne propose que les laveurs de sa propre équipe (+ les
-  // fiches anciennes sans genre assigné, pour ne rien cacher par erreur).
+  // Une caissière ne propose que les laveurs de sa propre équipe (les
+  // laveurs homme restent côté homme, les laveuses femme côté femme). Les
+  // noms utilisés dans l'historique mais absents du registre restent
+  // proposés (ancien service enregistré avant la déclaration du laveur).
   const knownLaveurs = useMemo(
     () =>
       Array.from(new Set([...laveurs.map(l => l.name), ...laveurCommissions.map(c => c.laveurName)])).sort(),
@@ -106,9 +107,7 @@ export const CommissionsLaveursView: React.FC = () => {
   );
   const myKnownLaveurs = useMemo(() => {
     if (isGerant || !myGender) return knownLaveurs;
-    const allowedNames = new Set(
-      laveurs.filter(l => l.gender === myGender || !l.gender).map(l => l.name)
-    );
+    const allowedNames = new Set(laveurs.filter(l => l.gender === myGender).map(l => l.name));
     return knownLaveurs.filter(name => allowedNames.has(name) || !laveurs.some(l => l.name === name));
   }, [knownLaveurs, laveurs, isGerant, myGender]);
 
