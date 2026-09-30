@@ -10,7 +10,9 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   const { activeSection, settings, currentUser } = useApp();
   const isServiceDept =
-    currentUser?.department === 'coiffure_salon' || currentUser?.department === 'epilation_traditionnelle';
+    currentUser?.department === 'coiffure_salon' ||
+    currentUser?.department === 'epilation_traditionnelle' ||
+    currentUser?.department === 'spa_massage';
 
   const getSectionInfo = () => {
     switch (activeSection) {

@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow, LaveurCommission, Decharge, Laveur } from '../types';
+import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow, LaveurCommission, Decharge, Laveur, Employee } from '../types';
 
 // Read credentials from environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -407,6 +407,51 @@ export async function deleteLaveurFromSupabase(id: number): Promise<void> {
     if (error) console.warn('Supabase delete laveur error:', error.message);
   } catch (err) {
     console.warn('Supabase delete laveur error:', err);
+  }
+}
+
+// ============================================================================
+// 8c. EMPLOYÉES (Coiffure & Salon, Épilation, Esthétique)
+// ============================================================================
+export async function getEmployeesFromSupabase(): Promise<Employee[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase.from('employees').select('*').order('name');
+    if (error) {
+      console.warn('Supabase fetch employees error:', error.message);
+      return null;
+    }
+    return (data || []).map(row => ({
+      id: row.id,
+      name: row.name,
+      category: row.category,
+      createdAt: row.created_at,
+    })) as Employee[];
+  } catch (err) {
+    console.warn('Supabase error:', err);
+    return null;
+  }
+}
+
+export async function saveEmployeeToSupabase(employee: Employee): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase
+      .from('employees')
+      .insert({ id: employee.id, name: employee.name, category: employee.category });
+    if (error) console.warn('Supabase save employee error:', error.message);
+  } catch (err) {
+    console.warn('Supabase save employee error:', err);
+  }
+}
+
+export async function deleteEmployeeFromSupabase(id: number): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase.from('employees').delete().eq('id', id);
+    if (error) console.warn('Supabase delete employee error:', error.message);
+  } catch (err) {
+    console.warn('Supabase delete employee error:', err);
   }
 }
 

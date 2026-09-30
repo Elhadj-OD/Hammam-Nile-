@@ -39,7 +39,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
   pageSubtitle,
   tabs,
 }) => {
-  const { products, sales, currentUser, completeServiceSale, settings } = useApp();
+  const { products, sales, currentUser, completeServiceSale, settings, employees } = useApp();
 
   const [activeTab, setActiveTab] = useState<string>(tabs?.[0]?.key || '');
   const [filterPeriod, setFilterPeriod] = useState<'today' | 'week' | 'month' | 'all'>('today');
@@ -51,7 +51,13 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [cashierName, setCashierName] = useState('');
+  const [employeeName, setEmployeeName] = useState('');
   const [formError, setFormError] = useState('');
+
+  const categoryEmployees = useMemo(
+    () => employees.filter(e => e.category === category).sort((a, b) => a.name.localeCompare(b.name)),
+    [employees, category]
+  );
 
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
 
@@ -86,6 +92,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
     setCustomerName('');
     setCustomerPhone('');
     setCashierName(currentUser?.name || '');
+    setEmployeeName('');
     setFormError('');
     setShowModal(true);
   };
@@ -115,6 +122,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
       customerName: customerName.trim() || undefined,
       customerPhone: customerPhone.trim() || undefined,
       cashierName: cashierName.trim() || undefined,
+      employeeName: employeeName.trim() || undefined,
     });
 
     closeModal();
@@ -253,6 +261,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                 <tr className="bg-[#F7F3EC]/80 border-b border-[#E7E0D3] text-[#6B7873] font-bold uppercase tracking-wider text-[10px]">
                   <th className="py-3 px-4">Date & Heure</th>
                   <th className="py-3 px-4">Prestation</th>
+                  <th className="py-3 px-4">Employée</th>
                   <th className="py-3 px-4">Paiement</th>
                   <th className="py-3 px-4 text-right">Montant</th>
                 </tr>
@@ -267,6 +276,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                     <td className="py-3 px-4 font-semibold text-[#1C2321]">
                       {s.items.map(i => i.name).join(', ')}
                     </td>
+                    <td className="py-3 px-4 whitespace-nowrap text-[#6B7873]">{s.employeeName || '—'}</td>
                     <td className="py-3 px-4 whitespace-nowrap text-[#6B7873]">
                       {s.payment === 'mobile' ? (
                         <div>
@@ -331,6 +341,29 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
                   className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                 />
                 <p className="text-[11px] text-[#6B7873] mt-1">Affiché sur le ticket. Modifiable si une autre personne tient la caisse.</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1">Employée</label>
+                {categoryEmployees.length > 0 ? (
+                  <select
+                    value={employeeName}
+                    onChange={e => setEmployeeName(e.target.value)}
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
+                  >
+                    <option value="">Sélectionner...</option>
+                    {categoryEmployees.map(emp => (
+                      <option key={emp.id} value={emp.name}>
+                        {emp.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="text-[11px] text-[#6B7873] p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl">
+                    Aucune employée enregistrée pour cette caisse.
+                  </p>
+                )}
+                <p className="text-[11px] text-[#6B7873] mt-1">Employée ayant réalisé la prestation.</p>
               </div>
 
               <div>

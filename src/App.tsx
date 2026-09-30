@@ -9,6 +9,7 @@ import { DashboardView } from './components/DashboardView';
 import { CaisseView } from './components/CaisseView';
 import { EpilationServicesView } from './components/EpilationServicesView';
 import { CoiffureServicesView } from './components/CoiffureServicesView';
+import { EstheticServicesView } from './components/EstheticServicesView';
 import { MesVentesView } from './components/MesVentesView';
 import { DevisView } from './components/DevisView';
 import { FacturesView } from './components/FacturesView';
@@ -61,6 +62,7 @@ const MainLayout: React.FC = () => {
         if (currentUser.role === 'gerant') return <DashboardView />;
         if (currentUser.department === 'epilation_traditionnelle') return <EpilationServicesView />;
         if (currentUser.department === 'coiffure_salon') return <CoiffureServicesView />;
+        if (currentUser.department === 'spa_massage') return <EstheticServicesView />;
         return <CaisseView />;
       case 'mes-ventes':
         return <MesVentesView />;
