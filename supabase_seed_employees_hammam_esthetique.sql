@@ -22,7 +22,9 @@ INSERT INTO public.employees (name, category) VALUES
   ('Ramla', 'coiffure_salon'),
   ('Binta', 'coiffure_salon'),
   ('Ramata', 'coiffure_salon'),
-  ('Niasse', 'coiffure_salon')
+  ('Niasse', 'coiffure_salon'),
+  ('Sirine', 'coiffure_salon'),
+  ('Oumeyma', 'coiffure_salon')
 ON CONFLICT (name, category) DO NOTHING;
 
 -- Esthétique
