@@ -23,6 +23,8 @@ import {
   Decharge,
   Laveur,
   LaveurGender,
+  Employee,
+  ProductCategory,
 } from '../types';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
 import { openCashDrawer } from '../lib/cashDrawer';
@@ -67,6 +69,9 @@ import {
   saveLaveurToSupabase,
   updateLaveurInSupabase,
   deleteLaveurFromSupabase,
+  getEmployeesFromSupabase,
+  saveEmployeeToSupabase,
+  deleteEmployeeFromSupabase,
   getDechargesFromSupabase,
   saveDechargeToSupabase,
   getShopSettingsFromSupabase,
@@ -173,7 +178,7 @@ interface AppContextType {
     product: Product,
     price: number,
     paymentMethod: PaymentMethod,
-    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string; cashierName?: string }
+    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string; cashierName?: string; employeeName?: string }
   ) => Sale;
 
   // Sales
@@ -283,6 +288,12 @@ interface AppContextType {
   updateLaveurGender: (id: number, gender: LaveurGender) => void;
   deleteLaveur: (id: number) => void;
 
+  // Employées (Coiffure & Salon, Épilation, Esthétique) — juste un nom
+  // rattaché à une caisse, sélectionné par la caissière sur chaque service
+  employees: Employee[];
+  addEmployee: (name: string, category: ProductCategory) => { success: boolean; error?: string };
+  deleteEmployee: (id: number) => void;
+
   // Décharge (clôture journalière) — chaque caissière clôture sa propre
   // caisse ; une fois faite, définitive (pas de correction possible)
   decharges: Decharge[];
@@ -391,6 +402,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [employees, setEmployees] = useState<Employee[]>(() => {
+    const saved = localStorage.getItem(`${STORAGE_KEY}-employees`);
+    return saved ? JSON.parse(saved) : [];
+  });
+
   // Pas de cache localStorage : réservé à la gérante (RLS), rechargé depuis
   // Supabase à chaque session pour ne jamais garder de décharge périmée.
   const [decharges, setDecharges] = useState<Decharge[]>([]);
@@ -439,6 +455,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem(`${STORAGE_KEY}-laveurs`, JSON.stringify(laveurs));
   }, [laveurs]);
+
+  useEffect(() => {
+    localStorage.setItem(`${STORAGE_KEY}-employees`, JSON.stringify(employees));
+  }, [employees]);
 
   useEffect(() => {
     localStorage.setItem(`${STORAGE_KEY}-settings`, JSON.stringify(settings));
@@ -494,7 +514,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!isSupabaseConfigured()) return;
     async function loadSupabase() {
       try {
-        const [sbProducts, sbSales, sbClients, sbMovements, sbUsages, sbCommissions, sbLaveurs, sbSettings] = await Promise.all([
+        const [sbProducts, sbSales, sbClients, sbMovements, sbUsages, sbCommissions, sbLaveurs, sbEmployees, sbSettings] = await Promise.all([
           getProductsFromSupabase(),
           getSalesFromSupabase(),
           getClientsFromSupabase(),
@@ -502,6 +522,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           getHammamUsagesFromSupabase(),
           getLaveurCommissionsFromSupabase(),
           getLaveursFromSupabase(),
+          getEmployeesFromSupabase(),
           getShopSettingsFromSupabase(),
         ]);
 
@@ -527,6 +548,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (sbUsages && sbUsages.length > 0) setHammamUsages(sbUsages);
         if (sbCommissions && sbCommissions.length > 0) setLaveurCommissions(sbCommissions);
         if (sbLaveurs && sbLaveurs.length > 0) setLaveurs(sbLaveurs);
+        if (sbEmployees && sbEmployees.length > 0) setEmployees(sbEmployees);
         if (sbSettings) setSettings(sbSettings);
 
         setSupabaseConnected(true);
@@ -593,6 +615,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setLaveurs(prev => {
           if (eventType === 'DELETE') return removeById(prev, (old as Laveur).id);
           return prev.some(l => l.id === (row as Laveur).id) ? prev : upsertById(prev, row as Laveur);
+        });
+      }),
+      subscribeToTable<Employee>('employees', ({ eventType, new: row, old }) => {
+        setEmployees(prev => {
+          if (eventType === 'DELETE') return removeById(prev, (old as Employee).id);
+          return prev.some(e => e.id === (row as Employee).id) ? prev : upsertById(prev, row as Employee);
         });
       }),
       // La RLS ne livre ces événements qu'à la gérante — sans effet pour les autres comptes.
@@ -1141,7 +1169,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     product: Product,
     price: number,
     paymentMethod: PaymentMethod,
-    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string; cashierName?: string }
+    details?: { paymentDetail?: string; customerPhone?: string; customerName?: string; cashierName?: string; employeeName?: string }
   ): Sale => {
     const timestamp = Date.now();
     const now = new Date();
@@ -1172,6 +1200,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       timestamp,
       customerName: details?.customerName || 'Client Comptoir',
       customerPhone: details?.customerPhone,
+      employeeName: details?.employeeName?.trim() || undefined,
     };
 
     setSales(prev => [newSale, ...prev]);
@@ -1785,6 +1814,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     deleteLaveurFromSupabase(id);
   };
 
+  // Employées (Coiffure & Salon, Épilation, Esthétique)
+  const addEmployee = (name: string, category: ProductCategory): { success: boolean; error?: string } => {
+    const cleanName = name.trim();
+    if (!cleanName) return { success: false, error: 'Veuillez indiquer un nom.' };
+    if (employees.some(e => e.category === category && e.name.toLowerCase() === cleanName.toLowerCase())) {
+      return { success: false, error: 'Cette employée est déjà enregistrée.' };
+    }
+    const newEmployee: Employee = {
+      id: Date.now(),
+      name: cleanName,
+      category,
+      createdAt: new Date().toISOString(),
+    };
+    setEmployees(prev => [...prev, newEmployee].sort((a, b) => a.name.localeCompare(b.name)));
+    saveEmployeeToSupabase(newEmployee);
+    return { success: true };
+  };
+
+  const deleteEmployee = (id: number) => {
+    setEmployees(prev => prev.filter(e => e.id !== id));
+    deleteEmployeeFromSupabase(id);
+  };
+
   // Décharge (clôture journalière) — une seule par jour ET par caisse.
   // Définitive une fois faite : aucune policy RLS d'UPDATE n'est accordée
   // aux caissières, donc un second essai pour le même (date, caisse)
@@ -1907,6 +1959,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addLaveur,
         updateLaveurGender,
         deleteLaveur,
+        employees,
+        addEmployee,
+        deleteEmployee,
         decharges,
         addOrUpdateDecharge,
         settings,

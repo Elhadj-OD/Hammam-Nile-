@@ -79,6 +79,9 @@ export interface Sale {
   timestamp: number;
   customerName?: string;
   customerPhone?: string;
+  // Employée ayant réalisé la prestation (Coiffure & Salon, Épilation,
+  // Esthétique) — équivalent du "laveur" côté Hammam, sans commission.
+  employeeName?: string;
 }
 
 export interface Client {
@@ -243,6 +246,17 @@ export interface Laveur {
   id: number;
   name: string;
   gender?: LaveurGender;
+  createdAt: string;
+}
+
+// Employée réalisant une prestation (Coiffure & Salon, Épilation,
+// Esthétique) — équivalent du Laveur côté Hammam, mais sans genre ni
+// commission : juste un nom rattaché à une caisse, sélectionné par la
+// caissière quand elle enregistre un service.
+export interface Employee {
+  id: number;
+  name: string;
+  category: ProductCategory;
   createdAt: string;
 }
 

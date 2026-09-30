@@ -39,7 +39,9 @@ export const ProduitsView: React.FC = () => {
   // Coiffure & Salon et Épilation vendent des prestations, pas des produits
   // physiques — le vocabulaire de cette page doit dire "Service".
   const isServiceDept =
-    currentUser?.department === 'coiffure_salon' || currentUser?.department === 'epilation_traditionnelle';
+    currentUser?.department === 'coiffure_salon' ||
+    currentUser?.department === 'epilation_traditionnelle' ||
+    currentUser?.department === 'spa_massage';
   const itemWord = isServiceDept ? 'Service' : 'Produit';
   // Le hammam des femmes vit dans le même rayon que la Boutique Femme —
   // pas un rayon à part. Boutique Homme garde son propre rayon : les
