@@ -85,13 +85,17 @@ export const CommissionsLaveursView: React.FC = () => {
 
   const isCommissionLocked = isLaveurCommissionLocked;
 
-  // Plusieurs personnes se relaient sur le même compte caissière côté
-  // Hammam Femme — cette liste permet d'indiquer qui était en caisse pour
-  // ce service précis, sans créer de compte de connexion par personne.
-  const hammamCashiers = useMemo(
-    () => employees.filter(e => e.category === 'hammam_bains').sort((a, b) => a.name.localeCompare(b.name)),
-    [employees]
-  );
+  // Plusieurs personnes se relaient sur le même compte caissière, côté
+  // Hammam Homme comme Hammam Femme — cette liste permet d'indiquer qui
+  // était en caisse pour ce service précis, sans créer de compte de
+  // connexion par personne. Même séparation homme/femme que les laveurs.
+  const hammamCashiers = useMemo(() => {
+    const inCategory = employees.filter(e => e.category === 'hammam_bains');
+    if (isGerant || !myGender) return inCategory.sort((a, b) => a.name.localeCompare(b.name));
+    return inCategory
+      .filter(e => e.gender === myGender || !e.gender)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [employees, isGerant, myGender]);
 
   // Une caissière ne propose que les laveurs de sa propre équipe (+ les
   // fiches anciennes sans genre assigné, pour ne rien cacher par erreur).
@@ -820,31 +824,29 @@ export const CommissionsLaveursView: React.FC = () => {
                 </datalist>
               </div>
 
-              {/* Caissière (Hammam Femme uniquement — plusieurs personnes
-                  se relaient sur le même compte) */}
-              {canUsePercent && (
-                <div>
-                  <label className="block text-xs font-bold text-[#1C2321] mb-1">Caissière</label>
-                  {hammamCashiers.length > 0 ? (
-                    <select
-                      value={cashierName}
-                      onChange={e => setCashierName(e.target.value)}
-                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
-                    >
-                      <option value="">Sélectionner...</option>
-                      {hammamCashiers.map(emp => (
-                        <option key={emp.id} value={emp.name}>
-                          {emp.name}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="text-[11px] text-[#6B7873] p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl">
-                      Aucune caissière enregistrée.
-                    </p>
-                  )}
-                </div>
-              )}
+              {/* Caissière (plusieurs personnes se relaient sur le même
+                  compte, côté Hammam Homme comme Hammam Femme) */}
+              <div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1">Caissière</label>
+                {hammamCashiers.length > 0 ? (
+                  <select
+                    value={cashierName}
+                    onChange={e => setCashierName(e.target.value)}
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
+                  >
+                    <option value="">Sélectionner...</option>
+                    {hammamCashiers.map(emp => (
+                      <option key={emp.id} value={emp.name}>
+                        {emp.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="text-[11px] text-[#6B7873] p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl">
+                    Aucune caissière enregistrée.
+                  </p>
+                )}
+              </div>
 
               {/* Client type */}
               <div>

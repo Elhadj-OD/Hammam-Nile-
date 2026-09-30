@@ -254,13 +254,16 @@ export interface Laveur {
 }
 
 // Employée réalisant une prestation (Coiffure & Salon, Épilation,
-// Esthétique) — équivalent du Laveur côté Hammam, mais sans genre ni
-// commission : juste un nom rattaché à une caisse, sélectionné par la
-// caissière quand elle enregistre un service.
+// Esthétique) — équivalent du Laveur côté Hammam, mais sans commission :
+// juste un nom rattaché à une caisse, sélectionné par la caissière quand
+// elle enregistre un service. Pour le Hammam (category "hammam_bains"),
+// c'est la caissière qui tient la caisse (pas le laveur) : le genre sépare
+// alors les deux équipes homme/femme, comme pour les Laveurs.
 export interface Employee {
   id: number;
   name: string;
   category: ProductCategory;
+  gender?: LaveurGender;
   createdAt: string;
 }
 

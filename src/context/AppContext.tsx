@@ -293,7 +293,7 @@ interface AppContextType {
   // Employées (Coiffure & Salon, Épilation, Esthétique) — juste un nom
   // rattaché à une caisse, sélectionné par la caissière sur chaque service
   employees: Employee[];
-  addEmployee: (name: string, category: ProductCategory) => { success: boolean; error?: string };
+  addEmployee: (name: string, category: ProductCategory, gender?: LaveurGender) => { success: boolean; error?: string };
   deleteEmployee: (id: number) => void;
 
   // Décharge (clôture journalière) — chaque caissière clôture sa propre
@@ -1821,7 +1821,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Employées (Coiffure & Salon, Épilation, Esthétique)
-  const addEmployee = (name: string, category: ProductCategory): { success: boolean; error?: string } => {
+  const addEmployee = (
+    name: string,
+    category: ProductCategory,
+    gender?: LaveurGender
+  ): { success: boolean; error?: string } => {
     const cleanName = name.trim();
     if (!cleanName) return { success: false, error: 'Veuillez indiquer un nom.' };
     if (employees.some(e => e.category === category && e.name.toLowerCase() === cleanName.toLowerCase())) {
@@ -1831,6 +1835,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: Date.now(),
       name: cleanName,
       category,
+      gender,
       createdAt: new Date().toISOString(),
     };
     setEmployees(prev => [...prev, newEmployee].sort((a, b) => a.name.localeCompare(b.name)));

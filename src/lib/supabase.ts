@@ -425,6 +425,7 @@ export async function getEmployeesFromSupabase(): Promise<Employee[] | null> {
       id: row.id,
       name: row.name,
       category: row.category,
+      gender: row.gender ?? undefined,
       createdAt: row.created_at,
     })) as Employee[];
   } catch (err) {
@@ -438,7 +439,7 @@ export async function saveEmployeeToSupabase(employee: Employee): Promise<void> 
   try {
     const { error } = await supabase
       .from('employees')
-      .insert({ id: employee.id, name: employee.name, category: employee.category });
+      .insert({ id: employee.id, name: employee.name, category: employee.category, gender: employee.gender ?? null });
     if (error) console.warn('Supabase save employee error:', error.message);
   } catch (err) {
     console.warn('Supabase save employee error:', err);
