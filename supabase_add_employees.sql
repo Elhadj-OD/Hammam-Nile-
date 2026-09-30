@@ -6,17 +6,23 @@
 --
 -- L'employée n'a pas de compte ni de connexion — juste un nom rattaché à
 -- une caisse (category), sélectionné par la caissière quand elle enregistre
--- un service. Équivalent du "laveur" côté Hammam, mais sans genre ni
--- commission.
+-- un service. Équivalent du "laveur" côté Hammam, mais sans commission.
+-- Pour le Hammam (category "hammam_bains"), cette table sert aux
+-- CAISSIÈRES (qui tiennent la caisse) — le laveur reste dans la table
+-- "laveurs" à part. Le genre sépare alors les équipes homme/femme.
 -- ==============================================================================
 
 CREATE TABLE IF NOT EXISTS public.employees (
   id BIGSERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   category TEXT NOT NULL,
+  gender TEXT CHECK (gender IN ('homme', 'femme')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE (name, category)
 );
+
+-- Si la table existait déjà avant l'ajout du genre (Hammam Homme/Femme).
+ALTER TABLE public.employees ADD COLUMN IF NOT EXISTS gender TEXT CHECK (gender IN ('homme', 'femme'));
 
 ALTER TABLE public.employees ENABLE ROW LEVEL SECURITY;
 
