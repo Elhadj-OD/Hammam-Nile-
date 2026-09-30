@@ -234,6 +234,10 @@ export interface LaveurCommission {
   time: string;
   timestamp: number;
   recordedBy: string;
+  // Employée physiquement à la caisse pour ce service (plusieurs personnes
+  // se relaient sur le même compte caissière côté Hammam Femme) — distinct
+  // du laveur, qui a réalisé le soin.
+  cashierName?: string;
 }
 
 export type LaveurGender = 'homme' | 'femme';

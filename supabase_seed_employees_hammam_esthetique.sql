@@ -64,3 +64,16 @@ INSERT INTO public.laveurs (name, gender) VALUES
   ('Elhadj', 'homme'),
   ('Thierno', 'homme')
 ON CONFLICT (name) DO NOTHING;
+
+-- Hammam Femme — Caissières (plusieurs personnes se relaient sur le même
+-- compte caissière) : table "employees", catégorie "hammam_bains".
+INSERT INTO public.employees (name, category) VALUES
+  ('Khadi', 'hammam_bains'),
+  ('Oumou', 'hammam_bains'),
+  ('Fahma', 'hammam_bains'),
+  ('Sora', 'hammam_bains'),
+  ('Salimata', 'hammam_bains'),
+  ('Houda', 'hammam_bains'),
+  ('Biye', 'hammam_bains'),
+  ('Kadia', 'hammam_bains')
+ON CONFLICT (name, category) DO NOTHING;

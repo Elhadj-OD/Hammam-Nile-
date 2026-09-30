@@ -46,6 +46,7 @@ export const CommissionsLaveursView: React.FC = () => {
     addProduct,
     sales,
     currentUser,
+    employees,
   } = useApp();
 
   // Boutique Homme (Elhadj) garde la commission fixe classique ; Boutique
@@ -63,6 +64,7 @@ export const CommissionsLaveursView: React.FC = () => {
 
   // Form state
   const [laveurName, setLaveurName] = useState('');
+  const [cashierName, setCashierName] = useState('');
   const [clientType, setClientType] = useState<ClientType>('simple');
   const [useCustomPercent, setUseCustomPercent] = useState(false);
   const [customPercent, setCustomPercent] = useState<string>('20');
@@ -82,6 +84,14 @@ export const CommissionsLaveursView: React.FC = () => {
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
 
   const isCommissionLocked = isLaveurCommissionLocked;
+
+  // Plusieurs personnes se relaient sur le même compte caissière côté
+  // Hammam Femme — cette liste permet d'indiquer qui était en caisse pour
+  // ce service précis, sans créer de compte de connexion par personne.
+  const hammamCashiers = useMemo(
+    () => employees.filter(e => e.category === 'hammam_bains').sort((a, b) => a.name.localeCompare(b.name)),
+    [employees]
+  );
 
   // Une caissière ne propose que les laveurs de sa propre équipe (+ les
   // fiches anciennes sans genre assigné, pour ne rien cacher par erreur).
@@ -191,6 +201,7 @@ export const CommissionsLaveursView: React.FC = () => {
     setShowAddModal(false);
     setEditingCommission(null);
     setLaveurName('');
+    setCashierName('');
     setClientType('simple');
     setUseCustomPercent(false);
     setCustomPercent('20');
@@ -215,6 +226,7 @@ export const CommissionsLaveursView: React.FC = () => {
     }
     setEditingCommission(c);
     setLaveurName(c.laveurName);
+    setCashierName(c.cashierName || '');
     setClientType(c.clientType);
     setUseCustomPercent(c.commissionPercent != null);
     setCustomPercent(c.commissionPercent != null ? String(c.commissionPercent) : '20');
@@ -259,6 +271,7 @@ export const CommissionsLaveursView: React.FC = () => {
         payment,
         paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
         customerPhone: payment === 'mobile' ? customerPhone.trim() : undefined,
+        cashierName: cashierName.trim() || undefined,
       });
     } else {
       addLaveurCommission({
@@ -269,6 +282,7 @@ export const CommissionsLaveursView: React.FC = () => {
         payment,
         paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
         customerPhone: payment === 'mobile' ? customerPhone.trim() : undefined,
+        cashierName: cashierName.trim() || undefined,
         products: boutiqueCart.map(item => ({ productId: item.productId, qty: item.qty, price: item.price })),
       });
     }
@@ -564,6 +578,7 @@ export const CommissionsLaveursView: React.FC = () => {
                 <tr className="bg-[#F7F3EC]/80 border-b border-[#E7E0D3] text-[#6B7873] font-bold uppercase tracking-wider text-[10px]">
                   <th className="py-3 px-4">Date & Heure</th>
                   <th className="py-3 px-4">Laveur</th>
+                  <th className="py-3 px-4">Caissière</th>
                   <th className="py-3 px-4">Type Client</th>
                   <th className="py-3 px-4">Paiement</th>
                   <th className="py-3 px-4 text-right">Hammam</th>
@@ -583,6 +598,7 @@ export const CommissionsLaveursView: React.FC = () => {
                       <div className="text-[10px] text-[#6B7873]">{c.time}</div>
                     </td>
                     <td className="py-3 px-4 font-bold text-[#1C2321]">{c.laveurName}</td>
+                    <td className="py-3 px-4 whitespace-nowrap text-[#6B7873]">{c.cashierName || '—'}</td>
                     <td className="py-3 px-4">
                       <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#E4EAF7] text-[#004CB7] border border-[#004CB7]/20">
                         {CLIENT_TYPE_GRID[c.clientType].label}
@@ -803,6 +819,32 @@ export const CommissionsLaveursView: React.FC = () => {
                   ))}
                 </datalist>
               </div>
+
+              {/* Caissière (Hammam Femme uniquement — plusieurs personnes
+                  se relaient sur le même compte) */}
+              {canUsePercent && (
+                <div>
+                  <label className="block text-xs font-bold text-[#1C2321] mb-1">Caissière</label>
+                  {hammamCashiers.length > 0 ? (
+                    <select
+                      value={cashierName}
+                      onChange={e => setCashierName(e.target.value)}
+                      className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
+                    >
+                      <option value="">Sélectionner...</option>
+                      {hammamCashiers.map(emp => (
+                        <option key={emp.id} value={emp.name}>
+                          {emp.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-[11px] text-[#6B7873] p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl">
+                      Aucune caissière enregistrée.
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Client type */}
               <div>
