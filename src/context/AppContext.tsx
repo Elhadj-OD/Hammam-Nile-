@@ -25,6 +25,7 @@ import {
   LaveurGender,
   Employee,
   ProductCategory,
+  Expense,
 } from '../types';
 import { CLIENT_TYPE_GRID } from '../lib/laveurCommissions';
 import { openCashDrawer } from '../lib/cashDrawer';
@@ -74,6 +75,9 @@ import {
   deleteEmployeeFromSupabase,
   getDechargesFromSupabase,
   saveDechargeToSupabase,
+  getExpensesFromSupabase,
+  saveExpenseToSupabase,
+  deleteExpenseFromSupabase,
   getShopSettingsFromSupabase,
   saveShopSettingsToSupabase,
   getPresenceFromSupabase,
@@ -309,6 +313,11 @@ interface AppContextType {
     montantMobileMoneyReel: number;
   }) => Promise<{ success: boolean; error?: string }>;
 
+  // Dépenses (achats marché/fournisseur) — accès gérante uniquement
+  expenses: Expense[];
+  addExpense: (data: { name: string; price: number; qty?: number; notes?: string }) => { success: boolean; error?: string };
+  deleteExpense: (id: number) => void;
+
   // Settings
   settings: ShopSettings;
   updateSettings: (newSettings: Partial<ShopSettings>) => void;
@@ -412,6 +421,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Pas de cache localStorage : réservé à la gérante (RLS), rechargé depuis
   // Supabase à chaque session pour ne jamais garder de décharge périmée.
   const [decharges, setDecharges] = useState<Decharge[]>([]);
+
+  // Pas de cache localStorage non plus : réservé à la gérante (RLS).
+  const [expenses, setExpenses] = useState<Expense[]>([]);
 
   const [settings, setSettings] = useState<ShopSettings>(() => {
     const saved = localStorage.getItem(`${STORAGE_KEY}-settings`);
@@ -632,6 +644,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           return upsertById(prev, row as Decharge).sort((a, b) => b.timestamp - a.timestamp);
         });
       }),
+      // La RLS ne livre ces événements qu'à la gérante — sans effet pour les autres comptes.
+      subscribeToTable<Expense>('expenses', ({ eventType, new: row, old }) => {
+        setExpenses(prev => {
+          if (eventType === 'DELETE') return removeById(prev, (old as Expense).id);
+          return upsertById(prev, row as Expense).sort((a, b) => b.timestamp - a.timestamp);
+        });
+      }),
       subscribeToTable<{ id: number; settings: ShopSettings }>('shop_settings', ({ new: row }) => {
         if (row?.settings) setSettings(row.settings);
       }),
@@ -734,6 +753,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (currentUser?.role !== 'gerant') return;
     getDechargesFromSupabase().then(rows => {
       if (rows) setDecharges(rows);
+    });
+  }, [currentUser?.role]);
+
+  // Dépenses : réservées à la gérante, la RLS refuse toute lecture aux autres comptes
+  useEffect(() => {
+    if (currentUser?.role !== 'gerant') return;
+    getExpensesFromSupabase().then(rows => {
+      if (rows) setExpenses(rows);
     });
   }, [currentUser?.role]);
 
@@ -1888,6 +1915,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return { success: true };
   };
 
+  // Dépenses (achats marché/fournisseur)
+  const addExpense = (data: {
+    name: string;
+    price: number;
+    qty?: number;
+    notes?: string;
+  }): { success: boolean; error?: string } => {
+    const cleanName = data.name.trim();
+    if (!cleanName) return { success: false, error: 'Veuillez indiquer le produit acheté.' };
+    if (!(data.price > 0)) return { success: false, error: 'Veuillez indiquer un prix valide.' };
+
+    const now = new Date();
+    const newExpense: Expense = {
+      id: Date.now(),
+      name: cleanName,
+      price: data.price,
+      qty: data.qty && data.qty > 0 ? data.qty : undefined,
+      notes: data.notes?.trim() || undefined,
+      date: now.toLocaleDateString('fr-FR'),
+      time: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: now.getTime(),
+      addedBy: currentUser?.name || currentUser?.username || 'admin',
+    };
+    setExpenses(prev => [newExpense, ...prev].sort((a, b) => b.timestamp - a.timestamp));
+    saveExpenseToSupabase(newExpense);
+    return { success: true };
+  };
+
+  const deleteExpense = (id: number) => {
+    setExpenses(prev => prev.filter(e => e.id !== id));
+    deleteExpenseFromSupabase(id);
+  };
+
   // Settings
   const updateSettings = (newSettings: Partial<ShopSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
@@ -1975,6 +2035,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteEmployee,
         decharges,
         addOrUpdateDecharge,
+        expenses,
+        addExpense,
+        deleteExpense,
         settings,
         updateSettings,
         resetDemoData,

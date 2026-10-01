@@ -232,6 +232,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             </li>
           )}
 
+          {/* Dépenses (achats marché/fournisseur) - Gérante uniquement */}
+          {isGerant && (
+            <li
+              onClick={() => handleNavClick('depenses')}
+              className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
+                activeSection === 'depenses'
+                  ? 'bg-[#B8874B] text-[#002E6E] opacity-100 font-bold'
+                  : 'opacity-75 hover:bg-white/[0.06] hover:opacity-100'
+              }`}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="w-[17px] h-[17px] shrink-0"
+              >
+                <path d="M3 6h18l-1.5 12.5a2 2 0 0 1-2 1.5H6.5a2 2 0 0 1-2-1.5L3 6Z" />
+                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                <path d="M9 11v5" />
+                <path d="M15 11v5" />
+              </svg>
+              <span>Dépenses</span>
+            </li>
+          )}
+
           {/* Décharge (Clôture Journalière) - Caissières uniquement (leur propre caisse) */}
           {!isGerant && currentUser.department && (
             <li

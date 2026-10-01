@@ -26,6 +26,7 @@ import { CommissionsLaveursView } from './components/CommissionsLaveursView';
 import { LaveursView } from './components/LaveursView';
 import { AbonnementsGymView } from './components/AbonnementsGymView';
 import { DechargeView } from './components/DechargeView';
+import { DepensesView } from './components/DepensesView';
 import { AssistantView } from './components/AssistantView';
 import { ReceiptModal } from './components/ReceiptModal';
 import { AuthSwitchModal } from './components/AuthSwitchModal';
@@ -110,6 +111,9 @@ const MainLayout: React.FC = () => {
         // Clôture journalière : chaque caissière clôture sa propre caisse.
         // Réservée aux caissières (RLS + accès UI) — la gérante n'y a plus accès.
         return currentUser.role === 'caissier' ? <DechargeView /> : <DashboardView />;
+      case 'depenses':
+        // Dépenses (achats marché/fournisseur) — réservée à la gérante (RLS + accès UI).
+        return currentUser.role === 'gerant' ? <DepensesView /> : <DashboardView />;
       case 'utilisateurs':
         return <CaissieresView />;
       case 'parametres':
