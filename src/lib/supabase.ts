@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow, LaveurCommission, Decharge, Laveur, Employee } from '../types';
+import { Product, Sale, Client, StockMovement, HammamUsage, Quote, Invoice, ShopSettings, PresenceRow, LaveurCommission, Decharge, Laveur, Employee, Expense } from '../types';
 
 // Read credentials from environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -516,6 +516,48 @@ export async function saveDechargeToSupabase(decharge: Omit<Decharge, 'id'>): Pr
   } catch (err) {
     console.warn('Supabase save decharge error:', err);
     return null;
+  }
+}
+
+// ============================================================================
+// 9b. DÉPENSES (Achats marché/fournisseur — accès gérante uniquement, cf. RLS)
+// ============================================================================
+export async function getExpensesFromSupabase(): Promise<Expense[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('expenses')
+      .select('*')
+      .order('timestamp', { ascending: false });
+    if (error) {
+      // RLS refuse l'accès (caissière) : pas une erreur, juste une liste vide.
+      console.warn('Supabase fetch expenses error:', error.message);
+      return null;
+    }
+    return data as Expense[];
+  } catch (err) {
+    console.warn('Supabase error:', err);
+    return null;
+  }
+}
+
+export async function saveExpenseToSupabase(expense: Expense): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase.from('expenses').insert(expense);
+    if (error) console.warn('Supabase save expense error:', error.message);
+  } catch (err) {
+    console.warn('Supabase save expense error:', err);
+  }
+}
+
+export async function deleteExpenseFromSupabase(id: number): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase.from('expenses').delete().eq('id', id);
+    if (error) console.warn('Supabase delete expense error:', error.message);
+  } catch (err) {
+    console.warn('Supabase delete expense error:', err);
   }
 }
 

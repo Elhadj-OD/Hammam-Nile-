@@ -208,6 +208,7 @@ export type ActiveSection =
   | 'abonnements-gym'
   | 'rapports'
   | 'decharge'
+  | 'depenses'
   | 'utilisateurs'
   | 'parametres'
   | 'assistant';
@@ -283,4 +284,18 @@ export interface Decharge {
   ecartMobileMoney: number;
   faitPar: string;
   timestamp: number;
+}
+
+// Dépense (achat au marché, fournisseur, etc.) — accès gérante uniquement,
+// pour suivre combien est dépensé chaque mois en dehors des ventes.
+export interface Expense {
+  id: number;
+  name: string;
+  price: number;
+  qty?: number;
+  notes?: string;
+  date: string; // "JJ/MM/AAAA"
+  time: string;
+  timestamp: number;
+  addedBy: string;
 }

@@ -42,6 +42,8 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
         return { title: 'Prélèvements Hammam & Cabines', desc: 'Produits boutique prélevés pour les soins, gommages et vestiaires' };
       case 'rapports':
         return { title: 'Rapports & Statistiques', desc: 'Analyse financière et chiffre d’affaires' };
+      case 'depenses':
+        return { title: 'Dépenses & Achats', desc: 'Produits achetés au marché ou chez un fournisseur' };
       case 'parametres':
         return { title: 'Paramètres Boutique', desc: 'Configuration de l’établissement Hammam Nile' };
       default:
