@@ -18,8 +18,6 @@ export const DepensesView: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
-  const [qty, setQty] = useState('');
-  const [notes, setNotes] = useState('');
   const [formError, setFormError] = useState('');
 
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
@@ -50,8 +48,6 @@ export const DepensesView: React.FC = () => {
     setShowAddModal(false);
     setName('');
     setPrice('');
-    setQty('');
-    setNotes('');
     setFormError('');
   };
 
@@ -63,8 +59,7 @@ export const DepensesView: React.FC = () => {
       setFormError('Veuillez indiquer un prix valide.');
       return;
     }
-    const qtyValue = qty.trim() ? parseFloat(qty) : undefined;
-    const res = addExpense({ name, price: priceValue, qty: qtyValue, notes });
+    const res = addExpense({ name, price: priceValue });
     if (!res.success) {
       setFormError(res.error || "Impossible d'ajouter cette dépense.");
       return;
@@ -163,7 +158,6 @@ export const DepensesView: React.FC = () => {
                 <tr className="bg-[#F7F3EC]/80 border-b border-[#E7E0D3] text-[#6B7873] font-bold uppercase tracking-wider text-[10px]">
                   <th className="py-3 px-4">Date & Heure</th>
                   <th className="py-3 px-4">Produit</th>
-                  <th className="py-3 px-4">Note</th>
                   <th className="py-3 px-4">Ajouté par</th>
                   <th className="py-3 px-4 text-right">Prix</th>
                   <th className="py-3 px-4 text-right">Actions</th>
@@ -176,11 +170,7 @@ export const DepensesView: React.FC = () => {
                       <div className="font-bold text-[#1C2321]">{e.date}</div>
                       <div className="text-[10px] text-[#6B7873]">{e.time}</div>
                     </td>
-                    <td className="py-3 px-4 font-semibold text-[#1C2321]">
-                      {e.name}
-                      {e.qty != null && <span className="text-[10px] text-[#6B7873] ml-1">×{e.qty}</span>}
-                    </td>
-                    <td className="py-3 px-4 text-[#6B7873]">{e.notes || '—'}</td>
+                    <td className="py-3 px-4 font-semibold text-[#1C2321]">{e.name}</td>
                     <td className="py-3 px-4 whitespace-nowrap text-[#6B7873]">{e.addedBy}</td>
                     <td className="py-3 px-4 text-right whitespace-nowrap font-extrabold text-[#1C2321]">
                       {formatPrice(e.price)}
@@ -244,44 +234,19 @@ export const DepensesView: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-[#1C2321] mb-1">
-                    Prix ({settings.currency}) *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    step="1"
-                    value={price}
-                    onChange={e => setPrice(e.target.value)}
-                    placeholder="ex: 1500"
-                    required
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-[#1C2321] mb-1">Quantité (optionnel)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={qty}
-                    onChange={e => setQty(e.target.value)}
-                    placeholder="ex: 5"
-                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
-                  />
-                </div>
-              </div>
-
               <div>
-                <label className="block text-xs font-bold text-[#1C2321] mb-1">Note (optionnel)</label>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1">
+                  Montant ({settings.currency}) *
+                </label>
                 <input
-                  type="text"
-                  value={notes}
-                  onChange={e => setNotes(e.target.value)}
-                  placeholder="ex: Marché du lundi"
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={price}
+                  onChange={e => setPrice(e.target.value)}
+                  placeholder="ex: 1500"
+                  required
+                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] font-mono focus:outline-none focus:border-[#004CB7]"
                 />
               </div>
 
