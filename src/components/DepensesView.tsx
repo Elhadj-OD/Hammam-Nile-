@@ -157,7 +157,7 @@ export const DepensesView: React.FC = () => {
               <thead>
                 <tr className="bg-[#F7F3EC]/80 border-b border-[#E7E0D3] text-[#6B7873] font-bold uppercase tracking-wider text-[10px]">
                   <th className="py-3 px-4">Date & Heure</th>
-                  <th className="py-3 px-4">Produit</th>
+                  <th className="py-3 px-4">Boutique</th>
                   <th className="py-3 px-4">Ajouté par</th>
                   <th className="py-3 px-4 text-right">Prix</th>
                   <th className="py-3 px-4 text-right">Actions</th>
@@ -222,12 +222,12 @@ export const DepensesView: React.FC = () => {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-[#1C2321] mb-1">Produit acheté *</label>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1">Nom du boutique *</label>
                 <input
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  placeholder="ex: Tomates, oignons, savon noir..."
+                  placeholder="ex: Marché Capitale, Boutique Ahmed..."
                   required
                   autoFocus
                   className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
