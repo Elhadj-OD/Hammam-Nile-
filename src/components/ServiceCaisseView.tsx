@@ -333,13 +333,28 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
 
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">Nom de la caissière</label>
-                <input
-                  type="text"
-                  value={cashierName}
-                  onChange={e => setCashierName(e.target.value)}
-                  placeholder="ex: Aïcha"
-                  className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
-                />
+                {categoryEmployees.length > 0 ? (
+                  <select
+                    value={cashierName}
+                    onChange={e => setCashierName(e.target.value)}
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
+                  >
+                    <option value="">Sélectionner...</option>
+                    {categoryEmployees.map(emp => (
+                      <option key={emp.id} value={emp.name}>
+                        {emp.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={cashierName}
+                    onChange={e => setCashierName(e.target.value)}
+                    placeholder="ex: Aïcha"
+                    className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
+                  />
+                )}
                 <p className="text-[11px] text-[#6B7873] mt-1">Affiché sur le ticket. Modifiable si une autre personne tient la caisse.</p>
               </div>
 
