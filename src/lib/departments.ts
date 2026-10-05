@@ -13,4 +13,5 @@ export const DEPARTMENTS: Record<
   epilation_traditionnelle: { label: 'Épilation Traditionnelle', icon: '🪡', category: 'epilation_traditionnelle' },
   fitness_gym: { label: 'Fitness Gym', icon: '🏋️', category: 'fitness_gym' },
   buvette: { label: 'Buvette', icon: '🥤', category: 'boissons' },
+  brushing: { label: 'Brushing', icon: '💁', category: 'brushing' },
 };
