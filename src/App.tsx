@@ -116,7 +116,10 @@ const MainLayout: React.FC = () => {
       case 'decharge':
         // Clôture journalière : chaque caissière clôture sa propre caisse.
         // Réservée aux caissières (RLS + accès UI) — la gérante n'y a plus accès.
-        return currentUser.role === 'caissier' ? <DechargeView /> : <DashboardView />;
+        // Pas pour Brushing (pas de caisse espèces/mobile money à clôturer).
+        return currentUser.role === 'caissier' && currentUser.department !== 'brushing'
+          ? <DechargeView />
+          : <DashboardView />;
       case 'depenses':
         // Dépenses (achats marché/fournisseur) — réservée à la gérante (RLS + accès UI).
         return currentUser.role === 'gerant' ? <DepensesView /> : <DashboardView />;
