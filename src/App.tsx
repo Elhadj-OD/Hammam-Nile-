@@ -10,6 +10,8 @@ import { CaisseView } from './components/CaisseView';
 import { EpilationServicesView } from './components/EpilationServicesView';
 import { CoiffureServicesView } from './components/CoiffureServicesView';
 import { EstheticServicesView } from './components/EstheticServicesView';
+import { BrushingServicesView } from './components/BrushingServicesView';
+import { BrushingClientsView } from './components/BrushingClientsView';
 import { MesVentesView } from './components/MesVentesView';
 import { DevisView } from './components/DevisView';
 import { FacturesView } from './components/FacturesView';
@@ -64,6 +66,7 @@ const MainLayout: React.FC = () => {
         if (currentUser.department === 'epilation_traditionnelle') return <EpilationServicesView />;
         if (currentUser.department === 'coiffure_salon') return <CoiffureServicesView />;
         if (currentUser.department === 'spa_massage') return <EstheticServicesView />;
+        if (currentUser.department === 'brushing') return <BrushingServicesView />;
         return <CaisseView />;
       case 'mes-ventes':
         return <MesVentesView />;
@@ -72,7 +75,10 @@ const MainLayout: React.FC = () => {
       case 'factures':
         return <FacturesView />;
       case 'clients':
-        return <ClientsView />;
+        // Brushing : vue dédiée (historique + clients les plus fidèles sur
+        // ce service uniquement, recherche par nom/numéro) au lieu du CRM
+        // général réservé à la gérante.
+        return currentUser.department === 'brushing' ? <BrushingClientsView /> : <ClientsView />;
       case 'inventaire':
         // Vue de stock centralisée : réservée à la gérante
         return currentUser.role === 'gerant' ? <InventaireView /> : <DashboardView />;

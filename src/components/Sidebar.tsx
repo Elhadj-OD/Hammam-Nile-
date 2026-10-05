@@ -184,8 +184,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
             <span>Historique Boutique</span>
           </li>
 
-          {/* Clientes - Admin only */}
-          {isGerant && (
+          {/* Clientes - Admin only ; Brushing voit sa propre vue (historique + fidélité) */}
+          {(isGerant || currentUser.department === 'brushing') && (
             <li
               onClick={() => handleNavClick('clients')}
               className={`flex items-center gap-3 p-[11px_12px] rounded-full text-[13.5px] font-semibold cursor-pointer transition-colors duration-150 ${
@@ -204,7 +204,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
                 <circle cx="12" cy="8" r="4" />
                 <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
               </svg>
-              <span>Clientes</span>
+              <span>{isGerant ? 'Clientes' : 'Clients Brushing'}</span>
             </li>
           )}
 

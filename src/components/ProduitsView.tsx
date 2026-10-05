@@ -41,7 +41,8 @@ export const ProduitsView: React.FC = () => {
   const isServiceDept =
     currentUser?.department === 'coiffure_salon' ||
     currentUser?.department === 'epilation_traditionnelle' ||
-    currentUser?.department === 'spa_massage';
+    currentUser?.department === 'spa_massage' ||
+    currentUser?.department === 'brushing';
   const itemWord = isServiceDept ? 'Service' : 'Produit';
   // Le hammam des femmes vit dans le même rayon que la Boutique Femme —
   // pas un rayon à part. Boutique Homme garde son propre rayon : les
@@ -437,6 +438,18 @@ export const ProduitsView: React.FC = () => {
             title="Caisse dédiée Coiffure & Salon"
           >
             💇 Coiffure & Salon
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('brushing')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+              selectedCategory === 'brushing'
+                ? 'bg-[#004CB7] text-white'
+                : 'bg-[#F7F3EC] text-[#6B7873] hover:text-[#1C2321]'
+            }`}
+            title="Caisse dédiée Brushing"
+          >
+            💁 Brushing
           </button>
         </div>
         )}
@@ -845,6 +858,7 @@ export const ProduitsView: React.FC = () => {
                       <option value="spa_massage">Esthétique</option>
                       <option value="coiffure_salon">Coiffure & Salon</option>
                       <option value="epilation_traditionnelle">Épilation Traditionnelle</option>
+                      <option value="brushing">Brushing</option>
                       <option value="fitness_gym">Fitness Gym</option>
                       <option value="boissons">Boissons</option>
                       <option value="snacks">Snacks</option>

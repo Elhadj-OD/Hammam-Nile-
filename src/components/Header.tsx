@@ -12,7 +12,8 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   const isServiceDept =
     currentUser?.department === 'coiffure_salon' ||
     currentUser?.department === 'epilation_traditionnelle' ||
-    currentUser?.department === 'spa_massage';
+    currentUser?.department === 'spa_massage' ||
+    currentUser?.department === 'brushing';
 
   const getSectionInfo = () => {
     switch (activeSection) {
