@@ -66,6 +66,9 @@ export const CommissionsLaveursView: React.FC = () => {
   const [laveurName, setLaveurName] = useState('');
   const [cashierName, setCashierName] = useState('');
   const [clientType, setClientType] = useState<ClientType>('simple');
+  // Pour un groupe (ex: 2 VIP + 1 Simple + 1 Enfant) : nombre de personnes
+  // par type, saisi en ajout uniquement (une modification reste sur 1 ligne).
+  const [typeCounts, setTypeCounts] = useState<Partial<Record<ClientType, number>>>({});
   const [useCustomPercent, setUseCustomPercent] = useState(false);
   const [customPercent, setCustomPercent] = useState<string>('20');
   const [bonus, setBonus] = useState<number>(0);
@@ -206,6 +209,7 @@ export const CommissionsLaveursView: React.FC = () => {
     setLaveurName('');
     setCashierName('');
     setClientType('simple');
+    setTypeCounts({});
     setUseCustomPercent(false);
     setCustomPercent('20');
     setBonus(0);
@@ -231,6 +235,7 @@ export const CommissionsLaveursView: React.FC = () => {
     setLaveurName(c.laveurName);
     setCashierName(c.cashierName || '');
     setClientType(c.clientType);
+    setTypeCounts({});
     setUseCustomPercent(c.commissionPercent != null);
     setCustomPercent(c.commissionPercent != null ? String(c.commissionPercent) : '20');
     setBonus(c.bonus);
@@ -277,16 +282,34 @@ export const CommissionsLaveursView: React.FC = () => {
         cashierName: cashierName.trim() || undefined,
       });
     } else {
-      addLaveurCommission({
-        laveurName: laveurName.trim(),
-        clientType,
-        commissionPercent,
-        bonus,
-        payment,
-        paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
-        customerPhone: payment === 'mobile' ? customerPhone.trim() : undefined,
-        cashierName: cashierName.trim() || undefined,
-        products: boutiqueCart.map(item => ({ productId: item.productId, qty: item.qty, price: item.price })),
+      // Groupe : une ligne de commission par personne (ex: 2 VIP + 1 Simple
+      // = 3 lignes), pour que chaque laveur/type garde ses propres
+      // statistiques. Le bonus et le panier boutique ne sont attachés qu'à
+      // la toute première ligne, pour ne pas les compter/déduire plusieurs
+      // fois ; le tiroir-caisse ne s'ouvre lui aussi qu'une seule fois.
+      const groupTypes = (Object.keys(typeCounts) as ClientType[]).filter(ct => (typeCounts[ct] || 0) > 0);
+      if (groupTypes.length === 0) {
+        setFormError('Veuillez sélectionner au moins un type de client.');
+        return;
+      }
+      let isFirst = true;
+      groupTypes.forEach(ct => {
+        const count = typeCounts[ct] || 0;
+        for (let i = 0; i < count; i++) {
+          addLaveurCommission({
+            laveurName: laveurName.trim(),
+            clientType: ct,
+            commissionPercent,
+            bonus: isFirst ? bonus : 0,
+            payment,
+            paymentDetail: payment === 'mobile' ? mobileOperator : undefined,
+            customerPhone: payment === 'mobile' ? customerPhone.trim() : undefined,
+            cashierName: cashierName.trim() || undefined,
+            products: isFirst ? boutiqueCart.map(item => ({ productId: item.productId, qty: item.qty, price: item.price })) : [],
+            skipCashDrawer: !isFirst,
+          });
+          isFirst = false;
+        }
       });
     }
 
@@ -350,6 +373,23 @@ export const CommissionsLaveursView: React.FC = () => {
     canUsePercent && useCustomPercent && !isNaN(effectivePercentValue)
       ? Math.round((grid.price * effectivePercentValue) / 100)
       : grid.commission;
+
+  // Détail du groupe en cours d'ajout (ex: 2 VIP + 1 Simple) : une ligne
+  // par type sélectionné, avec son prix/commission multipliés par le nombre
+  // de personnes de ce type.
+  const groupBreakdown = (Object.keys(typeCounts) as ClientType[])
+    .filter(ct => (typeCounts[ct] || 0) > 0)
+    .map(ct => {
+      const count = typeCounts[ct] || 0;
+      const g = CLIENT_TYPE_GRID[ct];
+      const unitCommission =
+        canUsePercent && useCustomPercent && !isNaN(effectivePercentValue)
+          ? Math.round((g.price * effectivePercentValue) / 100)
+          : g.commission;
+      return { ct, count, label: g.label, price: g.price * count, commission: unitCommission * count };
+    });
+  const groupTotalPrice = groupBreakdown.reduce((sum, e) => sum + e.price, 0);
+  const groupTotalCommission = groupBreakdown.reduce((sum, e) => sum + e.commission, 0);
 
   return (
     <div className="space-y-6 max-w-[1360px] mx-auto pb-12">
@@ -849,26 +889,80 @@ export const CommissionsLaveursView: React.FC = () => {
 
               {/* Client type */}
               <div>
-                <label className="block text-xs font-bold text-[#1C2321] mb-1.5">Type de client *</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {(Object.keys(CLIENT_TYPE_GRID) as ClientType[]).map(ct => (
-                    <button
-                      key={ct}
-                      type="button"
-                      onClick={() => setClientType(ct)}
-                      className={`p-3 rounded-full border text-center transition cursor-pointer ${
-                        clientType === ct
-                          ? 'bg-[#004CB7] border-[#004CB7] text-white shadow-xs'
-                          : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
-                      }`}
-                    >
-                      <div className="text-xs font-bold">{CLIENT_TYPE_GRID[ct].label}</div>
-                      <div className={`text-[10px] mt-0.5 ${clientType === ct ? 'text-white/80' : 'text-[#6B7873]'}`}>
-                        {formatPrice(CLIENT_TYPE_GRID[ct].price)}
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                <label className="block text-xs font-bold text-[#1C2321] mb-1.5">
+                  {editingCommission ? 'Type de client *' : 'Type(s) de client *'}
+                </label>
+                {editingCommission ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {(Object.keys(CLIENT_TYPE_GRID) as ClientType[]).map(ct => (
+                      <button
+                        key={ct}
+                        type="button"
+                        onClick={() => setClientType(ct)}
+                        className={`p-3 rounded-full border text-center transition cursor-pointer ${
+                          clientType === ct
+                            ? 'bg-[#004CB7] border-[#004CB7] text-white shadow-xs'
+                            : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
+                        }`}
+                      >
+                        <div className="text-xs font-bold">{CLIENT_TYPE_GRID[ct].label}</div>
+                        <div className={`text-[10px] mt-0.5 ${clientType === ct ? 'text-white/80' : 'text-[#6B7873]'}`}>
+                          {formatPrice(CLIENT_TYPE_GRID[ct].price)}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-[11px] text-[#6B7873] mb-1.5">
+                      Touchez un type pour l'ajouter — plusieurs fois pour un groupe (ex: 2× VIP).
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(Object.keys(CLIENT_TYPE_GRID) as ClientType[]).map(ct => {
+                        const count = typeCounts[ct] || 0;
+                        return (
+                          <button
+                            key={ct}
+                            type="button"
+                            onClick={() => setTypeCounts(prev => ({ ...prev, [ct]: (prev[ct] || 0) + 1 }))}
+                            className={`relative p-3 rounded-full border text-center transition cursor-pointer ${
+                              count > 0
+                                ? 'bg-[#004CB7] border-[#004CB7] text-white shadow-xs'
+                                : 'bg-[#F7F3EC] border-[#E7E0D3] text-[#1C2321] hover:bg-[#E4EAF7]'
+                            }`}
+                          >
+                            {count > 0 && (
+                              <span
+                                role="button"
+                                tabIndex={0}
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setTypeCounts(prev => {
+                                    const next = Math.max(0, (prev[ct] || 0) - 1);
+                                    const updated = { ...prev, [ct]: next };
+                                    if (next === 0) delete updated[ct];
+                                    return updated;
+                                  });
+                                }}
+                                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white text-[#004CB7] border border-[#004CB7]/30 flex items-center justify-center text-[11px] font-black shadow-xs cursor-pointer"
+                                title="Retirer un"
+                              >
+                                −
+                              </span>
+                            )}
+                            <div className="text-xs font-bold flex items-center justify-center gap-1">
+                              {count > 0 && <span>{count}×</span>}
+                              <span>{CLIENT_TYPE_GRID[ct].label}</span>
+                            </div>
+                            <div className={`text-[10px] mt-0.5 ${count > 0 ? 'text-white/80' : 'text-[#6B7873]'}`}>
+                              {formatPrice(CLIENT_TYPE_GRID[ct].price)}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Commission en pourcentage — option Boutique Femme/Hammam */}
@@ -1176,21 +1270,42 @@ export const CommissionsLaveursView: React.FC = () => {
 
               {/* Summary */}
               <div className="bg-[#E4EAF7]/60 p-3.5 rounded-xl border border-[#004CB7]/20 space-y-1.5 text-xs">
-                <div className="flex justify-between text-[#002E6E]">
-                  <span>Prix du service ({CLIENT_TYPE_GRID[clientType].label})</span>
-                  <span className="font-bold">{formatPrice(grid.price)}</span>
-                </div>
-                <div className="flex justify-between text-[#002E6E]">
-                  <span>Commission {useCustomPercent ? `(${customPercent || 0}%)` : 'fixe'} (laveur)</span>
-                  <span className="font-bold">{formatPrice(previewCommission)}</span>
-                </div>
+                {editingCommission ? (
+                  <>
+                    <div className="flex justify-between text-[#002E6E]">
+                      <span>Prix du service ({CLIENT_TYPE_GRID[clientType].label})</span>
+                      <span className="font-bold">{formatPrice(grid.price)}</span>
+                    </div>
+                    <div className="flex justify-between text-[#002E6E]">
+                      <span>Commission {useCustomPercent ? `(${customPercent || 0}%)` : 'fixe'} (laveur)</span>
+                      <span className="font-bold">{formatPrice(previewCommission)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {groupBreakdown.length > 0 ? (
+                      groupBreakdown.map(e => (
+                        <div key={e.ct} className="flex justify-between text-[#002E6E]">
+                          <span>{e.count}× {e.label}</span>
+                          <span className="font-bold">{formatPrice(e.price)}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-[#6B7873]">Sélectionnez un ou plusieurs types de client ci-dessus.</div>
+                    )}
+                    <div className="flex justify-between text-[#002E6E] pt-1.5 border-t border-[#004CB7]/20">
+                      <span>Commission {useCustomPercent ? `(${customPercent || 0}%)` : 'fixe'} (laveur)</span>
+                      <span className="font-bold">{formatPrice(groupTotalCommission)}</span>
+                    </div>
+                  </>
+                )}
                 <div className="flex justify-between text-[#002E6E]">
                   <span>Bonus (laveur)</span>
                   <span className="font-bold">{formatPrice(bonus)}</span>
                 </div>
                 <div className="flex justify-between pt-1.5 border-t border-[#004CB7]/20 font-extrabold text-[#004CB7]">
                   <span>Total commission laveur</span>
-                  <span>{formatPrice(previewCommission + bonus)}</span>
+                  <span>{formatPrice((editingCommission ? previewCommission : groupTotalCommission) + bonus)}</span>
                 </div>
                 {boutiqueCart.length > 0 && (
                   <div className="flex justify-between text-[#B8874B] pt-1.5 border-t border-[#004CB7]/20">
@@ -1200,7 +1315,9 @@ export const CommissionsLaveursView: React.FC = () => {
                 )}
                 <div className="flex justify-between pt-1.5 border-t border-[#004CB7]/20 text-sm font-extrabold text-[#1C2321]">
                   <span>Total payé par le client</span>
-                  <span>{formatPrice(grid.price + bonus + boutiqueSubtotal)}</span>
+                  <span>
+                    {formatPrice((editingCommission ? grid.price : groupTotalPrice) + bonus + boutiqueSubtotal)}
+                  </span>
                 </div>
               </div>
 
