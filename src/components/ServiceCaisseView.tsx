@@ -59,6 +59,17 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
     [employees, category]
   );
 
+  // Caissière : équipe partagée côté femme (Hammam, Esthétique, Coiffure,
+  // Épilation, Brushing), distincte de l'employée qui réalise la
+  // prestation — plusieurs personnes se relaient sur la même caisse.
+  const sideCashiers = useMemo(
+    () =>
+      employees
+        .filter(e => e.category === 'hammam_bains' && e.gender === 'femme')
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [employees]
+  );
+
   const formatPrice = (val: number) => `${val.toLocaleString('fr-FR')} ${settings.currency}`;
 
   const categoryProducts = useMemo(() => products.filter(p => p.category === category), [products, category]);
@@ -333,14 +344,14 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
 
               <div>
                 <label className="block text-xs font-bold text-[#1C2321] mb-1">Nom de la caissière</label>
-                {categoryEmployees.length > 0 ? (
+                {sideCashiers.length > 0 ? (
                   <select
                     value={cashierName}
                     onChange={e => setCashierName(e.target.value)}
                     className="w-full text-sm p-2.5 bg-[#F7F3EC] border border-[#E7E0D3] rounded-xl text-[#1C2321] focus:outline-none focus:border-[#004CB7]"
                   >
                     <option value="">Sélectionner...</option>
-                    {categoryEmployees.map(emp => (
+                    {sideCashiers.map(emp => (
                       <option key={emp.id} value={emp.name}>
                         {emp.name}
                       </option>
