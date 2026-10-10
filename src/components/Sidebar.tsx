@@ -87,7 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, setMobileO
       )}
 
       <aside
-        className={`no-print fixed xl:static top-0 bottom-0 left-0 z-50 w-[218px] bg-[#051B33] text-[#EFE8D8] flex flex-col p-[22px_16px] transition-transform duration-300 ease-in-out shrink-0 border-r border-[#E7E0D3]/10 ${
+        className={`no-print fixed xl:static top-0 bottom-0 left-0 z-50 w-[218px] water-glass-dark text-[#EFE8D8] flex flex-col p-[22px_16px] transition-transform duration-300 ease-in-out shrink-0 border-r border-[#E7E0D3]/10 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'
         }`}
       >
