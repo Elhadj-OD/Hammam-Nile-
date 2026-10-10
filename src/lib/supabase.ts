@@ -562,6 +562,25 @@ export async function deleteExpenseFromSupabase(id: number): Promise<void> {
 }
 
 // ============================================================================
+// 9c. RÉINITIALISATION DE L'HISTORIQUE (ventes, services, mouvements,
+// décharges, fiches clients) — garde le catalogue, les employées, les
+// comptes et les dépenses. Réservé à la gérante (cf. policies DELETE).
+// ============================================================================
+export async function resetHistoryInSupabase(): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Supabase non configuré.' };
+  const tables = ['sales', 'laveur_commissions', 'stock_movements', 'decharges', 'clients'];
+  for (const table of tables) {
+    try {
+      const { error } = await supabase.from(table).delete().gt('id', 0);
+      if (error) return { success: false, error: `${table} : ${error.message}` };
+    } catch (err) {
+      return { success: false, error: `${table} : ${String(err)}` };
+    }
+  }
+  return { success: true };
+}
+
+// ============================================================================
 // 10. SYNCHRONISATION TEMPS RÉEL (Realtime)
 // ============================================================================
 // La réplication logique Postgres est activée sur ces tables
