@@ -78,6 +78,7 @@ import {
   getExpensesFromSupabase,
   saveExpenseToSupabase,
   deleteExpenseFromSupabase,
+  resetHistoryInSupabase,
   getShopSettingsFromSupabase,
   saveShopSettingsToSupabase,
   getPresenceFromSupabase,
@@ -322,6 +323,10 @@ interface AppContextType {
   settings: ShopSettings;
   updateSettings: (newSettings: Partial<ShopSettings>) => void;
   resetDemoData: () => void;
+
+  // Réinitialisation de l'historique réel (ventes, services, mouvements,
+  // décharges, fiches clients) — garde catalogue/employées/comptes/dépenses.
+  resetAllHistory: () => Promise<{ success: boolean; error?: string }>;
 
   // Last Completed Sale (for receipt modal)
   lastSale: Sale | null;
@@ -1968,6 +1973,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCart([]);
   };
 
+  // Vide l'historique réel (ventes, services/commissions Hammam, mouvements
+  // de stock, décharges, fiches clients) en base ET localement, une fois le
+  // test terminé avant la mise en service. Ne touche ni au catalogue
+  // (produits/services), ni aux employées/laveurs, ni aux comptes, ni aux
+  // dépenses (gérante) — ces données restent telles quelles.
+  const resetAllHistory = async (): Promise<{ success: boolean; error?: string }> => {
+    const res = await resetHistoryInSupabase();
+    if (!res.success) return res;
+    setSales([]);
+    setLaveurCommissions([]);
+    setMovements([]);
+    setDecharges([]);
+    setClients([]);
+    setLastSale(null);
+    return { success: true };
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -2044,6 +2066,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         settings,
         updateSettings,
         resetDemoData,
+        resetAllHistory,
         lastSale,
         setLastSale,
         firebaseConnected,
