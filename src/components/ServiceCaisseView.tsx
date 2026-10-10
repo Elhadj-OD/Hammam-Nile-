@@ -198,7 +198,7 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
             key={p.id}
             type="button"
             onClick={() => openModal(p)}
-            className="text-left p-4 rounded-full bg-white border border-[#E7E0D3] hover:border-[#004CB7]/50 hover:shadow-xs transition cursor-pointer"
+            className="text-left p-4 rounded-full glass-card border border-white/50 hover:border-[#004CB7]/50 hover:shadow-sm transition cursor-pointer"
           >
             <div className="flex items-start justify-between gap-2">
               <span className="font-bold text-sm text-[#1C2321]">{p.name}</span>

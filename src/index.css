@@ -125,6 +125,34 @@
   }
 }
 
+/* Variante sombre du verre d'eau, pour le menu latéral (toujours visible,
+   pas d'animation ici pour rester reposant à l'œil toute la journée). */
+.water-glass-dark {
+  background: linear-gradient(
+    165deg,
+    rgba(5, 27, 51, 0.92) 0%,
+    rgba(0, 46, 110, 0.82) 55%,
+    rgba(0, 76, 183, 0.58) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Verre léger pour les grilles de cartes répétées (ex: prestations/tarifs) :
+   même rendu translucide que .water-glass-light, sans l'animation ni le
+   pseudo-élément, pour rester fluide même avec une douzaine de cartes à
+   l'écran en même temps. */
+.glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(228, 240, 252, 0.68) 55%,
+    rgba(191, 217, 247, 0.45) 100%
+  );
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
 /* Motif discret évoquant les ondulations du Nil — utilisé avec parcimonie,
    jamais comme simple décor générique (ex: écran de connexion). */
 .nile-waves {
