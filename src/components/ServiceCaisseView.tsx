@@ -42,7 +42,9 @@ export const ServiceCaisseView: React.FC<ServiceCaisseViewProps> = ({
   const { products, sales, currentUser, completeServiceSale, settings, employees } = useApp();
 
   const [activeTab, setActiveTab] = useState<string>(tabs?.[0]?.key || '');
-  const [filterPeriod, setFilterPeriod] = useState<'today' | 'week' | 'month' | 'all'>('today');
+  // "all" par défaut : en ne montrant que "today", l'historique semblait
+  // vide/vidé à chaque nouvelle journée alors que rien n'était perdu.
+  const [filterPeriod, setFilterPeriod] = useState<'today' | 'week' | 'month' | 'all'>('all');
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [priceInput, setPriceInput] = useState('');

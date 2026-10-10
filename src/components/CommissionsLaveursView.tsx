@@ -60,7 +60,9 @@ export const CommissionsLaveursView: React.FC = () => {
   const [editingCommission, setEditingCommission] = useState<LaveurCommission | null>(null);
   const [search, setSearch] = useState('');
   const [filterLaveur, setFilterLaveur] = useState('all');
-  const [filterPeriod, setFilterPeriod] = useState<'today' | 'week' | 'month' | 'all'>('today');
+  // "all" par défaut : en ne montrant que "today", l'historique semblait
+  // vide/vidé à chaque nouvelle journée alors que rien n'était perdu.
+  const [filterPeriod, setFilterPeriod] = useState<'today' | 'week' | 'month' | 'all'>('all');
 
   // Form state
   const [laveurName, setLaveurName] = useState('');

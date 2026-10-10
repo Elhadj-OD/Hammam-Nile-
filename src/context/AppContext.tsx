@@ -748,13 +748,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => clearInterval(interval);
   }, [currentUser?.role]);
 
-  // Décharges : réservées à la gérante, la RLS refuse toute lecture aux autres comptes
+  // Décharges : la gérante voit tout, chaque caissière voit celles de son
+  // propre département — la RLS filtre déjà correctement côté serveur, il
+  // ne faut donc pas sauter ce chargement pour les caissières (sinon leur
+  // propre historique de clôtures n'apparaît jamais après un rechargement).
   useEffect(() => {
-    if (currentUser?.role !== 'gerant') return;
+    if (!currentUser) return;
     getDechargesFromSupabase().then(rows => {
       if (rows) setDecharges(rows);
     });
-  }, [currentUser?.role]);
+  }, [currentUser?.role, currentUser?.department]);
 
   // Dépenses : réservées à la gérante, la RLS refuse toute lecture aux autres comptes
   useEffect(() => {
