@@ -208,24 +208,19 @@ export const INITIAL_PRODUCTS: Product[] = [
   { id: 192, name: 'Hammam complet', category: 'hammam_bains', price: 800, qty: 999, minQty: 0, emoji: '♨️', description: 'Gommage bissap (3 masques : argile, herbes, café)' },
   { id: 193, name: 'Hammam privé', category: 'hammam_bains', price: 1500, qty: 999, minQty: 0, emoji: '♨️', description: 'Masque, gommage bissap, masque argile, herbes, café, masque calmante, à boire, mele7fe (voile), un thé et collation' },
 
-  // Épilation Traditionnelle Helwa — prix "XXX" non communiqués sur le menu, à définir par la gérante
-  { id: 194, name: 'Helwa - Sourcils', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 195, name: 'Helwa - Lèvre supérieure', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 196, name: 'Helwa - Visage complet', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 197, name: 'Helwa - Aisselles', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 198, name: 'Helwa - Bras', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 199, name: 'Helwa - Demi-jambes', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 200, name: 'Helwa - Jambes complètes', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 201, name: 'Helwa - Maillot classique', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 202, name: 'Helwa - Maillot intégral', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 203, name: 'Helwa - Dos', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 204, name: 'Helwa - Ventre', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 205, name: 'Helwa - Fesses', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 206, name: 'Helwa - Doigts / Orteils', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Prix à définir' },
-  { id: 207, name: 'Helwa - Combo Visage', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Sourcils + lèvre + visage — prix à définir' },
-  { id: 208, name: 'Helwa - Combo Haut du corps', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Aisselles + bras — prix à définir' },
-  { id: 209, name: 'Helwa - Combo Bas du corps', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Demi-jambes + maillot — prix à définir' },
-  { id: 210, name: 'Helwa - Combo Complet', category: 'epilation_traditionnelle', price: 0, qty: 999, minQty: 0, emoji: '🪡', description: 'Jambes complètes + maillot + aisselles — prix à définir' },
+  // Épilation Traditionnelle Helwa — grille officielle (le soir : supplément de 50 MRU sur chaque prestation Helwa).
+  // Les combinaisons de la grille (Cuisses, Demi-jambes et bras, Helwa complet...) sont ajoutées en base par
+  // supabase_fix_prix_grille_officielle.sql ; leur nom doit commencer par "Helwa" pour apparaître dans l'onglet.
+  { id: 195, name: 'Helwa - Lèvre supérieure', category: 'epilation_traditionnelle', price: 100, qty: 999, minQty: 0, emoji: '🪡' },
+  { id: 196, name: 'Helwa - Visage complet', category: 'epilation_traditionnelle', price: 200, qty: 999, minQty: 0, emoji: '🪡' },
+  { id: 197, name: 'Helwa - Aisselles', category: 'epilation_traditionnelle', price: 100, qty: 999, minQty: 0, emoji: '🪡' },
+  { id: 198, name: 'Helwa - Bras', category: 'epilation_traditionnelle', price: 200, qty: 999, minQty: 0, emoji: '🪡' },
+  { id: 199, name: 'Helwa - Demi-jambes', category: 'epilation_traditionnelle', price: 200, qty: 999, minQty: 0, emoji: '🪡' },
+  { id: 200, name: 'Helwa - Jambes complètes', category: 'epilation_traditionnelle', price: 600, qty: 999, minQty: 0, emoji: '🪡' },
+  { id: 201, name: 'Helwa - Maillot classique', category: 'epilation_traditionnelle', price: 1500, qty: 999, minQty: 0, emoji: '🪡' },
+  { id: 203, name: 'Helwa - Dos', category: 'epilation_traditionnelle', price: 200, qty: 999, minQty: 0, emoji: '🪡' },
+  { id: 204, name: 'Helwa - Ventre', category: 'epilation_traditionnelle', price: 200, qty: 999, minQty: 0, emoji: '🪡' },
+  { id: 205, name: 'Helwa - Fesses', category: 'epilation_traditionnelle', price: 200, qty: 999, minQty: 0, emoji: '🪡' },
 
   // Henné (caisse Épilation "Helwa et Henné") — tarifs au choix du client selon la prestation
   { id: 275, name: 'Henné noir main (500 MRU)', category: 'epilation_traditionnelle', price: 500, qty: 999, minQty: 0, emoji: '🎨' },
@@ -264,7 +259,7 @@ export const INITIAL_PRODUCTS: Product[] = [
 
   // Soins & Beauté — Épilation moderne (Esthétique, distincte de l'Épilation Traditionnelle Helwa)
   { id: 230, name: 'Épilation Visage', category: 'spa_massage', price: 400, qty: 999, minQty: 0, emoji: '🪒' },
-  { id: 231, name: 'Épilation Sourcils (seule)', category: 'spa_massage', price: 200, qty: 999, minQty: 0, emoji: '🪒' },
+  { id: 231, name: 'Épilation Sourcils (seule)', category: 'spa_massage', price: 150, qty: 999, minQty: 0, emoji: '🪒' },
   { id: 232, name: 'Épilation Sourcils (avec coloration)', category: 'spa_massage', price: 300, qty: 999, minQty: 0, emoji: '🪒' },
   { id: 233, name: 'Faux cils (pose)', category: 'spa_massage', price: 400, qty: 999, minQty: 0, emoji: '👁️' },
   { id: 234, name: 'Épilation Bras', category: 'spa_massage', price: 400, qty: 999, minQty: 0, emoji: '🪒' },
@@ -273,8 +268,8 @@ export const INITIAL_PRODUCTS: Product[] = [
   { id: 237, name: 'Épilation Aisselles', category: 'spa_massage', price: 200, qty: 999, minQty: 0, emoji: '🪒' },
   { id: 238, name: 'Épilation Moustache', category: 'spa_massage', price: 100, qty: 999, minQty: 0, emoji: '🪒' },
   { id: 239, name: 'Épilation Maillot', category: 'spa_massage', price: 1500, qty: 999, minQty: 0, emoji: '🪒' },
-  { id: 240, name: 'Corps complet sans maillot', category: 'spa_massage', price: 25000, qty: 999, minQty: 0, emoji: '🪒' },
-  { id: 241, name: 'Corps complet avec maillot', category: 'spa_massage', price: 35000, qty: 999, minQty: 0, emoji: '🪒' },
+  { id: 240, name: 'Corps complet sans maillot', category: 'spa_massage', price: 2500, qty: 999, minQty: 0, emoji: '🪒' },
+  { id: 241, name: 'Corps complet avec maillot', category: 'spa_massage', price: 3500, qty: 999, minQty: 0, emoji: '🪒' },
 
   // Soins & Beauté — Massage (Esthétique)
   { id: 242, name: 'Massage 30 minutes', category: 'spa_massage', price: 800, qty: 999, minQty: 0, emoji: '💆' },
@@ -288,7 +283,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   { id: 248, name: 'Maquillage Mariage', category: 'spa_massage', price: 1000, qty: 999, minQty: 0, emoji: '👰' },
 
   // Soins & Beauté — Manucure & Pédicure (Esthétique)
-  { id: 249, name: 'Manucure', category: 'spa_massage', price: 600, qty: 999, minQty: 0, emoji: '💅' },
+  { id: 249, name: 'Manucure', category: 'spa_massage', price: 300, qty: 999, minQty: 0, emoji: '💅' },
   { id: 250, name: 'Pédicure simple', category: 'spa_massage', price: 600, qty: 999, minQty: 0, emoji: '💅' },
   { id: 251, name: 'Paraffine extra', category: 'spa_massage', price: 200, qty: 999, minQty: 0, emoji: '💅' },
   { id: 252, name: 'Épilation orteil', category: 'spa_massage', price: 100, qty: 999, minQty: 0, emoji: '💅' },
@@ -296,24 +291,24 @@ export const INITIAL_PRODUCTS: Product[] = [
   { id: 254, name: 'French manicure', category: 'spa_massage', price: 300, qty: 999, minQty: 0, emoji: '💅' },
   { id: 255, name: 'Vernis permanent', category: 'spa_massage', price: 500, qty: 999, minQty: 0, emoji: '💅' },
   { id: 256, name: 'French manicure permanent', category: 'spa_massage', price: 700, qty: 999, minQty: 0, emoji: '💅' },
-  { id: 257, name: 'Pose gel', category: 'spa_massage', price: 1500, qty: 999, minQty: 0, emoji: '💅' },
+  { id: 257, name: 'Pose gel (1500 MRU)', category: 'spa_massage', price: 1500, qty: 999, minQty: 0, emoji: '💅' },
 
   // Coiffure & Salon — tarifs au choix du client selon la prestation
-  { id: 258, name: 'Tress (300 MRU)', category: 'coiffure_salon', price: 300, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 259, name: 'Tress (400 MRU)', category: 'coiffure_salon', price: 400, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 260, name: 'Tress (500 MRU)', category: 'coiffure_salon', price: 500, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 261, name: 'Tress avec mèche (800 MRU)', category: 'coiffure_salon', price: 800, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 262, name: 'Tress avec mèche (1000 MRU)', category: 'coiffure_salon', price: 1000, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 263, name: 'Tenture (200 MRU)', category: 'coiffure_salon', price: 200, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 264, name: 'Tenture (300 MRU)', category: 'coiffure_salon', price: 300, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 258, name: 'Tresses (300 MRU)', category: 'coiffure_salon', price: 300, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 259, name: 'Tresses (400 MRU)', category: 'coiffure_salon', price: 400, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 260, name: 'Tresses (500 MRU)', category: 'coiffure_salon', price: 500, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 261, name: 'Tresses avec mèches (800 MRU)', category: 'coiffure_salon', price: 800, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 262, name: 'Tresses avec mèches (1000 MRU)', category: 'coiffure_salon', price: 1000, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 263, name: 'Teinture (200 MRU)', category: 'coiffure_salon', price: 200, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 264, name: 'Teinture (300 MRU)', category: 'coiffure_salon', price: 300, qty: 999, minQty: 0, emoji: '💇' },
   { id: 265, name: 'Afrois (250 MRU)', category: 'coiffure_salon', price: 250, qty: 999, minQty: 0, emoji: '💇' },
   { id: 266, name: 'Afrois (300 MRU)', category: 'coiffure_salon', price: 300, qty: 999, minQty: 0, emoji: '💇' },
   { id: 267, name: 'Greffache', category: 'coiffure_salon', price: 400, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 268, name: 'Broching (400 MRU)', category: 'coiffure_salon', price: 400, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 269, name: 'Broching (500 MRU)', category: 'coiffure_salon', price: 500, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 270, name: 'Broching (600 MRU)', category: 'coiffure_salon', price: 600, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 271, name: 'Bruching (700 MRU)', category: 'coiffure_salon', price: 700, qty: 999, minQty: 0, emoji: '💇' },
-  { id: 272, name: 'Bruching (800 MRU)', category: 'coiffure_salon', price: 800, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 268, name: 'Brushing (400 MRU)', category: 'coiffure_salon', price: 400, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 269, name: 'Brushing (500 MRU)', category: 'coiffure_salon', price: 500, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 270, name: 'Brushing (600 MRU)', category: 'coiffure_salon', price: 600, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 271, name: 'Brushing (700 MRU)', category: 'coiffure_salon', price: 700, qty: 999, minQty: 0, emoji: '💇' },
+  { id: 272, name: 'Brushing (800 MRU)', category: 'coiffure_salon', price: 800, qty: 999, minQty: 0, emoji: '💇' },
   { id: 273, name: 'Coupe (100 MRU)', category: 'coiffure_salon', price: 100, qty: 999, minQty: 0, emoji: '💇' },
   { id: 274, name: 'Coupe (200 MRU)', category: 'coiffure_salon', price: 200, qty: 999, minQty: 0, emoji: '💇' },
 ];
