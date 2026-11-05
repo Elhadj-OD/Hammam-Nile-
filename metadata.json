@@ -1,7 +1,0 @@
-{
-  "name": "Hammam Nile - Caisse & Gestion",
-  "description": "Hammam Nile — Système complet de caisse POS, boutique hammam, gestion des stocks, devis et facturation.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
-
