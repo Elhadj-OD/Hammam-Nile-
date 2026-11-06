@@ -1,0 +1,92 @@
+==========================================================
+  CAFÉ DUGOUT — Application Next.js + PWA
+==========================================================
+
+Tout est là : le SQL Supabase, l'application Next.js
+installable sur téléphone, les QR des tables et les guides.
+
+----------------------------------------------------------
+DÉMARRAGE RAPIDE (15 minutes)
+----------------------------------------------------------
+
+1) SUPABASE (une seule fois)
+   a. Crée un projet sur https://supabase.com
+   b. SQL Editor → New query → colle TOUT le contenu de
+      supabase/1_schema.sql  → Run
+   c. New query → colle TOUT supabase/2_seed.sql → Run
+      (vérifie : 21 tables, 7 produits)
+   d. Authentication → Users → Add user : crée un compte
+      par employé (coche "Auto Confirm User")
+   e. SQL Editor → une ligne par employé :
+        select public.promote_staff('email@exemple.mr','admin','Prénom');
+      rôles possibles : admin, gerant, serveur, cuisine
+   f. Authentication → Sign In / Providers → Email :
+      "Allow new users to sign up" = OFF
+   g. Project Settings → API : note l'URL du projet et la
+      clé "anon public"
+
+   Déjà installé une version précédente ? Lance une fois
+   supabase/3_migration_choix_table.sql (choix de table).
+
+2) SÉCURITÉ (à faire avant l'ouverture)
+   a. SQL Editor → supabase/4_security_hardening.sql → Run
+      (attendu en bas : 4 | 3 | 1)
+   b. Variables SERVEUR (jamais NEXT_PUBLIC_) :
+        SUPABASE_SERVICE_ROLE_KEY
+        TABLE_TOKEN_SECRET         (openssl rand -base64 48)
+        PAYMENT_SECRET_BANKILY / _MASRIVI / _SEDAD / _CLICK
+   c. Upstash (gratuit) → UPSTASH_REDIS_REST_URL + _TOKEN
+      (limite anti-spam correcte en production)
+   d. Supabase → Authentication → Rate Limits :
+      10 tentatives / 5 minutes, inscription fermée
+   Détail complet : AUDIT_SECURITE_COMPLET.md
+
+3) APPLICATION
+   (reste à la racine du projet)
+   cp .env.local.example .env.local
+   # édite .env.local et mets tes valeurs
+   npm install
+   npm run dev          → http://localhost:3000
+
+4) MISE EN LIGNE (Vercel, gratuit)
+   - Pousse tout le dossier sur GitHub
+   - vercel.com → Add New Project → laisse Root Directory vide
+   - Environment Variables : les mêmes valeurs
+     (cocher "Server" pour SERVICE_ROLE, TABLE_TOKEN_SECRET,
+      PAYMENT_SECRET_*, UPSTASH_*)
+   - Deploy, puis ajoute l'URL Vercel dans
+     Supabase → Authentication → URL Configuration
+
+5) INSTALLER SUR LES TÉLÉPHONES (PWA)
+   - Android/Chrome : bouton "Installer" dans l'en-tête
+   - iPhone/Safari : Partager → "Sur l'écran d'accueil"
+   (le PWA exige HTTPS : l'URL Vercel est déjà en HTTPS)
+
+----------------------------------------------------------
+CE QU'IL Y A DEDANS
+----------------------------------------------------------
+  INSTALLATION.md             Guide pas à pas complet (à lire)
+  AUDIT_SECURITE_COMPLET.md   Audit complet : RBAC, webhooks
+                              signés, rate limiting, jetons QR,
+                              hors-ligne (avec le code)
+  AUDIT_FAILLES.md            Les failles trouvées et corrigées
+  (racine)                    L application Next.js 14 + PWA : app/, components/, lib/, public/
+  supabase/                   SQL : schema, seed, migrations 3 et 4
+  qr/                         Planche PDF des 21 QR + script
+  extras/version-html-simple/        Même app en 1 fichier HTML (dépannage)
+  screenshots/                Captures réelles de l'app
+  security-test.mjs           Tests de sécurité (24)
+  rbac-test.mjs               Tests rôles + hors-ligne (11)
+
+----------------------------------------------------------
+À SAVOIR
+----------------------------------------------------------
+  - Le client CHOISIT sa table à la commande (choix mémorisé
+    sur son téléphone). S'il scanne le QR, la table est déjà
+    remplie mais reste modifiable.
+  - Ne JAMAIS mettre la clé "service_role" dans l'app.
+    La clé "anon" est publique, c'est normal : la sécurité
+    vient de la RLS, des fonctions SQL et des routes /api.
+  - Les prix ne peuvent pas être falsifiés : ils sont relus
+    en base au moment de la commande.
+  - Testé avec Next 14.2 et Node 20.

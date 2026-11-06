@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hors ligne — Café DUGOUT</title>
+<meta name="theme-color" content="#002e25">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100dvh;display:flex;align-items:center;justify-content:center;
+       font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#f6ead6;padding:24px;
+       background:radial-gradient(40% 35% at 12% 8%,rgba(217,180,63,.17),transparent 70%),
+                  radial-gradient(45% 40% at 92% 82%,rgba(200,45,75,.3),transparent 70%),#002e25}
+  .card{max-width:420px;width:100%;text-align:center;padding:28px 22px;border-radius:18px;
+        border:1px solid rgba(217,180,63,.28);
+        background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.02)),rgba(0,58,46,.72);
+        backdrop-filter:blur(18px)}
+  .logo{width:64px;height:64px;margin:0 auto 14px;border-radius:16px;border:1px solid #d9b43f;
+        display:flex;align-items:center;justify-content:center;background:rgba(217,180,63,.08)}
+  h1{font-family:Georgia,serif;font-size:22px;margin:0 0 8px;font-weight:700}
+  p{color:#b7a09e;font-size:14px;line-height:1.5;margin:0 0 18px}
+  button{border:0;border-radius:12px;padding:12px 20px;font-weight:700;font-size:14px;cursor:pointer;
+         background:linear-gradient(180deg,#e8c552,#c9a02c);color:#2a0f14;width:100%}
+  small{display:block;margin-top:14px;color:#8f7a76;font-size:11px}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <img src="/brand/logo.jpg" alt="Logo Café DUGOUT" width="64" height="64" style="border-radius:16px;object-fit:contain">
+    </div>
+    <h1>Vous êtes hors ligne</h1>
+    <p>Le menu s’affichera dès que la connexion revient. Votre commande n’a pas été envoyée : rien n’est perdu, réessayez dans un instant.</p>
+    <button onclick="location.reload()">Réessayer</button>
+    <small>Café DUGOUT</small>
+  </div>
+</body>
+</html>
