@@ -13,7 +13,7 @@ export default function SetupNotice({ title = 'Supabase n’est pas encore confi
         </p>
         <pre className="mt-3 overflow-x-auto rounded-xl p-3 text-xs" style={{ background: 'rgba(20,5,9,.6)' }}>
 {`NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6...`}
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_xxxxxxxx (ou ancienne clé anon eyJ...)`}
         </pre>
         <ul className="mut mt-4 list-disc space-y-1 pl-5 text-sm">
           <li>La clé <b className="gt">anon</b> est publique, c’est normal : la sécurité vient de la RLS.</li>
