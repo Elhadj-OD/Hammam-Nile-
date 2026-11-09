@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Icon from '@/components/Icon'
-import { BRAND } from '@/lib/config'
+import { BRAND, PIN_PROFILES, PIN_SUFFIX } from '@/lib/config'
 import { supabaseBrowser } from '@/lib/supabase/browser'
 import { toast } from '@/lib/toast'
 
@@ -13,20 +13,25 @@ export default function LoginForm({ email: initial = '', noRole = false }) {
   const sb = supabaseBrowser()
   const [email, setEmail] = useState(initial)
   const [password, setPassword] = useState('')
+  const [mode, setMode] = useState('pin') // 'pin' = profil + code · 'email' = compte personnel
+  const [profile, setProfile] = useState('serveur')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
 
   const submit = async e => {
     e.preventDefault()
     setError(null)
-    if (!email.trim() || !password) return setError('Email et mot de passe requis.')
+    const usePin = mode === 'pin'
+    const loginEmail = usePin ? PIN_PROFILES.find(x => x.key === profile).email : email.trim()
+    const loginPassword = usePin ? password.trim() + PIN_SUFFIX : password
+    if (!loginEmail || !password.trim()) return setError(usePin ? 'Choisissez un profil et saisissez le mot de passe.' : 'Email et mot de passe requis.')
     setBusy(true)
-    const { error: err } = await sb.auth.signInWithPassword({ email: email.trim(), password })
+    const { error: err } = await sb.auth.signInWithPassword({ email: loginEmail, password: loginPassword })
     setBusy(false)
     if (err) {
       setError(
         /invalid login/i.test(err.message)
-          ? 'Email ou mot de passe incorrect (ou compte non confirmé).'
+          ? mode === 'pin' ? 'Mot de passe incorrect.' : 'Email ou mot de passe incorrect (ou compte non confirmé).'
           : err.message
       )
       return
@@ -77,32 +82,43 @@ export default function LoginForm({ email: initial = '', noRole = false }) {
           </>
         ) : (
           <form onSubmit={submit} className="space-y-2">
-            <label className="mut text-xs" htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="username"
-              className="inp"
-              placeholder="votre@email.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
-            <label className="mut text-xs" htmlFor="password">
-              Mot de passe
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              className="inp"
-              placeholder="••••••••"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
+            {mode === 'pin' ? (
+              <>
+                <div className="mut text-xs">Profil</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {PIN_PROFILES.map(x => (
+                    <button key={x.key} type="button" className={'btn ' + (profile === x.key ? 'on' : '')} onClick={() => setProfile(x.key)}>
+                      {x.label}
+                    </button>
+                  ))}
+                </div>
+                <label className="mut text-xs" htmlFor="password">
+                  Mot de passe
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  autoComplete="current-password"
+                  className="inp text-center text-xl tracking-widest"
+                  placeholder="••••••"
+                  maxLength={12}
+                  value={password}
+                  onChange={e => setPassword(e.target.value.replace(/\s/g, ''))}
+                  required
+                />
+              </>
+            ) : (
+              <>
+                <label className="mut text-xs" htmlFor="email">
+                  Email
+                </label>
+                <input id="email" type="email" autoComplete="username" className="inp" placeholder="votre@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                <label className="mut text-xs" htmlFor="password">
+                  Mot de passe
+                </label>
+                <input id="password" type="password" autoComplete="current-password" className="inp" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
+              </>
+            )}
             {error && (
               <p className="text-sm" style={{ color: '#ff9a9a' }} role="alert">
                 {error}
@@ -110,6 +126,9 @@ export default function LoginForm({ email: initial = '', noRole = false }) {
             )}
             <button className="btn gold w-full" type="submit" disabled={busy}>
               {busy ? 'Connexion…' : 'Entrer'}
+            </button>
+            <button type="button" className="mut w-full pt-1 text-xs underline" onClick={() => { setMode(mode === 'pin' ? 'email' : 'pin'); setPassword(''); setError(null) }}>
+              {mode === 'pin' ? 'Utiliser un compte email' : 'Revenir à la connexion par profil'}
             </button>
           </form>
         )}

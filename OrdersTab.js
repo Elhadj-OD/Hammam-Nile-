@@ -5,6 +5,7 @@ import Icon from '@/components/Icon'
 import { M, ST_NEXT, can, hm, ticketNo, tot, paid, rest } from '@/lib/config'
 import { usePos } from './PosProvider'
 import PayDialog from './PayDialog'
+import { reprintOrder } from './PrintStation'
 
 export function OrderLines({ items }) {
   return (
@@ -59,6 +60,9 @@ export default function OrdersTab() {
               <div className="grid grid-cols-4 gap-1.5 pt-2">
                 <button className="btn sm col-span-2" onClick={() => setStatus(o.id, nextLabel)}>
                   {o.st} ›
+                </button>
+                <button className="btn sm" onClick={() => reprintOrder(o.id)} aria-label={'Réimprimer le bon ' + o.table} title="Réimprimer le bon">
+                  <Icon name="printer" size={14} />
                 </button>
                 {canPay && (
                   <button

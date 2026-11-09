@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { dt } from '@/lib/config'
 import { toast } from '@/lib/toast'
 import {
-  DESTINATIONS,
   UNITS,
   addStockItem,
   archiveStockItem,
@@ -21,7 +20,7 @@ const sameDay = (a, b) => new Date(a).toDateString() === new Date(b).toDateStrin
 const VIEWS = [
   ['stock', 'Stock'],
   ['entree', '↓ Entrée'],
-  ['sortie', '↑ Sortie vers resto'],
+  ['sortie', '→ Vers la cuisine'],
   ['hist', 'Historique']
 ]
 const KIND = {
@@ -40,23 +39,25 @@ export default function StockTab() {
   const [filter, setFilter] = useState('')
   const [form, setForm] = useState({ item: '', qty: '', cost: '', party: '', note: '' })
   const [adding, setAdding] = useState(false)
-  const [nw, setNw] = useState({ name: '', unit: UNITS[0], category: '', minQty: '' })
+  const [nw, setNw] = useState({ name: '', unit: UNITS[0], category: '', minQty: '', minCuisine: '' })
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
-  const load = useCallback(async () => {
+  const load = useCallback(async quiet => {
     try {
-      const [s, m] = await Promise.all([listStock(), listMovements({ limit: 300 })])
+      const [s, m] = await Promise.all([listStock(), listMovements({ location: 'magasin', limit: 300 })])
       setItems(s || [])
       setMoves(m || [])
     } catch (e) {
-      toast('Inventaire : ' + e.message, 'error')
+      if (!quiet) toast('Inventaire : ' + e.message, 'error')
     }
     setLoading(false)
   }, [])
 
   useEffect(() => {
     load()
+    const id = setInterval(() => load(true), 5000)
+    return () => clearInterval(id)
   }, [load])
 
   const byId = useMemo(() => Object.fromEntries(items.map(i => [i.id, i])), [items])
@@ -101,8 +102,8 @@ export default function StockTab() {
     if (!form.item || !(qty > 0)) return toast('Choisissez un article et une quantité', 'error')
     if (current && qty > Number(current.qty_on_hand)) return toast('Stock insuffisant : ' + fq(current.qty_on_hand) + ' ' + current.unit + ' disponible', 'error')
     const ok = await run(
-      () => stockOut({ item: form.item, qty, destination: form.party || 'Cuisine', note: form.note }),
-      'Sortie vers le restaurant enregistrée'
+      () => stockOut({ item: form.item, qty, note: form.note }),
+      'Envoyé à la cuisine : le stock cuisine est mis à jour'
     )
     if (ok) setForm({ item: '', qty: '', cost: '', party: '', note: '' })
   }
@@ -112,7 +113,7 @@ export default function StockTab() {
     if (v === null) return
     const n = num(v)
     if (!(n >= 0)) return toast('Quantité invalide', 'error')
-    run(() => stockCount({ item: it.id, counted: n }), 'Stock corrigé')
+    run(() => stockCount({ item: it.id, counted: n, location: 'magasin' }), 'Stock magasin corrigé')
   }
 
   const archive = it => {
@@ -122,9 +123,9 @@ export default function StockTab() {
 
   const createItem = async () => {
     if (!nw.name.trim()) return toast("Nom de l'article requis", 'error')
-    const ok = await run(() => addStockItem({ ...nw, minQty: num(nw.minQty || 0) }), 'Article ajouté')
+    const ok = await run(() => addStockItem({ ...nw, minQty: num(nw.minQty || 0), minCuisine: num(nw.minCuisine || 0) }), 'Article ajouté')
     if (ok) {
-      setNw({ name: '', unit: UNITS[0], category: '', minQty: '' })
+      setNw({ name: '', unit: UNITS[0], category: '', minQty: '', minCuisine: '' })
       setAdding(false)
     }
   }
@@ -153,7 +154,7 @@ export default function StockTab() {
         </div>
         <div className="card p-3">
           <div className="gt text-2xl font-bold">{outToday}</div>
-          <div className="mut text-xs">Sorties aujourd’hui</div>
+          <div className="mut text-xs">Envois cuisine aujourd’hui</div>
         </div>
       </div>
 
@@ -170,7 +171,7 @@ export default function StockTab() {
       {view === 'stock' && (
         <div className="card p-4">
           <div className="mb-3 flex flex-wrap items-center gap-2">
-            <h2 className="serif flex-1 text-xl font-bold">Stock du magasin</h2>
+            <h2 className="serif flex-1 text-xl font-bold">Stock Magasin <span className="mut text-sm font-normal">(grand stock)</span></h2>
             <input className="inp" style={{ maxWidth: 200 }} placeholder="Rechercher…" value={q} onChange={e => setQ(e.target.value)} />
             <button className="btn gold" onClick={() => setAdding(a => !a)}>
               + Nouvel article
@@ -186,7 +187,8 @@ export default function StockTab() {
                 ))}
               </select>
               <input className="inp" inputMode="decimal" placeholder="Seuil d'alerte" value={nw.minQty} onChange={e => setNw({ ...nw, minQty: e.target.value })} />
-              <input className="inp sm:col-span-3" placeholder="Catégorie (facultatif) : viandes, boissons…" maxLength={40} value={nw.category} onChange={e => setNw({ ...nw, category: e.target.value })} />
+              <input className="inp sm:col-span-2" placeholder="Catégorie (facultatif) : viandes, boissons…" maxLength={40} value={nw.category} onChange={e => setNw({ ...nw, category: e.target.value })} />
+              <input className="inp" inputMode="decimal" placeholder="Seuil d'alerte cuisine" value={nw.minCuisine} onChange={e => setNw({ ...nw, minCuisine: e.target.value })} />
               <button className="btn gold" onClick={createItem} disabled={busy}>
                 Ajouter
               </button>
@@ -211,12 +213,17 @@ export default function StockTab() {
                     {it.last_out_at ? ' · sortie ' + dt(it.last_out_at) : ''}
                   </div>
                 </div>
-                <div className="gt text-lg font-bold" style={it.is_low ? { color: '#ff6b6b' } : undefined}>
-                  {fq(it.qty_on_hand)} <span className="text-xs">{it.unit}</span>
+                <div className="text-right">
+                  <div className="gt text-lg font-bold" style={it.is_low ? { color: '#ff6b6b' } : undefined}>
+                    {fq(it.qty_on_hand)} <span className="text-xs">{it.unit}</span>
+                  </div>
+                  <div className="mut text-xs">
+                    Cuisine : {fq(it.qty_cuisine)} {it.unit}
+                  </div>
                 </div>
                 <div className="flex gap-1">
                   <button className="btn sm" onClick={() => go('entree', it.id)}>↓ Entrée</button>
-                  <button className="btn sm" onClick={() => go('sortie', it.id)}>↑ Resto</button>
+                  <button className="btn sm" onClick={() => go('sortie', it.id)}>→ Cuisine</button>
                   <button className="btn sm" onClick={() => count(it)}>Compter</button>
                   <button className="btn sm red" onClick={() => archive(it)} aria-label={'Archiver ' + it.name}>×</button>
                 </div>
@@ -246,22 +253,15 @@ export default function StockTab() {
 
       {view === 'sortie' && (
         <div className="card p-4">
-          <h2 className="serif mb-1 text-xl font-bold">Sortie du magasin vers le restaurant</h2>
-          <p className="mut mb-3 text-sm">Marchandise remise à la cuisine, au bar ou en salle : elle est retirée du stock du magasin.</p>
+          <h2 className="serif mb-1 text-xl font-bold">Envoi du magasin vers la cuisine</h2>
+          <p className="mut mb-3 text-sm">Retiré du stock du magasin et ajouté tout de suite au stock de la cuisine.</p>
           <div className="grid gap-2 sm:grid-cols-4">
             {picker}
             <input className="inp" inputMode="decimal" placeholder={'Quantité' + (current ? ' (' + current.unit + ')' : '')} value={form.qty} onChange={e => set('qty', e.target.value)} />
             <div className="mut flex items-center text-sm">{current ? 'Disponible : ' + fq(current.qty_on_hand) + ' ' + current.unit : ''}</div>
-            <div className="flex flex-wrap gap-2 sm:col-span-4">
-              {DESTINATIONS.map(d => (
-                <button key={d} type="button" className={'btn sm ' + ((form.party || 'Cuisine') === d ? 'on' : '')} onClick={() => set('party', d)}>
-                  {d}
-                </button>
-              ))}
-            </div>
             <input className="inp sm:col-span-4" placeholder="Note (facultatif)" maxLength={200} value={form.note} onChange={e => set('note', e.target.value)} />
             <button className="btn gold sm:col-span-4" onClick={submitOut} disabled={busy}>
-              {busy ? 'Enregistrement…' : 'Sortir vers le restaurant'}
+              {busy ? 'Enregistrement…' : 'Envoyer à la cuisine'}
             </button>
           </div>
         </div>

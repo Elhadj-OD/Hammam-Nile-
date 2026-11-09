@@ -38,7 +38,8 @@ export const TABS = [
   { key: 'orders', label: 'Commandes', level: 'g' },
   { key: 'kds', label: 'Écran Cuisine (KDS)', level: 'g' },
   { key: 'hist', label: 'Historique', level: 'g' },
-  { key: 'stock', label: 'Inventaire', level: 'm' },
+  { key: 'stock', label: 'Stock Magasin', level: 'm' },
+  { key: 'kstock', label: 'Stock Cuisine', level: 'k' },
   { key: 'stats', label: 'Statistiques', level: 'a' },
   { key: 'menu', label: 'Menu & Produits', level: 'a' },
   { key: 'qr', label: 'QR des tables', level: 'a' }
@@ -48,6 +49,7 @@ export function can(role, level) {
   if (!role) return false
   if (level === 'a') return role === 'admin'
   if (level === 'o') return role === 'admin' || role === 'gerant' || role === 'serveur' // prise de commande + encaissement
+  if (level === 'k') return role === 'admin' || role === 'gerant' || role === 'cuisine' // stock cuisine
   if (level === 'm') return role === 'admin' || role === 'gerant' // magasin / inventaire
   return ['admin', 'gerant', 'serveur', 'cuisine'].includes(role)
 }
@@ -95,3 +97,12 @@ export const SPEC_SLUGS = ['petit-dejeuner', 'cascroute', 'sucre', 'snack']
 /** Commandes par les clients (QR / menu public). Désactivé : seule l'équipe prend les commandes.
  *  Pour le réactiver plus tard : NEXT_PUBLIC_CLIENT_ORDERING=1 (+ ré-autoriser les fonctions SQL client_place_order*). */
 export const CLIENT_ORDERING = process.env.NEXT_PUBLIC_CLIENT_ORDERING === '1'
+
+/** Connexion équipe par profil : mot de passe saisi tel quel (PIN_SUFFIX vide ; voir supabase/8_comptes_et_bons.sql). */
+export const PIN_SUFFIX = ''
+export const PIN_PROFILES = [
+  { key: 'admin', label: 'Admin', email: 'admin@dugout.mr' },
+  { key: 'gerant', label: 'Gérant', email: 'gerant@dugout.mr' },
+  { key: 'serveur', label: 'Serveur', email: 'serveur@dugout.mr' },
+  { key: 'cuisine', label: 'Cuisine', email: 'cuisine@dugout.mr' }
+]

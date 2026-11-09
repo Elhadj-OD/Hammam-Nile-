@@ -7,6 +7,7 @@ import { BRAND, CLIENT_ORDERING, ROLE_LABEL, TABS, can } from '@/lib/config'
 import { supabaseBrowser } from '@/lib/supabase/browser'
 import { usePos } from './PosProvider'
 import NewOrderTab from './NewOrderTab'
+import PrintStation from './PrintStation'
 import OrdersTab from './OrdersTab'
 import KdsTab from './KdsTab'
 import HistoryTab from './HistoryTab'
@@ -14,8 +15,9 @@ import StatsTab from './StatsTab'
 import MenuTab from './MenuTab'
 import QrTab from './QrTab'
 import StockTab from './StockTab'
+import KitchenStockTab from './KitchenStockTab'
 
-const ICONS = { new: 'plate', orders: 'chef', kds: 'flame', hist: 'clock', stats: 'chart', menu: 'box', qr: 'qr', stock: 'box' }
+const ICONS = { new: 'plate', orders: 'chef', kds: 'flame', hist: 'clock', stats: 'chart', menu: 'box', qr: 'qr', stock: 'box', kstock: 'chef' }
 
 export default function PosApp({ onBackToMenu }) {
   const { staff, orders, menu, loading, error, refresh } = usePos()
@@ -90,6 +92,10 @@ export default function PosApp({ onBackToMenu }) {
         )}
         {loading && <p className="mut">Chargement des commandes…</p>}
 
+        <div className="no-print mb-3">
+          <PrintStation />
+        </div>
+
         {tab === 'new' && can(staff?.role, 'o') && <NewOrderTab onDone={() => setTab('orders')} />}
         {tab === 'orders' && <OrdersTab />}
         {tab === 'kds' && <KdsTab />}
@@ -97,6 +103,7 @@ export default function PosApp({ onBackToMenu }) {
         {tab === 'stats' && can(staff?.role, 'a') && <StatsTab />}
         {tab === 'menu' && can(staff?.role, 'a') && <MenuTab />}
         {tab === 'stock' && can(staff?.role, 'm') && <StockTab />}
+        {tab === 'kstock' && can(staff?.role, 'k') && <KitchenStockTab />}
         {tab === 'qr' && can(staff?.role, 'a') && <QrTab />}
 
         {onBackToMenu && (

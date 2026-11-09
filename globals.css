@@ -373,3 +373,31 @@ body::before{background:radial-gradient(40% 35% at 10% 6%,rgba(45,255,168,.2),tr
 @keyframes slide{to{transform:translateX(-50%)}}
 @keyframes drift{0%{transform:translate(0,0) scale(1);border-radius:50%}50%{transform:translate(8%,10%) scale(1.15);border-radius:42% 58% 55% 45%}100%{transform:translate(-6%,-8%) scale(.92);border-radius:55% 45% 40% 60%}}
 @media(prefers-reduced-motion:reduce){.liquid i,.hero-wave,.hero-cup,.btn.gold,.btn.on{animation:none!important}}
+
+/* ---- Bon de commande (imprimante thermique 80 mm) ---- */
+#ticket-print {
+  display: none;
+}
+@media print {
+  #ticket-print,
+  #ticket-print * {
+    visibility: visible;
+  }
+  #ticket-print {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 72mm;
+    padding: 3mm;
+    background: #fff !important;
+    color: #000 !important;
+    font-family: ui-monospace, 'Courier New', monospace;
+    line-height: 1.25;
+  }
+  #ticket-print hr {
+    border: 0;
+    border-top: 1px dashed #000;
+    margin: 2mm 0;
+  }
+}

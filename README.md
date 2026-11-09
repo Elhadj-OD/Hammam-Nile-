@@ -1,11 +1,11 @@
 # Café DUGOUT — Le café des passionnés
 
-Menu par QR code, caisse (POS), écran cuisine, inventaire du magasin (entrées, sorties vers le restaurant, stock), stats et paiements (Bankily, Masrivi, Sedad, Click, espèces).
+Menu par QR code, caisse (POS), écran cuisine, stock Magasin (grand stock : entrées, envois) et stock Cuisine (stock de travail), stats et paiements (Bankily, Masrivi, Sedad, Click, espèces).
 Next.js 14 (App Router) + Supabase. PWA installable, mode hors-ligne.
 
 ## Mise en ligne en 6 étapes
 1. **Supabase** : créer un projet, puis dans *SQL Editor* exécuter dans l'ordre
-   `supabase/1_schema.sql` → `2_seed.sql` → `4_security_hardening.sql` → `5_category_icons.sql` → `6_inventory.sql`
+   `supabase/1_schema.sql` → `2_seed.sql` → `4_security_hardening.sql` → `5_category_icons.sql` → `6_inventory.sql` → `7_staff_only.sql` → `8_comptes_et_bons.sql` → `9_stock_cuisine.sql`
    (`3_migration_choix_table.sql` seulement pour une base déjà existante).
 2. **Comptes équipe** : *Authentication → Users → Add user*, puis
    `select public.promote_staff('email@exemple.mr','admin','Prénom');`

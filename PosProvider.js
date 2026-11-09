@@ -57,6 +57,19 @@ export default function PosProvider({ staff, children }) {
     }
   }, [])
 
+  /** Recharge uniquement les commandes (léger) : appelée dès que l'empreinte serveur change. */
+  const loadOrders = useCallback(async () => {
+    if (!sb) return
+    const since = new Date(Date.now() - 30 * 864e5).toISOString()
+    const o = await sb.from('v_orders_full').select('*').gte('opened_at', since).order('opened_at', { ascending: false }).limit(500)
+    if (o.error) return setError(o.error.message)
+    setError(null)
+    setOrders(o.data.map(mapOrder))
+    const newest = Math.max(0, ...o.data.filter(x => !x.closed_at).map(x => new Date(x.opened_at).getTime()))
+    if (lastNewest.current && newest > lastNewest.current) beep()
+    if (newest > lastNewest.current) lastNewest.current = newest
+  }, [sb, beep])
+
   const load = useCallback(async () => {
     if (!sb) return
     const since = new Date(Date.now() - 30 * 864e5).toISOString()
@@ -89,11 +102,41 @@ export default function PosProvider({ staff, children }) {
     setLoading(false)
   }, [sb, isAdmin, beep])
 
+  // Actualisation toutes les 2 s : on interroge une petite empreinte (orders_signature) et on ne recharge
+  // les commandes que si elle change. Menu, tables, dépenses : toutes les 30 s.
+  // Si la fonction SQL 10_actualisation.sql n'est pas installée : secours, rechargement toutes les ~6 s.
+  const sigRef = useRef('')
   useEffect(() => {
+    if (!sb) return
     load()
-    const id = setInterval(load, 15000)
-    return () => clearInterval(id)
-  }, [load])
+    let stop = false
+    let busy = false
+    let n = 0
+    const tick = async () => {
+      if (stop || busy) return
+      busy = true
+      try {
+        n++
+        const { data, error: e } = await sb.rpc('orders_signature')
+        if (e) {
+          if (n % 3 === 0) await loadOrders()
+        } else if (data !== sigRef.current) {
+          sigRef.current = data
+          await loadOrders()
+        }
+        if (n % 15 === 0) await load()
+      } catch {
+        /* réseau coupé : on réessaie au prochain tour */
+      } finally {
+        busy = false
+      }
+    }
+    const id = setInterval(tick, 2000)
+    return () => {
+      stop = true
+      clearInterval(id)
+    }
+  }, [sb, load, loadOrders])
 
   /* ---------------- actions ---------------- */
   const act = useCallback(

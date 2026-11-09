@@ -6,7 +6,7 @@
 import { supabaseBrowser } from '@/lib/supabase/browser'
 
 export const UNITS = ['unité', 'kg', 'g', 'L', 'carton', 'sac', 'paquet', 'boîte', 'plaquette']
-export const DESTINATIONS = ['Cuisine', 'Bar / Café', 'Salle', 'Autre']
+export const REASONS = ['Utilisé', 'Perte', 'Casse']
 
 const sb = () => {
   const c = supabaseBrowser()
@@ -22,20 +22,21 @@ const unwrap = ({ data, error }) => {
 export const listStock = () => sb().from('v_stock').select('*').eq('is_active', true).order('name').then(unwrap)
 
 /** Derniers mouvements. kind = 'entree' | 'sortie' | 'ajustement' | null (tous). */
-export function listMovements({ kind = null, limit = 200 } = {}) {
+export function listMovements({ kind = null, location = null, limit = 200 } = {}) {
   let q = sb()
     .from('stock_movements')
-    .select('id,kind,qty,unit_cost,party,note,by_name,moved_at,stock_items(name,unit)')
+    .select('id,kind,location,qty,unit_cost,party,note,by_name,moved_at,stock_items(name,unit)')
     .order('moved_at', { ascending: false })
     .limit(limit)
   if (kind) q = q.eq('kind', kind)
+  if (location) q = q.eq('location', location)
   return q.then(unwrap)
 }
 
-export const addStockItem = ({ name, unit, category, minQty }) =>
+export const addStockItem = ({ name, unit, category, minQty, minCuisine }) =>
   sb()
     .from('stock_items')
-    .insert({ name: name.trim(), unit, category: category?.trim() || null, min_qty: Number(minQty) || 0 })
+    .insert({ name: name.trim(), unit, category: category?.trim() || null, min_qty: Number(minQty) || 0, min_cuisine: Number(minCuisine) || 0 })
     .then(unwrap)
 
 export const updateStockItem = (id, patch) => sb().from('stock_items').update(patch).eq('id', id).then(unwrap)
@@ -54,12 +55,14 @@ export const stockIn = ({ item, qty, unitCost, supplier, note }) =>
     })
     .then(unwrap)
 
-/** Sortie du magasin vers le restaurant. Refusée si le stock est insuffisant. */
-export const stockOut = ({ item, qty, destination, note }) =>
-  sb()
-    .rpc('staff_stock_move', { p_item: item, p_kind: 'sortie', p_qty: qty, p_party: destination || null, p_note: note || null })
-    .then(unwrap)
+/** Envoi du MAGASIN vers la CUISINE : retire du stock magasin et ajoute au stock cuisine (une seule opération). */
+export const stockOut = ({ item, qty, note }) =>
+  sb().rpc('staff_stock_move', { p_item: item, p_kind: 'sortie', p_qty: qty, p_note: note || null }).then(unwrap)
 
-/** Comptage physique : fixe le stock à `counted` (crée un ajustement de la différence). */
-export const stockCount = ({ item, counted, note }) =>
-  sb().rpc('staff_stock_count', { p_item: item, p_counted: counted, p_note: note || null }).then(unwrap)
+/** Cuisine : déclare une consommation (reason = 'Utilisé' | 'Perte' | 'Casse'). Refusé si le stock cuisine est insuffisant. */
+export const stockUse = ({ item, qty, reason, note }) =>
+  sb().rpc('staff_kitchen_use', { p_item: item, p_qty: qty, p_reason: reason || 'Utilisé', p_note: note || null }).then(unwrap)
+
+/** Comptage physique : fixe le stock du lieu ('magasin' ou 'cuisine') à `counted`. */
+export const stockCount = ({ item, counted, note, location = 'magasin' }) =>
+  sb().rpc('staff_stock_count', { p_item: item, p_counted: counted, p_note: note || null, p_location: location }).then(unwrap)
